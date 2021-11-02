@@ -2,9 +2,9 @@
 
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 //import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableMap.sol";
 //import "@openzeppelin/contracts-upgradeable/utils/math/SignedSafeMathUpgradeable.sol";
 //import "@openzeppelin/contracts-upgradeable/utils/math/MathUpgradeable.sol";
@@ -77,59 +77,37 @@ interface IDEXRouter {
     ) external;
 }
 
-contract MafaCoin is Initializable, ERC20Upgradeable, OwnableUpgradeable {
-    using SafeMathUpgradeable for uint256;
+contract MafaCoin is ERC20, Ownable {
+    using SafeMath for uint256;
 
     bool private swapping;
-    bool public tradingIsEnabled;// = false;
+    bool public tradingIsEnabled = false;
 
     IDEXRouter public dexRouter;
     address dexPair;
 
-    address deadAddress; // = 0x000000000000000000000000000000000000dEaD;
+    address deadAddress = 0x000000000000000000000000000000000000dEaD;
 
     address public teamWallet;
     address public lotteryWallet;
 
-    uint256 public liquidityFee; // = 0;
-    uint256 public burnFee; // = 0;
-    uint256 public teamBuyFee; // = 0;
-    uint256 public teamSellFee; // = 0;
-    uint256 public lotteryFee; // = 0;
+    uint256 public liquidityFee = 0;
+    uint256 public burnFee = 0;
+    uint256 public teamBuyFee = 0;
+    uint256 public teamSellFee = 0;
+    uint256 public lotteryFee = 0;
 
-    uint256 public totalBuyFee; // = 0;
-    uint256 public totalSellFee; // = 0;
+    uint256 public totalBuyFee = 0;
+    uint256 public totalSellFee = 0;
 
     mapping(address => bool) public isExcludedFromFees;
     mapping(address => bool) public automatedMarketMakerPairs;
     mapping(address => bool) isBlacklisted;
 
-//    constructor() ERC20("MafaCoin", "MAFA") {
-//        excludeFromFees(address(this), true);
-//        excludeFromFees(owner(), true);
-//
-//        _mint(owner(), 1000000000 * (10**18));
-//    }
-
-    function initialize(string memory tokenName, string memory symbol) public initializer {
-        __ERC20_init(tokenName, symbol);
-        __Ownable_init();
-
+    constructor() ERC20("MafaCoin", "MAFA") {
         excludeFromFees(address(this), true);
         excludeFromFees(owner(), true);
 
-        // init vars
-        tradingIsEnabled = false;
-        deadAddress = 0x000000000000000000000000000000000000dEaD;
-        liquidityFee = 0;
-        burnFee = 0;
-        teamBuyFee = 0;
-        teamSellFee = 0;
-        lotteryFee = 0;
-        totalBuyFee = 0;
-        totalSellFee = 0;
-
-        // mint
         _mint(owner(), 1000000000 * (10**18));
     }
 
@@ -245,6 +223,15 @@ contract MafaCoin is Initializable, ERC20Upgradeable, OwnableUpgradeable {
 
         emit SwapAndLiquify(half, newAmount, otherHalf);
     }
+
+//    function supportsInterface(bytes4 interfaceId) public view virtual override(AccessControlUpgradeable, ERC721Upgradeable) returns (bool) {
+//        return
+//            interfaceId == type(IERC165Upgradeable).interfaceId ||
+//            interfaceId == type(IERC721Upgradeable).interfaceId ||
+//            interfaceId == type(IERC721MetadataUpgradeable).interfaceId ||
+//            interfaceId == type(IAccessControlUpgradeable).interfaceId ||
+//        super.supportsInterface(interfaceId);
+//    }
 
     function _swapTokensForBNB(uint256 tokenAmount) private {
         address[] memory path = new address[](2);
