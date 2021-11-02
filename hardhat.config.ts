@@ -7,6 +7,24 @@ import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "solidity-coverage";
 
+import "@nomiclabs/hardhat-waffle";
+import "@typechain/hardhat";
+import "hardhat-gas-reporter";
+import "solidity-coverage";
+import "@openzeppelin/hardhat-upgrades";
+import "@nomiclabs/hardhat-etherscan";
+import "hardhat-gas-reporter";
+
+import "./tasks/accounts";
+import "./tasks/clean";
+
+import { resolve } from "path";
+
+import { config as dotenvConfig } from "dotenv";
+import { NetworkUserConfig } from "hardhat/types";
+
+dotenvConfig({ path: resolve(__dirname, "./.env") });
+
 dotenv.config();
 
 // This is a sample Hardhat task. To learn how to create your own go to
@@ -37,6 +55,12 @@ const config: HardhatUserConfig = {
   },
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,
+  },
+  paths: {
+    artifacts: "./artifacts",
+    cache: "./cache",
+    sources: "./contracts",
+    tests: "./test"
   },
 };
 
