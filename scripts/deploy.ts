@@ -5,7 +5,6 @@
 // Runtime Environment's members available in the global scope.
 import { ethers, upgrades } from "hardhat";
 import {MafaCoin__factory} from "../typechain";
-import {Contract} from "ethers";
 
 async function main() {
   // Hardhat always runs the compile task when running scripts with its command
@@ -27,9 +26,13 @@ async function main() {
 
   console.log("Deploying contracts with the account:", deployer.address);
 
-  const MafaCoin: MafaCoin__factory = await ethers.getContractFactory("Mafacoin");
-  var mafacoin: Contract = await upgrades.deployProxy(MafaCoin, ["MafaCoin", "MAFA"], { initializer: "initialize" });
+  const MafaCoin = await ethers.getContractFactory("Mafacoin");
+  var mafacoin = await upgrades.deployProxy(MafaCoin, ["MafaCoin", "MAFA"], { initializer: "initialize" });
   mafacoin = await mafacoin.deployed();
+
+  // const MafaCoin: MafaCoin__factory = await ethers.getContractFactory("Mafacoin");
+  // const greeter = await Greeter.deploy("Hello, Hardhat!");
+  // await greeter.deployed();
 
   console.log("MafaCoin deployed to:", mafacoin.address);
 }
