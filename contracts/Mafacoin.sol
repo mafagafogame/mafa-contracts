@@ -81,24 +81,24 @@ contract MafaCoin is Initializable, ERC20Upgradeable, OwnableUpgradeable {
     using SafeMathUpgradeable for uint256;
 
     bool private swapping;
-    bool public tradingIsEnabled = false;
+    bool public tradingIsEnabled;// = false;
 
     IDEXRouter public dexRouter;
     address dexPair;
 
-    address deadAddress = 0x000000000000000000000000000000000000dEaD;
+    address deadAddress; // = 0x000000000000000000000000000000000000dEaD;
 
     address public teamWallet;
     address public lotteryWallet;
 
-    uint256 public liquidityFee = 0;
-    uint256 public burnFee = 0;
-    uint256 public teamBuyFee = 0;
-    uint256 public teamSellFee = 0;
-    uint256 public lotteryFee = 0;
+    uint256 public liquidityFee; // = 0;
+    uint256 public burnFee; // = 0;
+    uint256 public teamBuyFee; // = 0;
+    uint256 public teamSellFee; // = 0;
+    uint256 public lotteryFee; // = 0;
 
-    uint256 public totalBuyFee = 0;
-    uint256 public totalSellFee = 0;
+    uint256 public totalBuyFee; // = 0;
+    uint256 public totalSellFee; // = 0;
 
     mapping(address => bool) public isExcludedFromFees;
     mapping(address => bool) public automatedMarketMakerPairs;
@@ -118,6 +118,18 @@ contract MafaCoin is Initializable, ERC20Upgradeable, OwnableUpgradeable {
         excludeFromFees(address(this), true);
         excludeFromFees(owner(), true);
 
+        // init vars
+        tradingIsEnabled = false;
+        deadAddress = 0x000000000000000000000000000000000000dEaD;
+        liquidityFee = 0;
+        burnFee = 0;
+        teamBuyFee = 0;
+        teamSellFee = 0;
+        lotteryFee = 0;
+        totalBuyFee = 0;
+        totalSellFee = 0;
+
+        // mint
         _mint(owner(), 1000000000 * (10**18));
     }
 
