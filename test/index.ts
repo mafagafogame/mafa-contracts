@@ -1,19 +1,30 @@
 import { expect } from "chai";
-import { ethers } from "hardhat";
+import {ethers, upgrades} from "hardhat";
+import {MafaCoin, MafaCoin__factory} from "../typechain";
+import {Contract} from "ethers";
+import {SignerWithAddress} from "@nomiclabs/hardhat-ethers/signers";
 
-describe("Greeter", function () {
-  it("Should return the new greeting once it's changed", async function () {
-    const Greeter = await ethers.getContractFactory("Greeter");
-    const greeter = await Greeter.deploy("Hello, world!");
-    await greeter.deployed();
+describe("MafaCoin", function () {
+  let contract: Contract;
+  let owner: SignerWithAddress;
+  let address1: SignerWithAddress;
+  let address2: SignerWithAddress;
 
-    expect(await greeter.greet()).to.equal("Hello, world!");
+  before(async function () {
+    [owner, address1, address2] = await ethers.getSigners();
+  });
 
-    const setGreetingTx = await greeter.setGreeting("Hola, mundo!");
+  beforeEach(async function (){
+    const MafaCoinFactory: MafaCoin__factory = await ethers.getContractFactory("MafaCoin");
+    contract = await upgrades.deployProxy(MafaCoinFactory, ["MafaCoin", "MAFA"], { initializer: "initialize" });
+    contract = await contract.deployed();
+  });
 
-    // wait until the transaction is mined
-    await setGreetingTx.wait();
+  it("should have the correct name and symbol", async function () {
+    const name = await contract.name();
+    const symbol = await contract.symbol();
 
-    expect(await greeter.greet()).to.equal("Hola, mundo!");
+    expect(name).to.equal("MafaCoin");
+    expect(symbol).to.equal("MAFA");
   });
 });
