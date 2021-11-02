@@ -26,13 +26,9 @@ async function main() {
 
   console.log("Deploying contracts with the account:", deployer.address);
 
-  const MafaCoin = await ethers.getContractFactory("Mafacoin");
+  const MafaCoin = await ethers.getContractFactory("MafaCoin");
   var mafacoin = await upgrades.deployProxy(MafaCoin, ["MafaCoin", "MAFA"], { initializer: "initialize" });
   mafacoin = await mafacoin.deployed();
-
-  // const MafaCoin: MafaCoin__factory = await ethers.getContractFactory("Mafacoin");
-  // const greeter = await Greeter.deploy("Hello, Hardhat!");
-  // await greeter.deployed();
 
   console.log("MafaCoin deployed to:", mafacoin.address);
 }
