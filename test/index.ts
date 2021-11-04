@@ -1,8 +1,8 @@
 import { expect } from "chai";
-import {ethers, upgrades} from "hardhat";
-import {MafaCoin, MafaCoin__factory} from "../typechain";
-import {Contract} from "ethers";
-import {SignerWithAddress} from "@nomiclabs/hardhat-ethers/signers";
+import { ethers, upgrades } from "hardhat";
+import { MafaCoin, MafaCoin__factory } from "../typechain";
+import { Contract } from "ethers";
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 describe("MafaCoin", function () {
   let contract: Contract;
@@ -14,9 +14,15 @@ describe("MafaCoin", function () {
     [owner, address1, address2] = await ethers.getSigners();
   });
 
-  beforeEach(async function (){
-    const MafaCoinFactory: MafaCoin__factory = await ethers.getContractFactory("MafaCoin");
-    contract = await upgrades.deployProxy(MafaCoinFactory, ["MafaCoin", "MAFA"], { initializer: "initialize" });
+  beforeEach(async function () {
+    const MafaCoinFactory: MafaCoin__factory = await ethers.getContractFactory(
+      "MafaCoin"
+    );
+    contract = await upgrades.deployProxy(
+      MafaCoinFactory,
+      ["MafaCoin", "MAFA"],
+      { initializer: "initialize" }
+    );
     contract = await contract.deployed();
   });
 
