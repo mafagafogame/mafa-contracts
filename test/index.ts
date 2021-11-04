@@ -1,11 +1,11 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { MafaCoin__factory, TimeLockedWallet__factory } from "../typechain";
+import {MafaCoin, MafaCoin__factory, TimeLockedWallet, TimeLockedWallet__factory} from "../typechain";
 import { Contract } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 describe("MafaCoin", function () {
-  let contract: Contract;
+  let contract: MafaCoin;
 
   beforeEach(async function () {
     const MafaCoinFactory: MafaCoin__factory = await ethers.getContractFactory(
@@ -25,8 +25,8 @@ describe("MafaCoin", function () {
 });
 
 describe("TimeLockedWallet", function () {
-  let timeLockedWallet: Contract;
-  let mafacoin: Contract;
+  let timeLockedWallet: TimeLockedWallet;
+  let mafacoin: MafaCoin;
   let owner: SignerWithAddress;
   let address1: SignerWithAddress;
   let timestamp: number;
