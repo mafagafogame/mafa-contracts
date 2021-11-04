@@ -4,7 +4,7 @@
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
 import { ethers, upgrades } from "hardhat";
-import {MafaCoin__factory} from "../typechain";
+import { MafaCoin__factory } from "../typechain";
 
 async function main() {
   // Hardhat always runs the compile task when running scripts with its command
@@ -28,10 +28,26 @@ async function main() {
 
   const MafaCoin = await ethers.getContractFactory("MafaCoin");
   // var mafacoin = await upgrades.deployProxy(MafaCoin, ["MafaCoin", "MAFA"], { initializer: "initialize" });
-  var mafacoin = await MafaCoin.deploy("MafaCoin", "MAFA");
+  let mafacoin = await MafaCoin.deploy("MafaCoin", "MAFA");
   mafacoin = await mafacoin.deployed();
 
   console.log("MafaCoin deployed to:", mafacoin.address);
+
+  const oneDay = 7 * 24 * 60 * 60;
+
+  const blockNumber = await ethers.provider.getBlockNumber();
+  const block = await ethers.provider.getBlock(blockNumber);
+  const timestamp = block.timestamp;
+
+  const TimeLockedWallet = await ethers.getContractFactory("TimeLockedWallet");
+  let timeLockedWallet = await TimeLockedWallet.deploy(
+    "0x3dBe2A5F92dc05Abd3DDFE1B07E41C4C3D297165",
+    mafacoin.address,
+    timestamp + oneDay
+  );
+  timeLockedWallet = await timeLockedWallet.deployed();
+
+  console.log("TimeLockedWallet deployed to:", timeLockedWallet.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
