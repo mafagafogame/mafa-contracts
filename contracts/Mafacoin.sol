@@ -300,32 +300,30 @@ contract MafaCoin is ERC20, Ownable {
                         setBurnFee(0);
                         emit BurnFeeStopped(burnedTokens, burnFee);
                     }
-                    uint256 tokensToBurn = amount.div(100).mul(burnFee);
+                    uint256 tokensToBurn = amount.mul(burnFee).div(100);
                     super._transfer(from, deadAddress, tokensToBurn);
                 }
 
                 if (automatedMarketMakerPairs[to]) {
                     if (teamSellFee > 0) {
-                        uint256 tokensToTeam = amount.div(100).mul(teamSellFee);
+                        uint256 tokensToTeam = amount.mul(teamSellFee).div(100);
                         super._transfer(from, teamWallet, tokensToTeam);
                     }
 
                     if (lotteryFee > 0) {
-                        uint256 tokensToLottery = amount.div(100).mul(
-                            lotteryFee
-                        );
+                        uint256 tokensToLottery = amount.mul(lotteryFee).div(100);
                         super._transfer(from, lotteryWallet, tokensToLottery);
                     }
                 } else {
                     if (teamBuyFee > 0) {
-                        uint256 tokensToTeam = amount.div(100).mul(teamBuyFee);
+                        uint256 tokensToTeam = amount.mul(teamBuyFee).div(100);
                         super._transfer(from, teamWallet, tokensToTeam);
                     }
                 }
 
                 if (liquidityFee > 0) {
                     uint256 tokensToLiquidity = amount.sub(
-                        amount.div(100).mul(liquidityFee)
+                        amount.mul(liquidityFee).div(100)
                     );
                     super._transfer(from, address(this), tokensToLiquidity);
                     _swapAndLiquify(tokensToLiquidity);
@@ -333,9 +331,9 @@ contract MafaCoin is ERC20, Ownable {
 
                 uint256 taxedAmount;
                 if (automatedMarketMakerPairs[to]) {
-                    taxedAmount = amount.sub(amount.div(100).mul(totalSellFee));
+                    taxedAmount = amount.sub(amount.mul(totalSellFee).div(100));
                 } else {
-                    taxedAmount = amount.sub(amount.div(100).mul(totalBuyFee));
+                    taxedAmount = amount.sub(amount.mul(totalBuyFee).div(100));
                 }
                 super._transfer(from, to, taxedAmount);
             }
