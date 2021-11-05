@@ -100,6 +100,8 @@ contract MafaCoin is ERC20, Ownable {
     uint256 public totalBuyFee = 0;
     uint256 public totalSellFee = 0;
 
+    uint256 public tSupply = 1000000000 * (10**18);
+
     mapping(address => bool) public isExcludedFromFees;
     mapping(address => bool) public automatedMarketMakerPairs;
     mapping(address => bool) isBlacklisted;
@@ -108,7 +110,7 @@ contract MafaCoin is ERC20, Ownable {
         excludeFromFees(address(this), true);
         excludeFromFees(owner(), true);
 
-        _mint(owner(), 1000000000 * (10**18));
+        _mint(owner(), tSupply);
     }
 
     function afterPreSale() external onlyOwner {
@@ -284,9 +286,20 @@ contract MafaCoin is ERC20, Ownable {
             swapping = true;
 
             if (excludedAccount) {
+                uint256 burnedTokens = balanceOf(deadAddress);
+                if (burnedTokens >= tSupply.div(2)) {
+                    setBurnFee(0);
+                    emit BurnFeeStopped(burnedTokens, burnFee);
+                }
+
                 super._transfer(from, to, amount);
             } else {
                 if (burnFee > 0) {
+                    uint256 burnedTokens = balanceOf(deadAddress);
+                    if (burnedTokens >= tSupply.div(2)) {
+                        setBurnFee(0);
+                        emit BurnFeeStopped(burnedTokens, burnFee);
+                    }
                     uint256 tokensToBurn = amount.div(100).mul(burnFee);
                     super._transfer(from, deadAddress, tokensToBurn);
                 }
@@ -338,4 +351,5 @@ contract MafaCoin is ERC20, Ownable {
         uint256 bnbReceived,
         uint256 tokensIntoLiqudity
     );
+    event BurnFeeStopped(uint256 burnedTokens, uint256 burnFee);
 }

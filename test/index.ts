@@ -1,11 +1,21 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import {MafaCoin, MafaCoin__factory, TimeLockedWallet, TimeLockedWallet__factory} from "../typechain";
-import { Contract } from "ethers";
+import { utils } from "ethers";
+import {
+  MafaCoin,
+  MafaCoin__factory,
+  TimeLockedWallet,
+  TimeLockedWallet__factory,
+} from "../typechain";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 describe("MafaCoin", function () {
   let contract: MafaCoin;
+  let address1: SignerWithAddress;
+
+  before(async function () {
+    [, address1] = await ethers.getSigners();
+  });
 
   beforeEach(async function () {
     const MafaCoinFactory: MafaCoin__factory = await ethers.getContractFactory(
@@ -21,6 +31,48 @@ describe("MafaCoin", function () {
 
     expect(name).to.equal("MafaCoin");
     expect(symbol).to.equal("MAFA");
+  });
+
+  it("should stop burn fee after 50% of the total supply is burned", async function () {
+    const deadAddress = "0x000000000000000000000000000000000000dEaD";
+    await contract.afterPreSale();
+
+    const initialBurnFee = await contract.burnFee();
+
+    await contract.transfer(
+      deadAddress,
+      utils.parseEther("500000000").toString()
+    );
+    await contract.transfer(address1.address, 100);
+
+    const totalSupply = await contract.totalSupply();
+
+    const totalBurned = await contract.balanceOf(deadAddress);
+
+    const burnFee = await contract.burnFee();
+
+    expect(totalSupply).to.equal(utils.parseEther("1000000000").toString());
+    expect(totalBurned).to.equal(utils.parseEther("500000000").toString());
+    expect(initialBurnFee).to.equal(1);
+    expect(burnFee).to.equal(0);
+  });
+
+  it("should maintain burn fee if 49% of the total supply is burned", async function () {
+    const deadAddress = "0x000000000000000000000000000000000000dEaD";
+    await contract.afterPreSale();
+
+    const initialBurnFee = await contract.burnFee();
+
+    await contract.transfer(
+      deadAddress,
+      utils.parseEther("490000000").toString()
+    );
+    await contract.transfer(address1.address, 100);
+
+    const burnFee = await contract.burnFee();
+
+    expect(initialBurnFee).to.equal(1);
+    expect(burnFee).to.equal(1);
   });
 });
 
