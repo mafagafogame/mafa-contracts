@@ -322,9 +322,7 @@ contract MafaCoin is ERC20, Ownable {
                 }
 
                 if (liquidityFee > 0) {
-                    uint256 tokensToLiquidity = amount.sub(
-                        amount.mul(liquidityFee).div(100)
-                    );
+                    uint256 tokensToLiquidity = amount.mul(liquidityFee).div(100);
                     super._transfer(from, address(this), tokensToLiquidity);
                     _swapAndLiquify(tokensToLiquidity);
                 }
