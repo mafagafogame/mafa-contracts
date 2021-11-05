@@ -12,9 +12,13 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 describe("MafaCoin", function () {
   let contract: MafaCoin;
   let address1: SignerWithAddress;
+  let address2: SignerWithAddress;
+  let address3: SignerWithAddress;
+  let address4: SignerWithAddress;
+  const deadAddress = "0x000000000000000000000000000000000000dEaD";
 
   before(async function () {
-    [, address1] = await ethers.getSigners();
+    [, address1, address2, address3, address4] = await ethers.getSigners();
   });
 
   beforeEach(async function () {
@@ -23,6 +27,9 @@ describe("MafaCoin", function () {
     );
     contract = await MafaCoinFactory.deploy();
     contract = await contract.deployed();
+    await contract.afterPreSale();
+    await contract.setTeamWallet(address1.address);
+    await contract.setLotteryWallet(address2.address);
   });
 
   it("should have the correct name and symbol", async function () {
@@ -34,16 +41,13 @@ describe("MafaCoin", function () {
   });
 
   it("should stop burn fee after 50% of the total supply is burned", async function () {
-    const deadAddress = "0x000000000000000000000000000000000000dEaD";
-    await contract.afterPreSale();
-
     const initialBurnFee = await contract.burnFee();
 
     await contract.transfer(
       deadAddress,
       utils.parseEther("500000000").toString()
     );
-    await contract.transfer(address1.address, 100);
+    await contract.transfer(address3.address, 100);
 
     const totalSupply = await contract.totalSupply();
 
@@ -58,21 +62,40 @@ describe("MafaCoin", function () {
   });
 
   it("should maintain burn fee if 49% of the total supply is burned", async function () {
-    const deadAddress = "0x000000000000000000000000000000000000dEaD";
-    await contract.afterPreSale();
-
     const initialBurnFee = await contract.burnFee();
 
     await contract.transfer(
       deadAddress,
       utils.parseEther("490000000").toString()
     );
-    await contract.transfer(address1.address, 100);
+    await contract.transfer(address3.address, 100);
 
     const burnFee = await contract.burnFee();
 
     expect(initialBurnFee).to.equal(1);
     expect(burnFee).to.equal(1);
+  });
+
+  it("should charge buy fees", async function () {
+    await contract.setLiquidyFee(0);
+
+    await contract.transfer(
+      address3.address,
+      utils.parseEther("1000").toString()
+    );
+    await contract
+      .connect(address3)
+      .transfer(address4.address, utils.parseEther("1000").toString());
+
+    const zeroBalance = await contract.balanceOf(address3.address);
+    const balanceTaxed = await contract.balanceOf(address4.address);
+    const teamBalance = await contract.balanceOf(address1.address);
+    const burnBalance = await contract.balanceOf(deadAddress);
+
+    expect(zeroBalance).to.equal(0);
+    expect(balanceTaxed).to.equal(utils.parseEther("980").toString());
+    expect(teamBalance).to.equal(utils.parseEther("10").toString());
+    expect(burnBalance).to.equal(utils.parseEther("10").toString());
   });
 });
 
