@@ -33,21 +33,21 @@ async function main() {
 
   console.log("MafaCoin deployed to:", mafacoin.address);
 
-  const oneDay = 7 * 24 * 60 * 60;
-
-  const blockNumber = await ethers.provider.getBlockNumber();
-  const block = await ethers.provider.getBlock(blockNumber);
-  const timestamp = block.timestamp;
-
-  const TimeLockedWallet = await ethers.getContractFactory("TimeLockedWallet");
-  let timeLockedWallet = await TimeLockedWallet.deploy(
-    "0x3dBe2A5F92dc05Abd3DDFE1B07E41C4C3D297165",
-    mafacoin.address,
-    timestamp + oneDay
-  );
-  timeLockedWallet = await timeLockedWallet.deployed();
-
-  console.log("TimeLockedWallet deployed to:", timeLockedWallet.address);
+  // const oneDay = 7 * 24 * 60 * 60;
+  //
+  // const blockNumber = await ethers.provider.getBlockNumber();
+  // const block = await ethers.provider.getBlock(blockNumber);
+  // const timestamp = block.timestamp;
+  //
+  // const TimeLockedWallet = await ethers.getContractFactory("TimeLockedWallet");
+  // let timeLockedWallet = await TimeLockedWallet.deploy(
+  //   "0x3dBe2A5F92dc05Abd3DDFE1B07E41C4C3D297165",
+  //   mafacoin.address,
+  //   timestamp + oneDay
+  // );
+  // timeLockedWallet = await timeLockedWallet.deployed();
+  //
+  // console.log("TimeLockedWallet deployed to:", timeLockedWallet.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
