@@ -1,5 +1,5 @@
 {
-  "name": "hardhat-project",
+  "name": "mafa-contracts",
   "devDependencies": {
     "@codechecks/client": "^0.1.12",
     "@commitlint/cli": "^13.2.1",

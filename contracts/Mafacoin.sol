@@ -5,77 +5,8 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-//import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableMap.sol";
-//import "@openzeppelin/contracts-upgradeable/utils/math/SignedSafeMathUpgradeable.sol";
-//import "@openzeppelin/contracts-upgradeable/utils/math/MathUpgradeable.sol";
-
-interface IDEXFactory {
-    function createPair(address tokenA, address tokenB)
-        external
-        returns (address pair);
-}
-
-interface IDEXRouter {
-    function factory() external pure returns (address);
-
-    function WETH() external pure returns (address);
-
-    function addLiquidity(
-        address tokenA,
-        address tokenB,
-        uint256 amountADesired,
-        uint256 amountBDesired,
-        uint256 amountAMin,
-        uint256 amountBMin,
-        address to,
-        uint256 deadline
-    )
-        external
-        returns (
-            uint256 amountA,
-            uint256 amountB,
-            uint256 liquidity
-        );
-
-    function addLiquidityETH(
-        address token,
-        uint256 amountTokenDesired,
-        uint256 amountTokenMin,
-        uint256 amountETHMin,
-        address to,
-        uint256 deadline
-    )
-        external
-        payable
-        returns (
-            uint256 amountToken,
-            uint256 amountETH,
-            uint256 liquidity
-        );
-
-    function swapExactTokensForTokensSupportingFeeOnTransferTokens(
-        uint256 amountIn,
-        uint256 amountOutMin,
-        address[] calldata path,
-        address to,
-        uint256 deadline
-    ) external;
-
-    function swapExactETHForTokensSupportingFeeOnTransferTokens(
-        uint256 amountOutMin,
-        address[] calldata path,
-        address to,
-        uint256 deadline
-    ) external payable;
-
-    function swapExactTokensForETHSupportingFeeOnTransferTokens(
-        uint256 amountIn,
-        uint256 amountOutMin,
-        address[] calldata path,
-        address to,
-        uint256 deadline
-    ) external;
-}
+import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
+import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
 
 contract MafaCoin is ERC20, Ownable {
     using SafeMath for uint256;
@@ -83,7 +14,7 @@ contract MafaCoin is ERC20, Ownable {
     bool private swapping;
     bool public tradingIsEnabled = false;
 
-    IDEXRouter public dexRouter;
+    IUniswapV2Router02 public dexRouter;
     address dexPair;
 
     address deadAddress = 0x000000000000000000000000000000000000dEaD;
@@ -198,9 +129,9 @@ contract MafaCoin is ERC20, Ownable {
     }
 
     function startLiquidity(address router) external onlyOwner {
-        IDEXRouter _dexRouter = IDEXRouter(router);
+        IUniswapV2Router02 _dexRouter = IUniswapV2Router02(router);
 
-        address _dexPair = IDEXFactory(_dexRouter.factory()).createPair(
+        address _dexPair = IUniswapV2Factory(_dexRouter.factory()).createPair(
             address(this),
             _dexRouter.WETH()
         );
