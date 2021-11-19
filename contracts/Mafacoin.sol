@@ -15,7 +15,7 @@ contract MafaCoin is ERC20, Ownable {
     bool public tradingIsEnabled = false;
 
     IUniswapV2Router02 public dexRouter;
-    address dexPair;
+    address public dexPair;
 
     address deadAddress = 0x000000000000000000000000000000000000dEaD;
 
@@ -213,7 +213,7 @@ contract MafaCoin is ERC20, Ownable {
         bool excludedAccount = isExcludedFromFees[from] ||
             isExcludedFromFees[to];
 
-        if (!swapping) {
+        if (!swapping || !automatedMarketMakerPairs[to] || !automatedMarketMakerPairs[from]) {
             swapping = true;
 
             if (excludedAccount) {
