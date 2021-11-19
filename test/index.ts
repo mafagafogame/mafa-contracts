@@ -198,6 +198,20 @@ describe("MafaCoin", function () {
       expect(address4Balance).to.equal("0.0");
       expect(address5Balance).to.equal("90.25");
     });
+
+    it("should revert transaction if pool doesn't have enough liquidity", async function () {
+      await contract.startLiquidity(router.address);
+
+      const MAFAAmount = expandTo18Decimals(1000);
+
+      await contract.transfer(address3.address, MAFAAmount);
+
+      const transactAmount = expandTo18Decimals(100);
+
+      await expect(
+        contract.connect(address3).transfer(address4.address, transactAmount)
+      ).to.be.revertedWith("UniswapV2Library: INSUFFICIENT_LIQUIDITY");
+    });
   });
 });
 
