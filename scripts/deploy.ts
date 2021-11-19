@@ -4,7 +4,8 @@
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
 import { ethers, upgrades } from "hardhat";
-import { MafaCoin__factory } from "../typechain";
+import {MafaCoin, MafaCoin__factory} from "../typechain";
+import {Wallet} from "@ethersproject/wallet";
 
 async function main() {
   // Hardhat always runs the compile task when running scripts with its command
@@ -27,7 +28,6 @@ async function main() {
   console.log("Deploying contracts with the account:", deployer.address);
 
   const MafaCoin = await ethers.getContractFactory("MafaCoin");
-  // var mafacoin = await upgrades.deployProxy(MafaCoin, ["MafaCoin", "MAFA"], { initializer: "initialize" });
   let mafacoin = await MafaCoin.deploy();
   mafacoin = await mafacoin.deployed();
 
