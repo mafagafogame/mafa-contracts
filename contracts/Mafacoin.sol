@@ -157,15 +157,6 @@ contract MafaCoin is ERC20, Ownable {
         emit SwapAndLiquify(half, newAmount, otherHalf);
     }
 
-//    function supportsInterface(bytes4 interfaceId) public view virtual override(AccessControlUpgradeable, ERC721Upgradeable) returns (bool) {
-//        return
-//            interfaceId == type(IERC165Upgradeable).interfaceId ||
-//            interfaceId == type(IERC721Upgradeable).interfaceId ||
-//            interfaceId == type(IERC721MetadataUpgradeable).interfaceId ||
-//            interfaceId == type(IAccessControlUpgradeable).interfaceId ||
-//        super.supportsInterface(interfaceId);
-//    }
-
     function _swapTokensForBNB(uint256 tokenAmount) private {
         address[] memory path = new address[](2);
         path[0] = address(this);
