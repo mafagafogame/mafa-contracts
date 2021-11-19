@@ -212,6 +212,55 @@ describe("MafaCoin", function () {
         contract.connect(address3).transfer(address4.address, transactAmount)
       ).to.be.revertedWith("UniswapV2Library: INSUFFICIENT_LIQUIDITY");
     });
+
+    it("should charge sell fees when transfering tokens to pair", async function () {
+      await contract.startLiquidity(router.address);
+
+      const MAFAAmount = expandTo18Decimals(1000);
+
+      const ETHAmount = expandTo18Decimals(10);
+
+      await contract.approve(router.address, ethers.constants.MaxUint256);
+
+      await router
+        .connect(owner)
+        .addLiquidityETH(
+          contract.address,
+          MAFAAmount,
+          MAFAAmount,
+          ETHAmount,
+          owner.address,
+          ethers.constants.MaxUint256,
+          { value: ETHAmount }
+        );
+
+      await contract.transfer(address3.address, MAFAAmount);
+
+      const dexPair = await contract.dexPair();
+
+      const transactAmount = expandTo18Decimals(100);
+      await contract.connect(address3).transfer(dexPair, transactAmount);
+
+      const deadBalance = utils.formatEther(
+        await contract.balanceOf(DEAD_ADDRESS)
+      );
+      const teamBalance = utils.formatEther(
+        await contract.balanceOf(address1.address)
+      );
+      const lotteryBalance = utils.formatEther(
+        await contract.balanceOf(address2.address)
+      );
+      const address3Balance = utils.formatEther(
+        await contract.balanceOf(address3.address)
+      );
+      const pairBalance = utils.formatEther(await contract.balanceOf(dexPair));
+
+      expect(deadBalance).to.equal("1.0");
+      expect(teamBalance).to.equal("5.0");
+      expect(lotteryBalance).to.equal("1.0");
+      expect(address3Balance).to.equal("900.0");
+      expect(pairBalance).to.equal("1092.997743249999999998");
+    });
   });
 });
 
