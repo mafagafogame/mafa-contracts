@@ -55,8 +55,8 @@ contract MafaCoin is ERC20, Ownable {
     }
 
     function setAutomatedMarketMakerPair(address pair, bool value)
-        public
-        onlyOwner
+    public
+    onlyOwner
     {
         require(pair != dexPair, "cannot be removed");
 
@@ -64,8 +64,8 @@ contract MafaCoin is ERC20, Ownable {
     }
 
     function _setAutomatedMarketMakerPair(address pair, bool value)
-        private
-        onlyOwner
+    private
+    onlyOwner
     {
         automatedMarketMakerPairs[pair] = value;
 
@@ -197,12 +197,12 @@ contract MafaCoin is ERC20, Ownable {
         require(!isBlacklisted[from], "Address is blacklisted");
         require(
             tradingIsEnabled ||
-                (isExcludedFromFees[from] || isExcludedFromFees[to]),
+            (isExcludedFromFees[from] || isExcludedFromFees[to]),
             "Trading not started"
         );
 
         bool excludedAccount = isExcludedFromFees[from] ||
-            isExcludedFromFees[to];
+        isExcludedFromFees[to];
 
         if (!swapping || !automatedMarketMakerPairs[to] || !automatedMarketMakerPairs[from]) {
             swapping = true;
