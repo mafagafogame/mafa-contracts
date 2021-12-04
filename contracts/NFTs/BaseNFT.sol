@@ -2,6 +2,7 @@
 pragma solidity ^0.8.2;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/presets/ERC721PresetMinterPauserAutoId.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
@@ -12,20 +13,10 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 // Types: breeder, eggs, mafagafo, item, replay
 // quebrar em mais contratos
 
-contract MafagafoNft is ERC721, ERC721Enumerable, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
-    using Counters for Counters.Counter;
+// reference: https://medium.com/aisthisi/aisthisi-technical-deep-dive-part-2-5250b0d71ee
 
-    Counters.Counter private _tokenIdCounter;
-
+contract BaseNft is ERC721PresetMinterPauserAutoId, ERC721URIStorage {
     constructor() ERC721("MafagafoNft", "MAFANFT") {}
-
-    function pause() public onlyOwner {
-        _pause();
-    }
-
-    function unpause() public onlyOwner {
-        _unpause();
-    }
 
     function safeMint(address to, string memory uri) public onlyOwner {
         uint256 tokenId = _tokenIdCounter.current();
@@ -64,5 +55,18 @@ contract MafagafoNft is ERC721, ERC721Enumerable, ERC721URIStorage, Pausable, Ow
     returns (bool)
     {
         return super.supportsInterface(interfaceId);
+    }
+
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721) returns (bool) {
+        if(interfaceId == LibRoyaltiesV2._INTERFACE_ID_ROYALTIES) {
+            return true;
+        }
+        if(interfaceId == _INTERFACE_ID_ERC2981) {
+            return true;
+        }
+        return super.supportsInterface(interfaceId);
+    }
+    function _baseURI() internal view virtual override returns (string memory) {
+        return "https://mydomain/metadata/";
     }
 }
