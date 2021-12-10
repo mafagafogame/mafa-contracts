@@ -6,7 +6,6 @@
 import { ethers, upgrades } from "hardhat";
 import {MafaCoin, MafaCoin__factory} from "../typechain";
 import {Wallet} from "@ethersproject/wallet";
-import {abi} from '../artifacts/contracts/Mafacoin.sol/MafaCoin.json';
 
 async function main() {
   // Hardhat always runs the compile task when running scripts with its command
@@ -28,12 +27,11 @@ async function main() {
 
   console.log("Deploying contracts with the account:", deployer.address);
 
-  let mafacoin: MafaCoin = new ethers.Contract("0xAF44400A99a9693bF3c2e89b02652bABACc5cdb9", abi, deployer) as MafaCoin;
-  let transaction = await mafacoin.startLiquidity("0x10ED43C718714eb63d5aA57B78B54704E256024E");
-  console.log("Transaction: " + transaction.hash);
-  await transaction.wait(1);
-  console.log("Router: " + (await mafacoin.dexRouter()));
-  console.log("Pair: " + (await mafacoin.dexPair()));
+  const MafaCoin = await ethers.getContractFactory("MafaCoin");
+  let mafacoin = await MafaCoin.deploy();
+  mafacoin = await mafacoin.deployed();
+
+  console.log("MafaCoin deployed to:", mafacoin.address);
 
   // const oneDay = 7 * 24 * 60 * 60;
   //
