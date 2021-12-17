@@ -24,6 +24,8 @@ contract NftCrowdSale is Ownable, Pausable {
         address nftAddress;
         // Price (in wei) for the published item
         uint256 price;
+        // NFT item to be sold
+        string item;
         // Status of the order (Open, Executed, Cancelled)
         string status;
     }
@@ -52,9 +54,10 @@ contract NftCrowdSale is Ownable, Pausable {
      * @dev Creates a new order
      * @param nftAddress - Non fungible registry address
      * @param price - Price in Wei for the supported coin
+     * @param item - NFT item to be sold
      */
-    function createOrder(address nftAddress, uint256 price) external whenNotPaused onlyOwner {
-        _createOrder(nftAddress, price);
+    function createOrder(address nftAddress, uint256 price, string memory item) external onlyOwner {
+        _createOrder(nftAddress, price, item);
     }
 
     /**
@@ -62,39 +65,36 @@ contract NftCrowdSale is Ownable, Pausable {
      *  can only be canceled by seller or the contract owner
      * @param id - ID of the order
      */
-    function cancelOrder(uint256 id) external whenNotPaused onlyOwner {
+    function cancelOrder(uint256 id) external onlyOwner {
         _cancelOrder(id);
     }
 
     /**
      * @dev Executes the sale for a published NFT
-     * @param nftAddress - Address of the NFT registry
      * @param id - ID of the order
-     * @param price - Order price
      * @param uri - URI for the new minted token
      */
     function executeOrder(
-        address nftAddress,
         uint256 id,
-        uint256 price,
         string memory uri
     ) external whenNotPaused {
-        _executeOrder(nftAddress, id, price, uri);
+        _executeOrder( id, uri);
     }
 
     /**
      * @dev Creates a new order
      * @param nftAddress - Non fungible registry address
      * @param price - Price in Wei for the supported coin
+     * @param item - NFT item to be sold
      */
-    function _createOrder(address nftAddress, uint256 price) internal {
+    function _createOrder(address nftAddress, uint256 price, string memory item) internal {
         _requireERC721(nftAddress);
         require(price > 0, "Price should be bigger than 0");
 
-        orders[orderCounter] = Order({ nftAddress: nftAddress, price: price, status: "Open" });
+        orders[orderCounter] = Order({ nftAddress: nftAddress, price: price, item: item, status: "Open" });
         orderCounter += 1;
 
-        emit OrderCreated(orderCounter - 1, nftAddress, price);
+        emit OrderCreated(orderCounter - 1, nftAddress, price, item);
     }
 
     /**
@@ -116,39 +116,34 @@ contract NftCrowdSale is Ownable, Pausable {
 
     /**
      * @dev Executes the sale for a published NFT
-     * @param nftAddress - Address of the NFT registry
      * @param id - ID of the order
-     * @param price - Order price
      * @param uri - URI for the new minted token
      */
     function _executeOrder(
-        address nftAddress,
         uint256 id,
-        uint256 price,
         string memory uri
     ) internal returns (Order memory) {
-        _requireERC721(nftAddress);
-
         Order memory order = orders[id];
+
         require(keccak256(abi.encodePacked(order.status)) == keccak256(abi.encodePacked("Open")), "Order is not Open");
-        require(order.price == price, "The price is not correct");
+        _requireERC721(order.nftAddress);
 
         address sender = _msgSender();
 
         uint256 allowance = acceptedToken.allowance(sender, address(this));
-        require(allowance >= price, "Check the token allowance");
+        require(allowance >= order.price, "Check the token allowance");
 
-        ERC721 nftRegistry = ERC721(nftAddress);
+        ERC721 nftRegistry = ERC721(order.nftAddress);
 
         // Transfer sale amount to seller
-        require(acceptedToken.transferFrom(sender, owner(), price), "Transfering the sale amount to the seller failed");
+        require(acceptedToken.transferFrom(sender, owner(), order.price), "Transfering the sale amount to the seller failed");
 
         // Transfer asset owner
         uint256 assetId = nftRegistry.safeMint(sender, uri);
 
         orders[id].status = "Executed";
 
-        emit OrderExecuted(id, assetId, uri, owner(), nftAddress, price, sender);
+        emit OrderExecuted(id, assetId, uri, owner(), order.nftAddress, order.price, sender);
 
         return order;
     }
@@ -164,7 +159,7 @@ contract NftCrowdSale is Ownable, Pausable {
     }
 
     // EVENTS
-    event OrderCreated(uint256 id, address nftAddress, uint256 price);
+    event OrderCreated(uint256 id, address nftAddress, uint256 price, string item);
     event OrderCancelled(uint256 id, address nftAddress);
     event OrderExecuted(
         uint256 id,
