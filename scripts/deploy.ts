@@ -4,8 +4,8 @@
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
 import { ethers, upgrades } from "hardhat";
-import {MafaCoin, MafaCoin__factory} from "../typechain";
-import {Wallet} from "@ethersproject/wallet";
+import { MafaCoin, MafaCoin__factory } from "../typechain";
+import { Wallet } from "@ethersproject/wallet";
 
 async function main() {
   // Hardhat always runs the compile task when running scripts with its command
@@ -52,7 +52,7 @@ async function main() {
 
 // We recommend this pattern to be able to use async/await everywhere
 // and properly handle errors.
-main().catch((error) => {
+main().catch(error => {
   console.error(error);
   process.exitCode = 1;
 });
