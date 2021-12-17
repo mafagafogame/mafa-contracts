@@ -56,7 +56,11 @@ contract NftCrowdSale is Ownable, Pausable {
      * @param price - Price in Wei for the supported coin
      * @param item - NFT item to be sold
      */
-    function createOrder(address nftAddress, uint256 price, string memory item) external onlyOwner {
+    function createOrder(
+        address nftAddress,
+        uint256 price,
+        string memory item
+    ) external onlyOwner {
         _createOrder(nftAddress, price, item);
     }
 
@@ -74,11 +78,8 @@ contract NftCrowdSale is Ownable, Pausable {
      * @param id - ID of the order
      * @param uri - URI for the new minted token
      */
-    function executeOrder(
-        uint256 id,
-        string memory uri
-    ) external whenNotPaused {
-        _executeOrder( id, uri);
+    function executeOrder(uint256 id, string memory uri) external whenNotPaused {
+        _executeOrder(id, uri);
     }
 
     /**
@@ -87,7 +88,11 @@ contract NftCrowdSale is Ownable, Pausable {
      * @param price - Price in Wei for the supported coin
      * @param item - NFT item to be sold
      */
-    function _createOrder(address nftAddress, uint256 price, string memory item) internal {
+    function _createOrder(
+        address nftAddress,
+        uint256 price,
+        string memory item
+    ) internal {
         _requireERC721(nftAddress);
         require(price > 0, "Price should be bigger than 0");
 
@@ -119,10 +124,7 @@ contract NftCrowdSale is Ownable, Pausable {
      * @param id - ID of the order
      * @param uri - URI for the new minted token
      */
-    function _executeOrder(
-        uint256 id,
-        string memory uri
-    ) internal returns (Order memory) {
+    function _executeOrder(uint256 id, string memory uri) internal returns (Order memory) {
         Order memory order = orders[id];
 
         require(keccak256(abi.encodePacked(order.status)) == keccak256(abi.encodePacked("Open")), "Order is not Open");
@@ -136,7 +138,10 @@ contract NftCrowdSale is Ownable, Pausable {
         ERC721 nftRegistry = ERC721(order.nftAddress);
 
         // Transfer sale amount to seller
-        require(acceptedToken.transferFrom(sender, owner(), order.price), "Transfering the sale amount to the seller failed");
+        require(
+            acceptedToken.transferFrom(sender, owner(), order.price),
+            "Transfering the sale amount to the seller failed"
+        );
 
         // Transfer asset owner
         uint256 assetId = nftRegistry.safeMint(sender, uri);
