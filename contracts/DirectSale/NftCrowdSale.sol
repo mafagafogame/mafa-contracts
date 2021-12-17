@@ -135,6 +135,9 @@ contract NftCrowdSale is Ownable, Pausable {
 
         address sender = _msgSender();
 
+        uint256 allowance = acceptedToken.allowance(sender, address(this));
+        require(allowance >= price, "Check the token allowance");
+
         ERC721 nftRegistry = ERC721(nftAddress);
 
         // Transfer sale amount to seller
