@@ -25,7 +25,7 @@ contract NftCrowdSale is Ownable, Pausable {
         // Price (in wei) for the published item
         uint256 price;
         // Status of the order (Open, Executed, Cancelled)
-        bytes32 status;
+        string status;
     }
 
     // From ERC721 registry assetId to Order (to avoid asset collision)
@@ -104,7 +104,7 @@ contract NftCrowdSale is Ownable, Pausable {
      */
     function _cancelOrder(uint256 id) internal returns (Order memory) {
         Order memory order = orders[id];
-        require(order.status == "Open", "Order is not Open");
+        require(keccak256(abi.encodePacked(order.status)) == keccak256(abi.encodePacked("Open")), "Order is not Open");
 
         orders[id].status = "Cancelled";
         address orderNftAddress = order.nftAddress;
@@ -130,7 +130,7 @@ contract NftCrowdSale is Ownable, Pausable {
         _requireERC721(nftAddress);
 
         Order memory order = orders[id];
-        require(order.status == "Open", "Order is not Open");
+        require(keccak256(abi.encodePacked(order.status)) == keccak256(abi.encodePacked("Open")), "Order is not Open");
         require(order.price == price, "The price is not correct");
 
         address sender = _msgSender();
