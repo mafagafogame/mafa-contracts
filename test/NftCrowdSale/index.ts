@@ -121,5 +121,35 @@ describe("Unit tests", function () {
 
       await expect(marketplace.connect(account1).executeOrder(0, TOKEN_URI)).to.be.revertedWith("Order is not Open");
     });
+
+    describe("pause", function () {
+      it("contract should initiate unpaused", async function () {
+        expect(await marketplace.paused()).to.equal(false);
+      });
+
+      it("owner should be able to pause/unpause contract", async function () {
+        await marketplace.pause();
+        expect(await marketplace.paused()).to.equal(true);
+
+        await marketplace.unpause();
+        expect(await marketplace.paused()).to.equal(false);
+      });
+
+      it("owner should be able to create/cancel orders when contract is paused", async function () {
+        await marketplace.pause();
+
+        await marketplace.createOrder(mafagafo.address, expandTo18Decimals(100), "mafagafo");
+
+        await expect(marketplace.cancelOrder(0)).to.emit(marketplace, "OrderCancelled").withArgs(0, mafagafo.address);
+      });
+
+      it("users should not be able to execute orders when contract is paused", async function () {
+        await marketplace.pause();
+
+        await marketplace.createOrder(mafagafo.address, expandTo18Decimals(100), "mafagafo");
+
+        await expect(marketplace.connect(account1).executeOrder(0, TOKEN_URI)).to.be.revertedWith("Pausable: paused");
+      });
+    });
   });
 });
