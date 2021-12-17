@@ -54,19 +54,13 @@ contract MafaCoin is ERC20, Ownable {
         tradingIsEnabled = true;
     }
 
-    function setAutomatedMarketMakerPair(address pair, bool value)
-    public
-    onlyOwner
-    {
+    function setAutomatedMarketMakerPair(address pair, bool value) public onlyOwner {
         require(pair != dexPair, "cannot be removed");
 
         _setAutomatedMarketMakerPair(pair, value);
     }
 
-    function _setAutomatedMarketMakerPair(address pair, bool value)
-    private
-    onlyOwner
-    {
+    function _setAutomatedMarketMakerPair(address pair, bool value) private onlyOwner {
         automatedMarketMakerPairs[pair] = value;
 
         emit SetAutomatedMarketMakerPair(pair, value);
@@ -123,18 +117,13 @@ contract MafaCoin is ERC20, Ownable {
     }
 
     function _updateTotalSellFee() internal {
-        totalSellFee = liquidityFee.add(burnFee).add(teamSellFee).add(
-            lotteryFee
-        );
+        totalSellFee = liquidityFee.add(burnFee).add(teamSellFee).add(lotteryFee);
     }
 
     function startLiquidity(address router) external onlyOwner {
         IUniswapV2Router02 _dexRouter = IUniswapV2Router02(router);
 
-        address _dexPair = IUniswapV2Factory(_dexRouter.factory()).createPair(
-            address(this),
-            _dexRouter.WETH()
-        );
+        address _dexPair = IUniswapV2Factory(_dexRouter.factory()).createPair(address(this), _dexRouter.WETH());
 
         dexRouter = _dexRouter;
         dexPair = _dexPair;
@@ -176,7 +165,7 @@ contract MafaCoin is ERC20, Ownable {
     function _addLiquidity(uint256 tokenAmount, uint256 bnbAmount) private {
         _approve(address(this), address(dexRouter), tokenAmount);
 
-        dexRouter.addLiquidityETH{value: bnbAmount}(
+        dexRouter.addLiquidityETH{ value: bnbAmount }(
             address(this),
             tokenAmount,
             0,
@@ -195,14 +184,9 @@ contract MafaCoin is ERC20, Ownable {
         require(to != address(0), "zero address");
         require(amount > 0, "Transfer amount must be greater than zero");
         require(!isBlacklisted[from], "Address is blacklisted");
-        require(
-            tradingIsEnabled ||
-            (isExcludedFromFees[from] || isExcludedFromFees[to]),
-            "Trading not started"
-        );
+        require(tradingIsEnabled || (isExcludedFromFees[from] || isExcludedFromFees[to]), "Trading not started");
 
-        bool excludedAccount = isExcludedFromFees[from] ||
-        isExcludedFromFees[to];
+        bool excludedAccount = isExcludedFromFees[from] || isExcludedFromFees[to];
 
         if (!swapping || !automatedMarketMakerPairs[to] || !automatedMarketMakerPairs[from]) {
             swapping = true;
@@ -264,10 +248,6 @@ contract MafaCoin is ERC20, Ownable {
 
     event ExcludeFromFees(address indexed account, bool isExcluded);
     event SetAutomatedMarketMakerPair(address indexed pair, bool indexed value);
-    event SwapAndLiquify(
-        uint256 tokensSwapped,
-        uint256 bnbReceived,
-        uint256 tokensIntoLiqudity
-    );
+    event SwapAndLiquify(uint256 tokensSwapped, uint256 bnbReceived, uint256 tokensIntoLiqudity);
     event BurnFeeStopped(uint256 burnedTokens, uint256 burnFee);
 }
