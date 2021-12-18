@@ -13,6 +13,9 @@ interface ERC721 is IERC721 {
     function safeMint(address to, string memory uri) external returns (uint256);
 }
 
+/**
+ * @dev Contract for the direct sale of mafagafo NFTs
+ */
 contract NftCrowdSale is Ownable, Pausable {
     using SafeMath for uint256;
     using Address for address;
@@ -24,22 +27,20 @@ contract NftCrowdSale is Ownable, Pausable {
         address nftAddress;
         // Price (in wei) for the published item
         uint256 price;
-        // NFT item to be sold
-        string item;
-        // Status of the order (Open, Executed, Cancelled)
-        string status;
+        // Quantity of an item to be sold
+        uint256 quantity;
     }
 
-    // From ERC721 registry assetId to Order (to avoid asset collision)
-    mapping(uint256 => Order) public orders;
-    uint256 public orderCounter;
+    mapping(string => Order) public orders;
 
     bytes4 private constant ERC721_Interface = 0x80ac58cd;
 
+    /**
+     * @param _acceptedToken accepted ERC20 token address
+     */
     constructor(address _acceptedToken) {
         require(_acceptedToken.isContract(), "The accepted token address must be a deployed contract");
         acceptedToken = IERC20(_acceptedToken);
-        orderCounter = 0;
     }
 
     function pause() public onlyOwner {
@@ -51,83 +52,80 @@ contract NftCrowdSale is Ownable, Pausable {
     }
 
     /**
-     * @dev Creates a new order
-     * @param nftAddress - Non fungible registry address
-     * @param price - Price in Wei for the supported coin
-     * @param item - NFT item to be sold
+     * @dev Open a quantity of orders.
+     *  Can only be opened by contract owner
+     * @param item NFT item to be sold
+     * @param nftAddress Non fungible registry address
+     * @param price Price in Wei for the supported coin
+     * @param quantity Quantity of orders to be opened
      */
-    function createOrder(
+    function openOrders(
+        string memory item,
         address nftAddress,
         uint256 price,
-        string memory item
+        uint256 quantity
     ) external onlyOwner {
-        _createOrder(nftAddress, price, item);
+        _openOrders(item, nftAddress, price, quantity);
     }
 
     /**
-     * @dev Cancel an already published order
-     *  can only be canceled by seller or the contract owner
-     * @param id - ID of the order
+     * @dev Cancel a quantity of published orders.
+     *  Can only be canceled by contract owner
+     * @param item NFT item to be sold
+     * @param quantity Quantity of orders to be canceled
      */
-    function cancelOrder(uint256 id) external onlyOwner {
-        _cancelOrder(id);
+    function cancelOrders(string memory item, uint256 quantity) external onlyOwner {
+        _cancelOrders(item, quantity);
     }
 
     /**
-     * @dev Executes the sale for a published NFT
-     * @param id - ID of the order
-     * @param uri - URI for the new minted token
+     * @dev Executes the sale for a order.
+     * @param item NFT item to be sold
+     * @param uri URI for the new minted token
      */
-    function executeOrder(uint256 id, string memory uri) external whenNotPaused {
-        _executeOrder(id, uri);
+    function executeOrder(string memory item, string memory uri) external whenNotPaused {
+        _executeOrder(item, uri);
     }
 
-    /**
-     * @dev Creates a new order
-     * @param nftAddress - Non fungible registry address
-     * @param price - Price in Wei for the supported coin
-     * @param item - NFT item to be sold
-     */
-    function _createOrder(
+    function _openOrders(
+        string memory item,
         address nftAddress,
         uint256 price,
-        string memory item
+        uint256 quantity
     ) internal {
+        Order memory order = orders[item];
+        require(order.quantity == 0, "Order has already been opened");
+        require(quantity > 0, "Order must have at least 1 item");
         _requireERC721(nftAddress);
-        require(price > 0, "Price should be bigger than 0");
+        require(price > 0, "Order price should be bigger than 0");
+        require(keccak256(abi.encodePacked(item)) != keccak256(abi.encodePacked("")), "Item must have some value");
 
-        orders[orderCounter] = Order({ nftAddress: nftAddress, price: price, item: item, status: "Open" });
-        orderCounter += 1;
+        orders[item] = Order({ nftAddress: nftAddress, price: price, quantity: quantity });
 
-        emit OrderCreated(orderCounter - 1, nftAddress, price, item);
+        emit OrdersOpened(item, nftAddress, price, quantity);
     }
 
-    /**
-     * @dev Cancel an already published order
-     *  can only be canceled by seller or the contract owner
-     * @param id - ID of the order
-     */
-    function _cancelOrder(uint256 id) internal returns (Order memory) {
-        Order memory order = orders[id];
-        require(keccak256(abi.encodePacked(order.status)) == keccak256(abi.encodePacked("Open")), "Order is not Open");
+    function _cancelOrders(string memory item, uint256 quantity) internal returns (Order memory) {
+        Order memory order = orders[item];
+        require(order.quantity != 0, "Order is not open");
 
-        orders[id].status = "Cancelled";
+        if (quantity >= order.quantity) {
+            orders[item].quantity = 0;
+        } else {
+            orders[item].quantity = order.quantity.sub(quantity);
+        }
+
         address orderNftAddress = order.nftAddress;
+        uint256 newQuantity = orders[item].quantity;
 
-        emit OrderCancelled(id, orderNftAddress);
+        emit OrdersCanceled(item, orderNftAddress, newQuantity);
 
         return order;
     }
-
-    /**
-     * @dev Executes the sale for a published NFT
-     * @param id - ID of the order
-     * @param uri - URI for the new minted token
-     */
-    function _executeOrder(uint256 id, string memory uri) internal returns (Order memory) {
-        Order memory order = orders[id];
-
-        require(keccak256(abi.encodePacked(order.status)) == keccak256(abi.encodePacked("Open")), "Order is not Open");
+    
+    function _executeOrder(string memory item, string memory uri) internal returns (Order memory) {
+        Order memory order = orders[item];
+        require(order.quantity != 0, "Order is not open");
         _requireERC721(order.nftAddress);
 
         address sender = _msgSender();
@@ -143,12 +141,13 @@ contract NftCrowdSale is Ownable, Pausable {
             "Transfering the sale amount to the seller failed"
         );
 
-        // Transfer asset owner
+        // Mint new asset to sender
         uint256 assetId = nftRegistry.safeMint(sender, uri);
 
-        orders[id].status = "Executed";
+        orders[item].quantity = order.quantity.sub(1);
+        uint256 newQuantity = orders[item].quantity;
 
-        emit OrderExecuted(id, assetId, uri, owner(), order.nftAddress, order.price, sender);
+        emit OrderExecuted(item, assetId, uri, owner(), order.nftAddress, order.price, sender, newQuantity);
 
         return order;
     }
@@ -164,15 +163,16 @@ contract NftCrowdSale is Ownable, Pausable {
     }
 
     // EVENTS
-    event OrderCreated(uint256 id, address nftAddress, uint256 price, string item);
-    event OrderCancelled(uint256 id, address nftAddress);
+    event OrdersOpened(string item, address nftAddress, uint256 price, uint256 quantity);
+    event OrdersCanceled(string item, address nftAddress, uint256 newQuantity);
     event OrderExecuted(
-        uint256 id,
+        string item,
         uint256 indexed assetId,
         string uri,
         address indexed seller,
         address nftAddress,
         uint256 totalPrice,
-        address indexed buyer
+        address indexed buyer,
+        uint256 newQuantity
     );
 }
