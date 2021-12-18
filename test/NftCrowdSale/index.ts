@@ -41,85 +41,135 @@ describe("Unit tests", function () {
 
     it("should be deployed with correct values", async function () {
       expect(await marketplace.acceptedToken()).to.equal(mafacoin.address);
-      expect(await marketplace.orderCounter()).to.equal(0);
       expect(await marketplace.owner()).to.equal(owner.address);
     });
 
-    it("non owner users should not be able to create orders", async function () {
-      await expect(
-        marketplace.connect(account1).createOrder(mafagafo.address, expandTo18Decimals(100), "mafagafo"),
-      ).to.be.revertedWith("Ownable: caller is not the owner");
-    });
+    describe("non owner", function () {
+      it("non owner user should not be able to open orders", async function () {
+        await expect(
+          marketplace.connect(account1).openOrders("mafagafo", mafagafo.address, expandTo18Decimals(100), 100),
+        ).to.be.revertedWith("Ownable: caller is not the owner");
+      });
 
-    it("non owner users should not be able to cancel orders", async function () {
-      await expect(marketplace.connect(account1).cancelOrder(0)).to.be.revertedWith("Ownable: caller is not the owner");
+      it("non owner user should not be able to cancel orders", async function () {
+        await expect(marketplace.connect(account1).cancelOrders("mafagafo", 1)).to.be.revertedWith(
+          "Ownable: caller is not the owner",
+        );
+      });
     });
 
     describe("owner", function () {
-      it("owner should not be able to create orders with 0 price", async function () {
-        await expect(marketplace.createOrder(mafagafo.address, expandTo18Decimals(0), "mafagafo")).to.be.revertedWith(
-          "Price should be bigger than 0",
+      describe("open orders", function () {
+        it("owner should not be able to open orders that have already been opened", async function () {
+          await marketplace.openOrders("mafagafo", mafagafo.address, expandTo18Decimals(100), 100);
+
+          await expect(
+            marketplace.openOrders("mafagafo", mafagafo.address, expandTo18Decimals(0), 100),
+          ).to.be.revertedWith("Order has already been opened");
+        });
+
+        it("owner should not be able to open orders with no items", async function () {
+          await expect(
+            marketplace.openOrders("mafagafo", mafagafo.address, expandTo18Decimals(0), 0),
+          ).to.be.revertedWith("Order must have at least 1 item");
+        });
+
+        it("owner should not be able to open orders with non contract address", async function () {
+          await expect(
+            marketplace.openOrders("mafagafo", account1.address, expandTo18Decimals(0), 100),
+          ).to.be.revertedWith("The NFT Address should be a contract");
+        });
+
+        it("owner should not be able to open orders with no price", async function () {
+          await expect(
+            marketplace.openOrders("mafagafo", mafagafo.address, expandTo18Decimals(0), 100),
+          ).to.be.revertedWith("Order price should be bigger than 0");
+        });
+
+        it("owner should not be able to open orders with no item value", async function () {
+          await expect(marketplace.openOrders("", mafagafo.address, expandTo18Decimals(100), 100)).to.be.revertedWith(
+            "Item must have some value",
+          );
+        });
+
+        it("owner should be able to open orders", async function () {
+          await expect(marketplace.openOrders("mafagafo", mafagafo.address, expandTo18Decimals(100), 100))
+            .to.emit(marketplace, "OrdersOpened")
+            .withArgs("mafagafo", mafagafo.address, expandTo18Decimals(100), 100);
+        });
+      });
+
+      describe("cancel order", function () {
+        it("owner should not be able to cancel orders that are not open", async function () {
+          await expect(marketplace.cancelOrders("mafagafo", 1)).to.be.revertedWith("Order is not open");
+        });
+
+        it("owner should be able to cancel orders", async function () {
+          await marketplace.openOrders("mafagafo", mafagafo.address, expandTo18Decimals(100), 100);
+
+          await expect(marketplace.cancelOrders("mafagafo", 1))
+            .to.emit(marketplace, "OrdersCanceled")
+            .withArgs("mafagafo", mafagafo.address, 99);
+        });
+      });
+    });
+
+    describe("execute order", function () {
+      it("user should not be able to execute an order that doesn't exists", async function () {
+        await expect(marketplace.connect(account1).executeOrder("mafagafo", TOKEN_URI)).to.be.revertedWith(
+          "Order is not open",
         );
       });
 
-      it("owner should be able to create orders", async function () {
-        await expect(marketplace.createOrder(mafagafo.address, expandTo18Decimals(100), "mafagafo"))
-          .to.emit(marketplace, "OrderCreated")
-          .withArgs(0, mafagafo.address, expandTo18Decimals(100), "mafagafo");
+      it("user should not be able to execute an opened order if he doesn't allow the transfer", async function () {
+        await marketplace.openOrders("mafagafo", mafagafo.address, expandTo18Decimals(100), 100);
 
-        expect(await marketplace.orderCounter()).to.equal(1);
+        await expect(marketplace.connect(account1).executeOrder("mafagafo", TOKEN_URI)).to.be.revertedWith(
+          "Check the token allowance",
+        );
       });
 
-      it("owner should not be able to cancel an order that doesn't exists", async function () {
-        await expect(marketplace.cancelOrder(0)).to.be.revertedWith("Order is not Open");
+      it("user should not be able to execute a canceled order", async function () {
+        await marketplace.openOrders("mafagafo", mafagafo.address, expandTo18Decimals(100), 100);
+        await marketplace.cancelOrders("mafagafo", 100);
+
+        await mafacoin.connect(account1).approve(marketplace.address, expandTo18Decimals(100));
+
+        await expect(marketplace.connect(account1).executeOrder("mafagafo", TOKEN_URI)).to.be.revertedWith(
+          "Order is not open",
+        );
       });
 
-      it("owner should be able to cancel orders", async function () {
-        await marketplace.createOrder(mafagafo.address, expandTo18Decimals(100), "mafagafo");
+      it("user should be able to execute an opened order", async function () {
+        await marketplace.openOrders("mafagafo", mafagafo.address, expandTo18Decimals(100), 100);
 
-        await expect(marketplace.cancelOrder(0)).to.emit(marketplace, "OrderCancelled").withArgs(0, mafagafo.address);
+        await mafacoin.connect(account1).approve(marketplace.address, expandTo18Decimals(100));
+
+        await expect(marketplace.connect(account1).executeOrder("mafagafo", TOKEN_URI))
+          .to.emit(marketplace, "OrderExecuted")
+          .withArgs(
+            "mafagafo",
+            0,
+            TOKEN_URI,
+            owner.address,
+            mafagafo.address,
+            expandTo18Decimals(100),
+            account1.address,
+            99,
+          );
+
+        expect(await mafagafo.tokenURI(0)).to.equal(TOKEN_URI);
       });
-    });
 
-    it("user should not be able to execute an order that doesn't exists", async function () {
-      await expect(marketplace.connect(account1).executeOrder(0, TOKEN_URI)).to.be.revertedWith("Order is not Open");
-    });
+      it("user should not be able to execute an order that have been closed", async function () {
+        await marketplace.openOrders("mafagafo", mafagafo.address, expandTo18Decimals(100), 1);
+        await mafacoin.connect(account1).approve(marketplace.address, expandTo18Decimals(100));
+        marketplace.connect(account1).executeOrder("mafagafo", TOKEN_URI);
 
-    it("user should not be able to execute an opened order if he doesn't allow the transfer", async function () {
-      await marketplace.createOrder(mafagafo.address, expandTo18Decimals(100), "mafagafo");
-
-      await expect(marketplace.connect(account1).executeOrder(0, TOKEN_URI)).to.be.revertedWith(
-        "Check the token allowance",
-      );
-    });
-
-    it("user should not be able to execute a cancelled order", async function () {
-      await marketplace.createOrder(mafagafo.address, expandTo18Decimals(100), "mafagafo");
-      await marketplace.cancelOrder(0);
-
-      await mafacoin.connect(account1).approve(marketplace.address, expandTo18Decimals(100));
-
-      await expect(marketplace.connect(account1).executeOrder(0, TOKEN_URI)).to.be.revertedWith("Order is not Open");
-    });
-
-    it("user should be able to execute an opened order", async function () {
-      await marketplace.createOrder(mafagafo.address, expandTo18Decimals(100), "mafagafo");
-
-      await mafacoin.connect(account1).approve(marketplace.address, expandTo18Decimals(100));
-
-      await expect(marketplace.connect(account1).executeOrder(0, TOKEN_URI))
-        .to.emit(marketplace, "OrderExecuted")
-        .withArgs(0, 0, TOKEN_URI, owner.address, mafagafo.address, expandTo18Decimals(100), account1.address);
-
-      expect(await mafagafo.tokenURI(0)).to.equal(TOKEN_URI);
-    });
-
-    it("user should not be able to execute an order that have been already executed", async function () {
-      await marketplace.createOrder(mafagafo.address, expandTo18Decimals(100), "mafagafo");
-      await mafacoin.connect(account1).approve(marketplace.address, expandTo18Decimals(100));
-      marketplace.connect(account1).executeOrder(0, TOKEN_URI);
-
-      await expect(marketplace.connect(account1).executeOrder(0, TOKEN_URI)).to.be.revertedWith("Order is not Open");
+        await expect(marketplace.connect(account1).executeOrder("mafagafo", TOKEN_URI)).to.be.revertedWith(
+          "Order is not open",
+        );
+      });
     });
 
     describe("pause", function () {
@@ -135,20 +185,26 @@ describe("Unit tests", function () {
         expect(await marketplace.paused()).to.equal(false);
       });
 
-      it("owner should be able to create/cancel orders when contract is paused", async function () {
+      it("owner should be able to open/cancel orders when contract is paused", async function () {
         await marketplace.pause();
 
-        await marketplace.createOrder(mafagafo.address, expandTo18Decimals(100), "mafagafo");
+        await expect(marketplace.openOrders("mafagafo", mafagafo.address, expandTo18Decimals(100), 100))
+          .to.emit(marketplace, "OrdersOpened")
+          .withArgs("mafagafo", mafagafo.address, expandTo18Decimals(100), 100);
 
-        await expect(marketplace.cancelOrder(0)).to.emit(marketplace, "OrderCancelled").withArgs(0, mafagafo.address);
+        await expect(marketplace.cancelOrders("mafagafo", 1))
+          .to.emit(marketplace, "OrdersCanceled")
+          .withArgs("mafagafo", mafagafo.address, 99);
       });
 
-      it("users should not be able to execute orders when contract is paused", async function () {
+      it("user should not be able to execute orders when contract is paused", async function () {
         await marketplace.pause();
 
-        await marketplace.createOrder(mafagafo.address, expandTo18Decimals(100), "mafagafo");
+        await marketplace.openOrders("mafagafo", mafagafo.address, expandTo18Decimals(100), 100);
 
-        await expect(marketplace.connect(account1).executeOrder(0, TOKEN_URI)).to.be.revertedWith("Pausable: paused");
+        await expect(marketplace.connect(account1).executeOrder("mafagafo", TOKEN_URI)).to.be.revertedWith(
+          "Pausable: paused",
+        );
       });
     });
   });
