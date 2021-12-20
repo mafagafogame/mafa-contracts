@@ -1,5 +1,19 @@
+# directories
 node_modules
 artifacts
 cache
 coverage*
+typechain
+typechain-types
+abis
+
+# files
+*.env
+*.log
+.pnp.*
+coverage.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 gasReporterOutput.json
+README.md
