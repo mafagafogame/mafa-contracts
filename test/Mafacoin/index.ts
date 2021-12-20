@@ -2,16 +2,11 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { Contract, utils } from "ethers";
-import {
-  MafaCoin,
-  MafaCoin__factory,
-  TimeLockedWallet,
-  TimeLockedWallet__factory,
-} from "../typechain";
+import { MafaCoin, MafaCoin__factory } from "../../typechain";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import routerABI from "../abis/routerABI.json";
+import routerABI from "../../abis/routerABI.json";
 import { AlchemyProvider } from "@ethersproject/providers";
-import { expandTo18Decimals } from "./shared/utilities";
+import { expandTo18Decimals } from "../shared/utilities";
 
 describe("MafaCoin", function () {
   const DEAD_ADDRESS = "0x000000000000000000000000000000000000dEaD";
@@ -24,14 +19,11 @@ describe("MafaCoin", function () {
   let address5: SignerWithAddress;
 
   before(async function () {
-    [owner, address1, address2, address3, address4, address5] =
-      await ethers.getSigners();
+    [owner, address1, address2, address3, address4, address5] = await ethers.getSigners();
   });
 
   beforeEach(async function () {
-    const MafaCoinFactory: MafaCoin__factory = await ethers.getContractFactory(
-      "MafaCoin"
-    );
+    const MafaCoinFactory: MafaCoin__factory = await ethers.getContractFactory("MafaCoin");
     contract = await MafaCoinFactory.deploy();
     contract = await contract.deployed();
     await contract.afterPreSale();
@@ -50,10 +42,7 @@ describe("MafaCoin", function () {
   it("should stop burn fee after 50% of the total supply is burned", async function () {
     const initialBurnFee = await contract.burnFee();
 
-    await contract.transfer(
-      DEAD_ADDRESS,
-      utils.parseEther("500000000").toString()
-    );
+    await contract.transfer(DEAD_ADDRESS, utils.parseEther("500000000").toString());
     await contract.transfer(address3.address, 100);
 
     const totalSupply = await contract.totalSupply();
@@ -71,10 +60,7 @@ describe("MafaCoin", function () {
   it("should maintain burn fee if 49% of the total supply is burned", async function () {
     const initialBurnFee = await contract.burnFee();
 
-    await contract.transfer(
-      DEAD_ADDRESS,
-      utils.parseEther("490000000").toString()
-    );
+    await contract.transfer(DEAD_ADDRESS, utils.parseEther("490000000").toString());
     await contract.transfer(address3.address, 100);
 
     const burnFee = await contract.burnFee();
@@ -86,13 +72,8 @@ describe("MafaCoin", function () {
   it("should charge buy fees", async function () {
     await contract.setLiquidyFee(0);
 
-    await contract.transfer(
-      address3.address,
-      utils.parseEther("1000").toString()
-    );
-    await contract
-      .connect(address3)
-      .transfer(address4.address, utils.parseEther("1000").toString());
+    await contract.transfer(address3.address, utils.parseEther("1000").toString());
+    await contract.connect(address3).transfer(address4.address, utils.parseEther("1000").toString());
 
     const zeroBalance = await contract.balanceOf(address3.address);
     const balanceTaxed = await contract.balanceOf(address4.address);
@@ -150,7 +131,7 @@ describe("MafaCoin", function () {
           ETHAmount,
           owner.address,
           ethers.constants.MaxUint256,
-          { value: ETHAmount }
+          { value: ETHAmount },
         );
 
       // first transaction from owner, should not charge fees
@@ -158,37 +139,19 @@ describe("MafaCoin", function () {
 
       // sencond transaction from address3, should charge fees
       const transactAmount = expandTo18Decimals(100);
-      await contract
-        .connect(address3)
-        .transfer(address4.address, transactAmount);
+      await contract.connect(address3).transfer(address4.address, transactAmount);
 
       // third transaction from address4, should charge fees
       const transactAmount2 = expandTo18Decimals(95);
-      await contract
-        .connect(address4)
-        .transfer(address5.address, transactAmount2);
+      await contract.connect(address4).transfer(address5.address, transactAmount2);
 
-      const pairBalance = utils.formatEther(
-        await contract.balanceOf(await contract.dexPair())
-      );
-      const deadBalance = utils.formatEther(
-        await contract.balanceOf(DEAD_ADDRESS)
-      );
-      const teamBalance = utils.formatEther(
-        await contract.balanceOf(address1.address)
-      );
-      const lotteryBalance = utils.formatEther(
-        await contract.balanceOf(address2.address)
-      );
-      const address3Balance = utils.formatEther(
-        await contract.balanceOf(address3.address)
-      );
-      const address4Balance = utils.formatEther(
-        await contract.balanceOf(address4.address)
-      );
-      const address5Balance = utils.formatEther(
-        await contract.balanceOf(address5.address)
-      );
+      const pairBalance = utils.formatEther(await contract.balanceOf(await contract.dexPair()));
+      const deadBalance = utils.formatEther(await contract.balanceOf(DEAD_ADDRESS));
+      const teamBalance = utils.formatEther(await contract.balanceOf(address1.address));
+      const lotteryBalance = utils.formatEther(await contract.balanceOf(address2.address));
+      const address3Balance = utils.formatEther(await contract.balanceOf(address3.address));
+      const address4Balance = utils.formatEther(await contract.balanceOf(address4.address));
+      const address5Balance = utils.formatEther(await contract.balanceOf(address5.address));
 
       expect(pairBalance).to.equal("1005.845486732233509186");
       expect(deadBalance).to.equal("1.95");
@@ -208,9 +171,9 @@ describe("MafaCoin", function () {
 
       const transactAmount = expandTo18Decimals(100);
 
-      await expect(
-        contract.connect(address3).transfer(address4.address, transactAmount)
-      ).to.be.revertedWith("UniswapV2Library: INSUFFICIENT_LIQUIDITY");
+      await expect(contract.connect(address3).transfer(address4.address, transactAmount)).to.be.revertedWith(
+        "UniswapV2Library: INSUFFICIENT_LIQUIDITY",
+      );
     });
 
     it("should charge sell fees when transfering tokens to pair", async function () {
@@ -231,7 +194,7 @@ describe("MafaCoin", function () {
           ETHAmount,
           owner.address,
           ethers.constants.MaxUint256,
-          { value: ETHAmount }
+          { value: ETHAmount },
         );
 
       await contract.transfer(address3.address, MAFAAmount);
@@ -241,18 +204,10 @@ describe("MafaCoin", function () {
       const transactAmount = expandTo18Decimals(100);
       await contract.connect(address3).transfer(dexPair, transactAmount);
 
-      const deadBalance = utils.formatEther(
-        await contract.balanceOf(DEAD_ADDRESS)
-      );
-      const teamBalance = utils.formatEther(
-        await contract.balanceOf(address1.address)
-      );
-      const lotteryBalance = utils.formatEther(
-        await contract.balanceOf(address2.address)
-      );
-      const address3Balance = utils.formatEther(
-        await contract.balanceOf(address3.address)
-      );
+      const deadBalance = utils.formatEther(await contract.balanceOf(DEAD_ADDRESS));
+      const teamBalance = utils.formatEther(await contract.balanceOf(address1.address));
+      const lotteryBalance = utils.formatEther(await contract.balanceOf(address2.address));
+      const address3Balance = utils.formatEther(await contract.balanceOf(address3.address));
       const pairBalance = utils.formatEther(await contract.balanceOf(dexPair));
 
       expect(deadBalance).to.equal("1.0");
@@ -261,61 +216,5 @@ describe("MafaCoin", function () {
       expect(address3Balance).to.equal("900.0");
       expect(pairBalance).to.equal("1092.997743249999999998");
     });
-  });
-});
-
-describe("TimeLockedWallet", function () {
-  let timeLockedWallet: TimeLockedWallet;
-  let mafacoin: MafaCoin;
-  let owner: SignerWithAddress;
-  let address1: SignerWithAddress;
-  let timestamp: number;
-
-  const oneDay = 7 * 24 * 60 * 60;
-
-  before(async function () {
-    [owner, address1] = await ethers.getSigners();
-  });
-
-  beforeEach(async function () {
-    const blockNumber = await ethers.provider.getBlockNumber();
-    const block = await ethers.provider.getBlock(blockNumber);
-    timestamp = block.timestamp;
-
-    const MafaCoinFactory: MafaCoin__factory = await ethers.getContractFactory(
-      "MafaCoin"
-    );
-    mafacoin = await MafaCoinFactory.deploy();
-    mafacoin = await mafacoin.deployed();
-
-    const TimeLockedWalletFactory: TimeLockedWallet__factory =
-      await ethers.getContractFactory("TimeLockedWallet");
-    timeLockedWallet = await TimeLockedWalletFactory.deploy(
-      address1.address,
-      mafacoin.address,
-      timestamp + oneDay
-    );
-    timeLockedWallet = await timeLockedWallet.deployed();
-  });
-
-  it("should have the correct addresses", async function () {
-    const creator = await timeLockedWallet.creator();
-    const toWallet = await timeLockedWallet.toWallet();
-    const mafacoinAddress = await timeLockedWallet.mafacoin();
-
-    expect(creator).to.equal(owner.address);
-    expect(toWallet).to.equal(address1.address);
-    expect(mafacoinAddress).to.equal(mafacoin.address);
-  });
-
-  it("should have the correct createdAt time and unlockDate", async function () {
-    const createdAt = await timeLockedWallet.createdAt();
-    const unlockDate = await timeLockedWallet.unlockDate();
-    const blockNumber = await timeLockedWallet.provider.getBlockNumber();
-    const block = await timeLockedWallet.provider.getBlock(blockNumber);
-    const contractTimestamp = block.timestamp;
-
-    expect(createdAt).to.equal(contractTimestamp);
-    expect(unlockDate).to.equal(timestamp + oneDay);
   });
 });

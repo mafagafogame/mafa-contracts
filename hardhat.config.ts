@@ -42,8 +42,7 @@ const config: HardhatUserConfig = {
   networks: {
     ropsten: {
       url: process.env.ROPSTEN_URL || "",
-      accounts:
-        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+      accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
     bsctest: {
       url: "https://data-seed-prebsc-1-s1.binance.org:8545",
@@ -79,7 +78,7 @@ const config: HardhatUserConfig = {
   },
   typechain: {
     outDir: "typechain",
-    target: "ethers-v5"
+    target: "ethers-v5",
   },
   solidity: {
     version: "0.8.9",
@@ -87,16 +86,16 @@ const config: HardhatUserConfig = {
       metadata: {
         // Not including the metadata hash
         // https://github.com/paulrberg/solidity-template/issues/31
-        bytecodeHash: "none"
+        bytecodeHash: "none",
       },
       // You should disable the optimizer when debugging
       // https://hardhat.org/hardhat-network/#solidity-optimizer-support
       optimizer: {
         enabled: true,
-        runs: 800
-      }
-    }
-  }
+        runs: 800,
+      },
+    },
+  },
 };
 
 export default config;
