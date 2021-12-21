@@ -14,7 +14,6 @@ import "./tasks/clean";
 import { resolve } from "path";
 
 import { config as dotenvConfig } from "dotenv";
-import { NetworkUserConfig } from "hardhat/types";
 
 dotenvConfig({ path: resolve(__dirname, "./.env") });
 
