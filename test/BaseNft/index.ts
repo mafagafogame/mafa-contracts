@@ -3,11 +3,14 @@ import { artifacts, ethers, upgrades, waffle } from "hardhat";
 import type { Artifact } from "hardhat/types";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-import { BaseNft__factory, BaseNft } from "../../typechain";
+import {BaseNft__factory, BaseNft, BaseNftTestV2__factory, BaseNftTestV2} from "../../typechain";
 import { expandTo18Decimals } from "../shared/utilities";
+import {assert} from "@openzeppelin/upgrades-core/dist/utils/assert";
+import {BigNumber} from "ethers";
 
 describe("Base NFT", function () {
   let contract: BaseNft;
+  let contractV2: BaseNftTestV2;
   let owner: SignerWithAddress;
   let address1: SignerWithAddress;
   let address2: SignerWithAddress;
@@ -45,5 +48,19 @@ describe("Base NFT", function () {
 
   it("Should have right roles", async function () {
 
+  });
+
+  it("Should be upgradeable", async function () {
+    const baseNftFactory: BaseNftTestV2__factory = await ethers.getContractFactory("BaseNftTestV2");
+    let version = await contract.version();
+    expect(version).to.equal(BigNumber.from(1));
+
+    let v2contract = (await upgrades.upgradeProxy(contract, baseNftFactory)) as BaseNftTestV2;
+    version = await v2contract.version();
+    expect(version).to.equal(BigNumber.from(2));
+
+    // test access same fuction from old contract should reflect the contract of the new one
+    version = await contract.version();
+    expect(version).to.equal(BigNumber.from(3));
   });
 });
