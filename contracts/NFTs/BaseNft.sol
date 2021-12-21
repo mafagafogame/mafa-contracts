@@ -14,7 +14,12 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 // quebrar em mais contratos
 
 // reference: https://medium.com/aisthisi/aisthisi-technical-deep-dive-part-2-5250b0d71ee
-contract BaseNft is ERC721PresetMinterPauserAutoIdUpgradeable, RoyaltiesV2UpgradeableImpl, ReentrancyGuardUpgradeable, UUPSUpgradeable {
+contract BaseNft is
+    ERC721PresetMinterPauserAutoIdUpgradeable,
+    RoyaltiesV2UpgradeableImpl,
+    ReentrancyGuardUpgradeable,
+    UUPSUpgradeable
+{
     function initialize(
         string memory name,
         string memory symbol,
@@ -29,11 +34,7 @@ contract BaseNft is ERC721PresetMinterPauserAutoIdUpgradeable, RoyaltiesV2Upgrad
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function _authorizeUpgrade(address newImplementation)
-        internal
-        override
-        onlyRole(DEFAULT_ADMIN_ROLE)
-    {}
+    function _authorizeUpgrade(address newImplementation) internal override onlyRole(DEFAULT_ADMIN_ROLE) {}
 
     //    function _beforeTokenTransfer(address from, address to, uint256 tokenId)
     //    internal
@@ -72,11 +73,12 @@ contract BaseNft is ERC721PresetMinterPauserAutoIdUpgradeable, RoyaltiesV2Upgrad
             super.supportsInterface(interfaceId);
     }
 
-    function _baseURI() internal view virtual override returns (string memory) {
-        return super._baseURI();
-    }
+    //    function _baseURI
+    //    () internal view virtual override returns (string memory) {
+    //        return super._baseURI();
+    //    }
 
-    function baseURI() external view returns (string memory){
+    function baseURI() external view returns (string memory) {
         return super._baseURI();
     }
 
@@ -121,5 +123,16 @@ contract BaseNft is ERC721PresetMinterPauserAutoIdUpgradeable, RoyaltiesV2Upgrad
     // _saveRoyalties(uint256 id, LibPart.Part[] memory _royalties)
     // _updateAccount(uint256 _id, address _from, address _to)
 
+    function version() public pure virtual returns (uint256){
+        return 1;
+    }
+
     uint256[50] private __gap;
+}
+
+
+contract BaseNftTestV2 is BaseNft {
+    function version() public pure virtual override returns (uint256) {
+        return 2;
+    }
 }
