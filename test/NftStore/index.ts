@@ -1,13 +1,14 @@
+/* eslint-disable camelcase */
 import { expect } from "chai";
-import { artifacts, ethers, waffle } from "hardhat";
+import { artifacts, ethers, waffle, upgrades } from "hardhat";
 import type { Artifact } from "hardhat/types";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-import { MafaCoin, MafagafoNft, NftCrowdSale } from "../../typechain";
+import { MafaCoin, MafagafoNft, NftStore, NftStore__factory } from "../../typechain";
 import { expandTo18Decimals } from "../shared/utilities";
 
 describe("Unit tests", function () {
-  let marketplace: NftCrowdSale;
+  let marketplace: NftStore;
   let mafacoin: MafaCoin;
   let mafagafo: MafagafoNft;
   let owner: SignerWithAddress;
@@ -33,8 +34,8 @@ describe("Unit tests", function () {
       const mafagafoArtifact: Artifact = await artifacts.readArtifact("MafagafoNft");
       mafagafo = <MafagafoNft>await waffle.deployContract(owner, mafagafoArtifact);
 
-      const marketplaceArtifact: Artifact = await artifacts.readArtifact("NftCrowdSale");
-      marketplace = <NftCrowdSale>await waffle.deployContract(owner, marketplaceArtifact, [mafacoin.address]);
+      const marketplaceFactory: NftStore__factory = await ethers.getContractFactory("NftStore");
+      marketplace = <NftStore>await upgrades.deployProxy(marketplaceFactory, [mafacoin.address]);
 
       await mafagafo.setMinter(marketplace.address, true);
     });
@@ -77,7 +78,7 @@ describe("Unit tests", function () {
         it("owner should not be able to open orders with non contract address", async function () {
           await expect(
             marketplace.openOrders("mafagafo", account1.address, expandTo18Decimals(0), 100),
-          ).to.be.revertedWith("The NFT Address should be a contract");
+          ).to.be.revertedWith("function call to a non-contract account");
         });
 
         it("owner should not be able to open orders with no price", async function () {

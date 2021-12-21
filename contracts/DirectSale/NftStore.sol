@@ -2,8 +2,10 @@
 
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -13,12 +15,8 @@ interface ERC721 is IERC721 {
     function safeMint(address to, string memory uri) external returns (uint256);
 }
 
-/**
- * @dev Contract for the direct sale of mafagafo NFTs
- */
-contract NftCrowdSale is Ownable, Pausable {
+contract NftStore is Initializable, PausableUpgradeable, OwnableUpgradeable, UUPSUpgradeable {
     using SafeMath for uint256;
-    using Address for address;
 
     IERC20 public acceptedToken;
 
@@ -38,10 +36,16 @@ contract NftCrowdSale is Ownable, Pausable {
     /**
      * @param _acceptedToken accepted ERC20 token address
      */
-    constructor(address _acceptedToken) {
-        require(_acceptedToken.isContract(), "The accepted token address must be a deployed contract");
+    function initialize(address _acceptedToken) public initializer {
         acceptedToken = IERC20(_acceptedToken);
+
+        __Pausable_init();
+        __Ownable_init();
+        __UUPSUpgradeable_init();
     }
+
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() initializer {}
 
     function pause() public onlyOwner {
         _pause();
@@ -122,7 +126,7 @@ contract NftCrowdSale is Ownable, Pausable {
 
         return order;
     }
-    
+
     function _executeOrder(string memory item, string memory uri) internal returns (Order memory) {
         Order memory order = orders[item];
         require(order.quantity != 0, "Order is not open");
@@ -153,8 +157,6 @@ contract NftCrowdSale is Ownable, Pausable {
     }
 
     function _requireERC721(address nftAddress) internal view {
-        require(nftAddress.isContract(), "The NFT Address should be a contract");
-
         IERC721 nftRegistry = IERC721(nftAddress);
         require(
             nftRegistry.supportsInterface(ERC721_Interface),
@@ -175,4 +177,6 @@ contract NftCrowdSale is Ownable, Pausable {
         address indexed buyer,
         uint256 newQuantity
     );
+
+    function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }
