@@ -7,11 +7,11 @@ import "./RoyaltiesV2.sol";
 import "./RoyaltiesV2Upgradeable.sol";
 
 contract RoyaltiesV2UpgradeableImpl is AbstractRoyalties, RoyaltiesV2Upgradeable {
-    function getRaribleV2Royalties(uint256 id) override external view returns (LibPart.Part[] memory) {
+    function getRaribleV2Royalties(uint256 id) external view override returns (LibPart.Part[] memory) {
         return royalties[id];
     }
 
-    function _onRoyaltiesSet(uint256 id, LibPart.Part[] memory _royalties) override internal {
+    function _onRoyaltiesSet(uint256 id, LibPart.Part[] memory _royalties) internal override {
         emit RoyaltiesSet(id, _royalties);
     }
 }
