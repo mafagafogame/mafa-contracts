@@ -18,8 +18,9 @@
     "@nomiclabs/hardhat-waffle": "^2.0.1",
     "@openzeppelin/contracts": "^4.3.3",
     "@openzeppelin/contracts-ethereum-package": "^3.0.0",
-    "@openzeppelin/contracts-upgradeable": "^4.3.3",
+    "@openzeppelin/contracts-upgradeable": "^4.4.1",
     "@openzeppelin/hardhat-upgrades": "^1.12.0",
+    "@openzeppelin/upgrades-core": "^1.10.0",
     "@rarible/royalties": "^0.7.2",
     "@rarible/royalties-upgradeable": "^0.7.2",
     "@typechain/ethers-v5": "^8.0.2",
@@ -36,7 +37,7 @@
     "commitizen": "^4.2.4",
     "cz-conventional-changelog": "^3.3.0",
     "dotenv": "^10.0.0",
-    "eslint": "^8.2.0",
+    "eslint": "^8.4.1",
     "eslint-config-prettier": "^8.3.0",
     "eslint-config-standard": "^16.0.3",
     "eslint-plugin-import": "^2.25.3",
@@ -71,13 +72,14 @@
   },
   "scripts": {
     "clean": "hardhat clean",
+    "postinstall": "pip3 install slither-analyzer mythril mythx-cli",
     "commit": "git-cz",
     "compile": "hardhat compile",
     "coverage": "hardhat coverage --solcoverjs ./.solcover.js --temp artifacts --testfiles \"./test/**/*.ts\"",
     "deploy": "hardhat run scripts/deploy.ts",
     "deploy:network": "hardhat run scripts/deploy.ts --network",
     "lint": "yarn run lint:sol && yarn run lint:ts && yarn run prettier:check",
-    "lint:sol": "solhint --config ./.solhint.json --max-warnings 0 \"contracts/**/*.sol\"",
+    "lint:sol": "solhint --fix --config ./.solhint.json --max-warnings 0 \"contracts/**/*.sol\"",
     "lint:ts": "eslint --config ./.eslintrc.yaml --ignore-path ./.eslintignore --ext .js,.ts .",
     "prettier": "prettier --config ./.prettierrc.yaml --write \"**/*.{js,json,md,sol,ts}\"",
     "prettier:check": "prettier --check --config ./.prettierrc \"**/*.{js,json,md,sol,ts}\"",
@@ -88,6 +90,9 @@
     "create-local": "graph create stevyhacker/nft-mint --node http://127.0.0.1:8020",
     "codegen": "graph codegen",
     "build": "graph build",
-    "verify": "hardhat verify --network bsc 0xb1871564612243d34532fcd4946737974457661a"
+    "verify": "hardhat verify --network bsc 0xb1871564612243d34532fcd4946737974457661a",
+    "slither:log": "python3 -m slither . --ignore-compile --filter-paths \"node_modules\" --disable-color --print human-summary > slither-audit.txt 2>&1",
+    "slither:summary": "python3 -m slither . --ignore-compile --filter-paths \"node_modules\" --print human-summary",
+    "slither": "python3 -m slither . --ignore-compile --filter-paths \"node_modules\""
   }
 }
