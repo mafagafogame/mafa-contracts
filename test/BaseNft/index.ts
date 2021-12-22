@@ -53,7 +53,7 @@ describe("Base NFT", function () {
     let version = await contract.version();
     expect(version).to.equal(BigNumber.from(1));
 
-    let v2contract = (await upgrades.upgradeProxy(contract, baseNftFactory)) as BaseNftTestV2;
+    const v2contract = (await upgrades.upgradeProxy(contract, baseNftFactory, { kind: "uups" })) as BaseNftTestV2;
     version = await v2contract.version();
     expect(version).to.equal(BigNumber.from(2));
 
