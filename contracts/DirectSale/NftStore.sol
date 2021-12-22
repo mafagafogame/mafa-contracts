@@ -186,3 +186,10 @@ contract NftStore is Initializable, PausableUpgradeable, OwnableUpgradeable, UUP
 
     uint256[50] private __gap;
 }
+
+
+contract NftStoreTestV2 is NftStore {
+    function version() public pure virtual override returns (string memory) {
+        return "2.0.0";
+    }
+}
