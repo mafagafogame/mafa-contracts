@@ -123,16 +123,15 @@ contract BaseNft is
     // _saveRoyalties(uint256 id, LibPart.Part[] memory _royalties)
     // _updateAccount(uint256 _id, address _from, address _to)
 
-    function version() public pure virtual returns (uint256){
-        return 1;
+    function version() public pure virtual returns (string memory) {
+        return "1.0.0";
     }
 
     uint256[50] private __gap;
 }
 
-
 contract BaseNftTestV2 is BaseNft {
-    function version() public pure virtual override returns (uint256) {
-        return 2;
+    function version() public pure virtual override returns (string memory) {
+        return "2.0.0";
     }
 }

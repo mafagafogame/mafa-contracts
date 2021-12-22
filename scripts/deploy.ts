@@ -6,7 +6,7 @@
 import { ethers, upgrades } from "hardhat";
 import { MafaCoin, MafaCoin__factory } from "../typechain";
 import { Wallet } from "@ethersproject/wallet";
-import {abi} from '../artifacts/contracts/Mafacoin.sol/MafaCoin.json';
+import { abi } from "../artifacts/contracts/Mafacoin.sol/MafaCoin.json";
 
 async function main() {
   // Hardhat always runs the compile task when running scripts with its command
