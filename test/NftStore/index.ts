@@ -4,11 +4,19 @@ import { artifacts, ethers, waffle, upgrades } from "hardhat";
 import type { Artifact } from "hardhat/types";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-import { BaseNft, BaseNft__factory, MafaCoin, NftStore, NftStore__factory } from "../../typechain";
+import {
+  BaseNft,
+  BaseNft__factory,
+  MafaCoin,
+  NftStore,
+  NftStoreTestV2,
+  NftStoreTestV2__factory,
+  NftStore__factory,
+} from "../../typechain";
 import { expandTo18Decimals } from "../shared/utilities";
 
 describe("Unit tests", function () {
-  let marketplace: NftStore;
+  let nftStore: NftStore;
   let mafacoin: MafaCoin;
   let baseNft: BaseNft;
   let owner: SignerWithAddress;
@@ -19,7 +27,7 @@ describe("Unit tests", function () {
     [owner, account1] = await ethers.getSigners();
   });
 
-  describe("Marketplace", function () {
+  describe("NFT Store", function () {
     beforeEach(async function () {
       const mafacoinArtifact: Artifact = await artifacts.readArtifact("MafaCoin");
       mafacoin = <MafaCoin>await waffle.deployContract(owner, mafacoinArtifact);
@@ -37,29 +45,29 @@ describe("Unit tests", function () {
         kind: "uups",
       });
 
-      const marketplaceFactory: NftStore__factory = await ethers.getContractFactory("NftStore");
-      marketplace = <NftStore>await upgrades.deployProxy(marketplaceFactory, [mafacoin.address], {
+      const nftStoreFactory: NftStore__factory = await ethers.getContractFactory("NftStore");
+      nftStore = <NftStore>await upgrades.deployProxy(nftStoreFactory, [mafacoin.address], {
         initializer: "initialize",
         kind: "uups",
       });
 
-      await baseNft.grantRole(ethers.utils.id("MINTER_ROLE"), marketplace.address);
+      await baseNft.grantRole(ethers.utils.id("MINTER_ROLE"), nftStore.address);
     });
 
     it("should be deployed with correct values", async function () {
-      expect(await marketplace.acceptedToken()).to.equal(mafacoin.address);
-      expect(await marketplace.owner()).to.equal(owner.address);
+      expect(await nftStore.acceptedToken()).to.equal(mafacoin.address);
+      expect(await nftStore.owner()).to.equal(owner.address);
     });
 
     describe("non owner", function () {
       it("non owner user should not be able to add an item", async function () {
         await expect(
-          marketplace.connect(account1).addItem("mafagafo", baseNft.address, expandTo18Decimals(100), 100),
+          nftStore.connect(account1).addItem("mafagafo", baseNft.address, expandTo18Decimals(100), 100),
         ).to.be.revertedWith("Ownable: caller is not the owner");
       });
 
       it("non owner user should not be able to remove products", async function () {
-        await expect(marketplace.connect(account1).removeProducts("mafagafo", 1)).to.be.revertedWith(
+        await expect(nftStore.connect(account1).removeProducts("mafagafo", 1)).to.be.revertedWith(
           "Ownable: caller is not the owner",
         );
       });
@@ -68,54 +76,54 @@ describe("Unit tests", function () {
     describe("owner", function () {
       describe("add item", function () {
         it("owner should not be able to add an item that has already been added", async function () {
-          await marketplace.addItem("mafagafo", baseNft.address, expandTo18Decimals(100), 100);
+          await nftStore.addItem("mafagafo", baseNft.address, expandTo18Decimals(100), 100);
 
-          await expect(marketplace.addItem("mafagafo", baseNft.address, expandTo18Decimals(0), 100)).to.be.revertedWith(
+          await expect(nftStore.addItem("mafagafo", baseNft.address, expandTo18Decimals(0), 100)).to.be.revertedWith(
             "Item has already been added",
           );
         });
 
         it("owner should not be able to add an item with no products", async function () {
-          await expect(marketplace.addItem("mafagafo", baseNft.address, expandTo18Decimals(0), 0)).to.be.revertedWith(
+          await expect(nftStore.addItem("mafagafo", baseNft.address, expandTo18Decimals(0), 0)).to.be.revertedWith(
             "Must add at least one product",
           );
         });
 
         it("owner should not be able to add item with non contract nft address", async function () {
-          await expect(
-            marketplace.addItem("mafagafo", account1.address, expandTo18Decimals(0), 100),
-          ).to.be.revertedWith("function call to a non-contract account");
+          await expect(nftStore.addItem("mafagafo", account1.address, expandTo18Decimals(0), 100)).to.be.revertedWith(
+            "function call to a non-contract account",
+          );
         });
 
         it("owner should not be able to add an item with no price", async function () {
-          await expect(marketplace.addItem("mafagafo", baseNft.address, expandTo18Decimals(0), 100)).to.be.revertedWith(
+          await expect(nftStore.addItem("mafagafo", baseNft.address, expandTo18Decimals(0), 100)).to.be.revertedWith(
             "Item price should be bigger than 0",
           );
         });
 
         it("owner should not be able to add an item with no name", async function () {
-          await expect(marketplace.addItem("", baseNft.address, expandTo18Decimals(100), 100)).to.be.revertedWith(
+          await expect(nftStore.addItem("", baseNft.address, expandTo18Decimals(100), 100)).to.be.revertedWith(
             "Item must have some name",
           );
         });
 
         it("owner should be able to add an item", async function () {
-          await expect(marketplace.addItem("mafagafo", baseNft.address, expandTo18Decimals(100), 100))
-            .to.emit(marketplace, "ItemAdded")
+          await expect(nftStore.addItem("mafagafo", baseNft.address, expandTo18Decimals(100), 100))
+            .to.emit(nftStore, "ItemAdded")
             .withArgs("mafagafo", baseNft.address, expandTo18Decimals(100), 100);
         });
       });
 
       describe("remove products", function () {
         it("owner should not be able to remove products of an item that doesn't exist", async function () {
-          await expect(marketplace.removeProducts("mafagafo", 1)).to.be.revertedWith("Item has not been added");
+          await expect(nftStore.removeProducts("mafagafo", 1)).to.be.revertedWith("Item has not been added");
         });
 
         it("owner should be able to remove products", async function () {
-          await marketplace.addItem("mafagafo", baseNft.address, expandTo18Decimals(100), 100);
+          await nftStore.addItem("mafagafo", baseNft.address, expandTo18Decimals(100), 100);
 
-          await expect(marketplace.removeProducts("mafagafo", 1))
-            .to.emit(marketplace, "ProductsRemoved")
+          await expect(nftStore.removeProducts("mafagafo", 1))
+            .to.emit(nftStore, "ProductsRemoved")
             .withArgs("mafagafo", baseNft.address, 99);
         });
       });
@@ -123,37 +131,31 @@ describe("Unit tests", function () {
 
     describe("buy product", function () {
       it("user should not be able to buy an product of an item that doesn't exist", async function () {
-        await expect(marketplace.connect(account1).buyProduct("mafagafo")).to.be.revertedWith(
-          "Item has not been added",
-        );
+        await expect(nftStore.connect(account1).buyProduct("mafagafo")).to.be.revertedWith("Item has not been added");
       });
 
       it("user should not be able to buy a product if he doesn't allow the transfer", async function () {
-        await marketplace.addItem("mafagafo", baseNft.address, expandTo18Decimals(100), 100);
+        await nftStore.addItem("mafagafo", baseNft.address, expandTo18Decimals(100), 100);
 
-        await expect(marketplace.connect(account1).buyProduct("mafagafo")).to.be.revertedWith(
-          "Check the token allowance",
-        );
+        await expect(nftStore.connect(account1).buyProduct("mafagafo")).to.be.revertedWith("Check the token allowance");
       });
 
       it("user should not be able to buy a product that has been removed", async function () {
-        await marketplace.addItem("mafagafo", baseNft.address, expandTo18Decimals(100), 100);
-        await marketplace.removeProducts("mafagafo", 100);
+        await nftStore.addItem("mafagafo", baseNft.address, expandTo18Decimals(100), 100);
+        await nftStore.removeProducts("mafagafo", 100);
 
-        await mafacoin.connect(account1).approve(marketplace.address, expandTo18Decimals(100));
+        await mafacoin.connect(account1).approve(nftStore.address, expandTo18Decimals(100));
 
-        await expect(marketplace.connect(account1).buyProduct("mafagafo")).to.be.revertedWith(
-          "Item has not been added",
-        );
+        await expect(nftStore.connect(account1).buyProduct("mafagafo")).to.be.revertedWith("Item has not been added");
       });
 
       it("user should be able to buy a product", async function () {
-        await marketplace.addItem("mafagafo", baseNft.address, expandTo18Decimals(100), 100);
+        await nftStore.addItem("mafagafo", baseNft.address, expandTo18Decimals(100), 100);
 
-        await mafacoin.connect(account1).approve(marketplace.address, expandTo18Decimals(100));
+        await mafacoin.connect(account1).approve(nftStore.address, expandTo18Decimals(100));
 
-        await expect(marketplace.connect(account1).buyProduct("mafagafo"))
-          .to.emit(marketplace, "ProductBought")
+        await expect(nftStore.connect(account1).buyProduct("mafagafo"))
+          .to.emit(nftStore, "ProductBought")
           .withArgs(
             "mafagafo",
             owner.address,
@@ -168,47 +170,59 @@ describe("Unit tests", function () {
       });
 
       it("user should not be able to buy a product that has been removed", async function () {
-        await marketplace.addItem("mafagafo", baseNft.address, expandTo18Decimals(100), 1);
-        await mafacoin.connect(account1).approve(marketplace.address, expandTo18Decimals(100));
-        marketplace.connect(account1).buyProduct("mafagafo");
+        await nftStore.addItem("mafagafo", baseNft.address, expandTo18Decimals(100), 1);
+        await mafacoin.connect(account1).approve(nftStore.address, expandTo18Decimals(100));
+        nftStore.connect(account1).buyProduct("mafagafo");
 
-        await expect(marketplace.connect(account1).buyProduct("mafagafo")).to.be.revertedWith(
-          "Item has not been added",
-        );
+        await expect(nftStore.connect(account1).buyProduct("mafagafo")).to.be.revertedWith("Item has not been added");
       });
     });
 
     describe("pause", function () {
       it("contract should initiate unpaused", async function () {
-        expect(await marketplace.paused()).to.equal(false);
+        expect(await nftStore.paused()).to.equal(false);
       });
 
       it("owner should be able to pause/unpause contract", async function () {
-        await marketplace.pause();
-        expect(await marketplace.paused()).to.equal(true);
+        await nftStore.pause();
+        expect(await nftStore.paused()).to.equal(true);
 
-        await marketplace.unpause();
-        expect(await marketplace.paused()).to.equal(false);
+        await nftStore.unpause();
+        expect(await nftStore.paused()).to.equal(false);
       });
 
       it("owner should be able to add item and remove products when contract is paused", async function () {
-        await marketplace.pause();
+        await nftStore.pause();
 
-        await expect(marketplace.addItem("mafagafo", baseNft.address, expandTo18Decimals(100), 100))
-          .to.emit(marketplace, "ItemAdded")
+        await expect(nftStore.addItem("mafagafo", baseNft.address, expandTo18Decimals(100), 100))
+          .to.emit(nftStore, "ItemAdded")
           .withArgs("mafagafo", baseNft.address, expandTo18Decimals(100), 100);
 
-        await expect(marketplace.removeProducts("mafagafo", 1))
-          .to.emit(marketplace, "ProductsRemoved")
+        await expect(nftStore.removeProducts("mafagafo", 1))
+          .to.emit(nftStore, "ProductsRemoved")
           .withArgs("mafagafo", baseNft.address, 99);
       });
 
       it("user should not be able to buy a product when contract is paused", async function () {
-        await marketplace.pause();
+        await nftStore.pause();
 
-        await marketplace.addItem("mafagafo", baseNft.address, expandTo18Decimals(100), 100);
+        await nftStore.addItem("mafagafo", baseNft.address, expandTo18Decimals(100), 100);
 
-        await expect(marketplace.connect(account1).buyProduct("mafagafo")).to.be.revertedWith("Pausable: paused");
+        await expect(nftStore.connect(account1).buyProduct("mafagafo")).to.be.revertedWith("Pausable: paused");
+      });
+    });
+
+    describe("upgradable", function () {
+      it("should initiate on version 1.0.0", async function () {
+        expect(await nftStore.version()).to.equal("1.0.0");
+      });
+
+      it("should be upgradable", async function () {
+        expect(await nftStore.version()).to.equal("1.0.0");
+        const nftStoreFactoryV2: NftStoreTestV2__factory = await ethers.getContractFactory("NftStoreTestV2");
+        const nftStoreV2 = <NftStoreTestV2>await upgrades.upgradeProxy(nftStore, nftStoreFactoryV2, { kind: "uups" });
+
+        expect(await nftStoreV2.version()).to.equal("2.0.0");
       });
     });
   });
