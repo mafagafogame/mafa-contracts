@@ -10,7 +10,7 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC721/presets/ERC721PresetMinterPauserAutoIdUpgradeable.sol";
+import "../NFTs/BaseNft.sol";
 
 contract NftStore is Initializable, PausableUpgradeable, OwnableUpgradeable, UUPSUpgradeable {
     using SafeMath for uint256;
@@ -53,20 +53,20 @@ contract NftStore is Initializable, PausableUpgradeable, OwnableUpgradeable, UUP
     }
 
     /**
-     * @dev Add a quantity of a product to inventory.
+     * @dev Add new item to inventory.
      *  Can only be added by contract owner
      * @param item NFT item to be sold
      * @param nftAddress Non fungible registry address
      * @param price Price in Wei for the supported coin
      * @param quantity Quantity of products to be added
      */
-    function addProducts(
+    function addItem(
         string memory item,
         address nftAddress,
         uint256 price,
         uint256 quantity
     ) external onlyOwner {
-        _addProducts(item, nftAddress, price, quantity);
+        _addItem(item, nftAddress, price, quantity);
     }
 
     /**
@@ -89,27 +89,27 @@ contract NftStore is Initializable, PausableUpgradeable, OwnableUpgradeable, UUP
 
     // TODO: buy multiple products
 
-    function _addProducts(
+    function _addItem(
         string memory item,
         address nftAddress,
         uint256 price,
         uint256 quantity
     ) internal {
         Product memory product = inventory[item];
-        require(product.quantity == 0, "Product has already been added");
-        require(quantity > 0, "Must add at least one item");
+        require(product.quantity == 0, "Item has already been added");
+        require(quantity > 0, "Must add at least one product");
         _requireERC721(nftAddress);
-        require(price > 0, "Product price should be bigger than 0");
-        require(keccak256(abi.encodePacked(item)) != keccak256(abi.encodePacked("")), "Product must have some value");
+        require(price > 0, "Item price should be bigger than 0");
+        require(keccak256(abi.encodePacked(item)) != keccak256(abi.encodePacked("")), "Item must have some name");
 
         inventory[item] = Product({ nftAddress: nftAddress, price: price, quantity: quantity });
 
-        emit ProductsAdded(item, nftAddress, price, quantity);
+        emit ItemAdded(item, nftAddress, price, quantity);
     }
 
     function _removeProducts(string memory item, uint256 quantity) internal returns (Product memory) {
         Product memory product = inventory[item];
-        require(product.quantity != 0, "Product has not been added");
+        require(product.quantity != 0, "Item has not been added");
 
         if (quantity >= product.quantity) {
             inventory[item].quantity = 0;
@@ -127,7 +127,7 @@ contract NftStore is Initializable, PausableUpgradeable, OwnableUpgradeable, UUP
 
     function _buyProduct(string memory item) internal returns (Product memory) {
         Product memory product = inventory[item];
-        require(product.quantity != 0, "Product has not been added");
+        require(product.quantity != 0, "Item has not been added");
         _requireERC721(product.nftAddress);
 
         address sender = _msgSender();
@@ -135,7 +135,7 @@ contract NftStore is Initializable, PausableUpgradeable, OwnableUpgradeable, UUP
         uint256 allowance = acceptedToken.allowance(sender, address(this));
         require(allowance >= product.price, "Check the token allowance");
 
-        ERC721PresetMinterPauserAutoIdUpgradeable nftRegistry = ERC721PresetMinterPauserAutoIdUpgradeable(
+        BaseNft nftRegistry = BaseNft(
             product.nftAddress
         );
 
@@ -150,8 +150,9 @@ contract NftStore is Initializable, PausableUpgradeable, OwnableUpgradeable, UUP
 
         inventory[item].quantity = product.quantity.sub(1);
         uint256 newQuantity = inventory[item].quantity;
+        string memory uri = nftRegistry.baseURI();
 
-        emit ProductBought(item, owner(), product.nftAddress, product.price, sender, newQuantity);
+        emit ProductBought(item, owner(), uri, product.nftAddress, product.price, sender, newQuantity);
 
         return product;
     }
@@ -169,11 +170,12 @@ contract NftStore is Initializable, PausableUpgradeable, OwnableUpgradeable, UUP
     }
 
     // EVENTS
-    event ProductsAdded(string item, address nftAddress, uint256 price, uint256 quantity);
+    event ItemAdded(string item, address nftAddress, uint256 price, uint256 quantity);
     event ProductsRemoved(string item, address nftAddress, uint256 newQuantity);
     event ProductBought(
         string item,
         address indexed seller,
+        string uri,
         address nftAddress,
         uint256 totalPrice,
         address indexed buyer,
