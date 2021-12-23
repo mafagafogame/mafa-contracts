@@ -12,7 +12,13 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "../NFTs/BaseNft.sol";
 
-contract NftStore is Initializable, PausableUpgradeable, OwnableUpgradeable, UUPSUpgradeable {
+contract NftStore is
+    Initializable,
+    PausableUpgradeable,
+    OwnableUpgradeable,
+    UUPSUpgradeable,
+    ReentrancyGuardUpgradeable
+{
     using SafeMath for uint256;
 
     IERC20 public acceptedToken;
@@ -44,11 +50,11 @@ contract NftStore is Initializable, PausableUpgradeable, OwnableUpgradeable, UUP
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function pause() public onlyOwner {
+    function pause() public virtual onlyOwner {
         _pause();
     }
 
-    function unpause() public onlyOwner {
+    function unpause() public virtual onlyOwner {
         _unpause();
     }
 
@@ -65,7 +71,7 @@ contract NftStore is Initializable, PausableUpgradeable, OwnableUpgradeable, UUP
         address nftAddress,
         uint256 price,
         uint256 quantity
-    ) external onlyOwner {
+    ) external virtual onlyOwner {
         _addItem(item, nftAddress, price, quantity);
     }
 
@@ -75,7 +81,7 @@ contract NftStore is Initializable, PausableUpgradeable, OwnableUpgradeable, UUP
      * @param item NFT item to be sold
      * @param quantity Quantity of products to be removed
      */
-    function removeProducts(string memory item, uint256 quantity) external onlyOwner {
+    function removeProducts(string memory item, uint256 quantity) external virtual onlyOwner {
         _removeProducts(item, quantity);
     }
 
@@ -83,7 +89,7 @@ contract NftStore is Initializable, PausableUpgradeable, OwnableUpgradeable, UUP
      * @dev Buy a single product on inventory.
      * @param item NFT item to be sold
      */
-    function buyProduct(string memory item) external whenNotPaused {
+    function buyProduct(string memory item) external virtual whenNotPaused {
         _buyProduct(item);
     }
 
@@ -94,7 +100,7 @@ contract NftStore is Initializable, PausableUpgradeable, OwnableUpgradeable, UUP
         address nftAddress,
         uint256 price,
         uint256 quantity
-    ) internal {
+    ) internal virtual {
         Product memory product = inventory[item];
         require(product.quantity == 0, "Item has already been added");
         require(quantity > 0, "Must add at least one product");
@@ -107,7 +113,7 @@ contract NftStore is Initializable, PausableUpgradeable, OwnableUpgradeable, UUP
         emit ItemAdded(item, nftAddress, price, quantity);
     }
 
-    function _removeProducts(string memory item, uint256 quantity) internal returns (Product memory) {
+    function _removeProducts(string memory item, uint256 quantity) internal virtual returns (Product memory) {
         Product memory product = inventory[item];
         require(product.quantity != 0, "Item has not been added");
 
@@ -125,7 +131,7 @@ contract NftStore is Initializable, PausableUpgradeable, OwnableUpgradeable, UUP
         return product;
     }
 
-    function _buyProduct(string memory item) internal returns (Product memory) {
+    function _buyProduct(string memory item) internal virtual returns (Product memory) {
         Product memory product = inventory[item];
         require(product.quantity != 0, "Item has not been added");
         _requireERC721(product.nftAddress);
@@ -135,9 +141,7 @@ contract NftStore is Initializable, PausableUpgradeable, OwnableUpgradeable, UUP
         uint256 allowance = acceptedToken.allowance(sender, address(this));
         require(allowance >= product.price, "Check the token allowance");
 
-        BaseNft nftRegistry = BaseNft(
-            product.nftAddress
-        );
+        BaseNft nftRegistry = BaseNft(product.nftAddress);
 
         // Transfer sale amount to seller
         require(
@@ -157,7 +161,7 @@ contract NftStore is Initializable, PausableUpgradeable, OwnableUpgradeable, UUP
         return product;
     }
 
-    function _requireERC721(address nftAddress) internal view {
+    function _requireERC721(address nftAddress) internal view virtual {
         IERC721 nftRegistry = IERC721(nftAddress);
         require(
             nftRegistry.supportsInterface(ERC721_Interface),
@@ -186,7 +190,6 @@ contract NftStore is Initializable, PausableUpgradeable, OwnableUpgradeable, UUP
 
     uint256[50] private __gap;
 }
-
 
 contract NftStoreTestV2 is NftStore {
     function version() public pure virtual override returns (string memory) {
