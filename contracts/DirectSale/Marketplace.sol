@@ -39,6 +39,8 @@ contract Marketplace is
 
     /**
      * @param _acceptedToken accepted ERC20 token address
+     * @param mafaBnb LP token address of MAFA/BNB pair
+     * @param bnbBusd LP token address of BNB/BUSD pair
      */
     function initialize(
         address _acceptedToken,
@@ -138,12 +140,19 @@ contract Marketplace is
         emit ProductBought(nftAddress, id, owner(), sender, itemPriceInMafa, amounts);
     }
 
+    /**
+     * @dev Checks if an address exists on acceptedNFTs list.
+     * @param nftAddress Address to be checked
+     */
     function exists(address nftAddress) internal view virtual returns (bool exist) {
         for (uint256 i; i < _acceptedNFTs.length; i++) {
             if (_acceptedNFTs[i] == nftAddress) return true;
         }
     }
 
+    /**
+     * @dev gets the price of MAFA per BUSD.
+     */
     function getMAFABUSDprice() public view virtual returns (uint256 price) {
         (uint256 reserves0LP0, uint256 reserves1LP0, ) = _mafaBnb.getReserves();
         (uint256 reserves0LP1, uint256 reserves1LP1, ) = _bnbBusd.getReserves();
@@ -151,6 +160,9 @@ contract Marketplace is
         return (reserves1LP1.mul(reserves1LP0).mul(10**18)).div(reserves0LP1.mul(reserves0LP0));
     }
 
+    /**
+     * @dev upgradable version
+     */
     function version() public pure virtual returns (string memory) {
         return "1.0.0";
     }
