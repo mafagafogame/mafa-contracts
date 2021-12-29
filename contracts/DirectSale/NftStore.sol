@@ -2,16 +2,19 @@
 
 pragma solidity ^0.8.9;
 
+import "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+
 import "../NFTs/BaseNft.sol";
+import "../NFTs/MafaBox.sol";
+import "../NFTs/Breeder.sol";
 
 contract NftStore is
     Initializable,
@@ -24,18 +27,9 @@ contract NftStore is
 
     IERC20 public acceptedToken;
 
-    struct Product {
-        // NFT registry address
-        address nftAddress;
-        // Price (in wei) for the published item
-        uint256 price;
-        // Quantity of an item to be sold
-        uint256 quantity;
-    }
+    mapping(address => mapping(uint256 => uint256)) public itemPrices;
 
-    mapping(string => Product) public inventory;
-
-    bytes4 private constant ERC721_Interface = 0x80ac58cd;
+    bytes4 private constant _INTERFACE_ID_ERC1155 = 0xd9b67a26;
 
     /**
      * @param _acceptedToken accepted ERC20 token address
@@ -60,136 +54,95 @@ contract NftStore is
     }
 
     /**
-     * @dev Add new item to inventory.
-     *  Can only be added by contract owner
-     * @param item NFT item to be sold
-     * @param nftAddress Non fungible registry address
-     * @param price Price in Wei for the supported coin
-     * @param quantity Quantity of products to be added
+     * @dev Set the price of an item.
+     *  Can only be called by contract owner
+     * @param nftAddress Address of ERC1155 inventory of items
+     * @param id Type of the item
+     * @param price Price of the item
      */
-    function addItem(
-        string memory item,
+    function setItemPrice(
         address nftAddress,
-        uint256 price,
-        uint256 quantity
+        uint256 id,
+        uint256 price
     ) external virtual onlyOwner {
-        _addItem(item, nftAddress, price, quantity);
+        _setItemPrice(nftAddress, id, price);
     }
 
     /**
-     * @dev Remove a quantity of published products.
-     *  Can only be removed by contract owner
-     * @param item NFT item to be sold
-     * @param quantity Quantity of products to be removed
+     * @dev Buy amounts of an item.
+     * @param nftAddress Address of ERC1155 inventory of items
+     * @param id Type of the item
+     * @param amounts Amounts of items to be sold
      */
-    function removeProducts(string memory item, uint256 quantity) external virtual onlyOwner {
-        _removeProducts(item, quantity);
-    }
-
-    /**
-     * @dev Buy a single product on inventory.
-     * @param item NFT item to be sold
-     */
-    function buyProduct(string memory item) external virtual whenNotPaused nonReentrant {
-        _buyProduct(item);
-    }
-
-    // TODO: buy multiple products
-
-    function _addItem(
-        string memory item,
+    function buyItem(
         address nftAddress,
-        uint256 price,
-        uint256 quantity
+        uint256 id,
+        uint256 amounts
+    ) external virtual nonReentrant {
+        _buyItem(nftAddress, id, amounts);
+    }
+
+    function _setItemPrice(
+        address nftAddress,
+        uint256 id,
+        uint256 price
     ) internal virtual {
-        Product memory product = inventory[item];
-        require(product.quantity == 0, "Item has already been added");
-        require(quantity > 0, "Must add at least one product");
-        _requireERC721(nftAddress);
-        require(price > 0, "Item price should be bigger than 0");
-        require(keccak256(abi.encodePacked(item)) != keccak256(abi.encodePacked("")), "Item must have some name");
+        require(_supportERC1155(nftAddress), "NFT address must be a valid ERC1155 implementation");
+        require(price > 0, "Item price can't be 0");
 
-        inventory[item] = Product({ nftAddress: nftAddress, price: price, quantity: quantity });
-
-        emit ItemAdded(item, nftAddress, price, quantity);
+        itemPrices[nftAddress][id] = price;
     }
 
-    function _removeProducts(string memory item, uint256 quantity) internal virtual returns (Product memory) {
-        Product memory product = inventory[item];
-        require(product.quantity != 0, "Item has not been added");
-
-        if (quantity >= product.quantity) {
-            inventory[item].quantity = 0;
-        } else {
-            inventory[item].quantity = product.quantity.sub(quantity);
-        }
-
-        address productNftAddress = product.nftAddress;
-        uint256 newQuantity = inventory[item].quantity;
-
-        emit ProductsRemoved(item, productNftAddress, newQuantity);
-
-        return product;
-    }
-
-    function _buyProduct(string memory item) internal virtual returns (Product memory) {
-        Product memory product = inventory[item];
-        require(product.quantity != 0, "Item has not been added");
-        _requireERC721(product.nftAddress);
+    function _buyItem(
+        address nftAddress,
+        uint256 id,
+        uint256 amounts
+    ) internal virtual {
+        require(_supportERC1155(nftAddress), "NFT address must be a valid ERC1155 implementation");
+        require(itemPrices[nftAddress][id] > 0, "Item doesn't exists");
 
         address sender = _msgSender();
 
         uint256 allowance = acceptedToken.allowance(sender, address(this));
-        require(allowance >= product.price, "Check the token allowance");
-
-        BaseNft nftRegistry = BaseNft(product.nftAddress);
+        require(allowance >= itemPrices[nftAddress][id], "Check the token allowance");
 
         // Transfer sale amount to seller
         require(
-            acceptedToken.transferFrom(sender, owner(), product.price),
+            acceptedToken.transferFrom(sender, owner(), itemPrices[nftAddress][id]),
             "Transfering the sale amount to the seller failed"
         );
 
-        // Mint new asset to sender
-        nftRegistry.mint(sender);
+        BaseERC1155 nftRegistry = BaseERC1155(nftAddress);
 
-        inventory[item].quantity = product.quantity.sub(1);
-        uint256 newQuantity = inventory[item].quantity;
-        string memory uri = nftRegistry.baseURI();
+        nftRegistry.mint(sender, id, amounts, "");
 
-        emit ProductBought(item, owner(), uri, product.nftAddress, product.price, sender, newQuantity);
-
-        return product;
+        emit ProductBought(nftAddress, id, owner(), sender, amounts);
     }
 
-    function _requireERC721(address nftAddress) internal view virtual {
-        IERC721 nftRegistry = IERC721(nftAddress);
-        require(
-            nftRegistry.supportsInterface(ERC721_Interface),
-            "The NFT contract has an invalid ERC721 implementation"
-        );
+    /**
+     * @dev Check if address supports ERC1155
+     * @param nftAddress ERC1155 address
+     */
+    function _supportERC1155(address nftAddress) internal view returns (bool) {
+        return ERC165Upgradeable(nftAddress).supportsInterface(_INTERFACE_ID_ERC1155);
     }
 
     function version() public pure virtual returns (string memory) {
         return "1.0.0";
     }
 
-    // EVENTS
-    event ItemAdded(string item, address nftAddress, uint256 price, uint256 quantity);
-    event ProductsRemoved(string item, address nftAddress, uint256 newQuantity);
-    event ProductBought(
-        string item,
-        address indexed seller,
-        string uri,
-        address nftAddress,
-        uint256 totalPrice,
-        address indexed buyer,
-        uint256 newQuantity
-    );
-
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
     uint256[50] private __gap;
+
+    // EVENTS
+    event ProductBought(
+        address indexed nftAddress,
+        uint256 id,
+        address indexed seller,
+        address indexed buyer,
+        uint256 amounts
+    );
 }
 
 contract NftStoreTestV2 is NftStore {
