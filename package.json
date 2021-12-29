@@ -51,6 +51,7 @@
     "hardhat-gas-reporter": "^1.0.4",
     "lint-staged": "^11.2.6",
     "mocha": "^9.1.3",
+    "node-fetch": "2",
     "pancakeswap-peripheral": "^1.1.0-beta.0",
     "prettier": "^2.4.1",
     "prettier-plugin-solidity": "^1.0.0-beta.19",
