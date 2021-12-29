@@ -12,11 +12,13 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 
-import "../NFTs/BaseNft.sol";
+import "hardhat/console.sol";
+
+import "../NFTs/BaseERC1155.sol";
 import "../NFTs/MafaBox.sol";
 import "../NFTs/Breeder.sol";
 
-contract NftStore is
+contract Marketplace is
     Initializable,
     PausableUpgradeable,
     OwnableUpgradeable,
@@ -26,10 +28,9 @@ contract NftStore is
     using SafeMath for uint256;
 
     IERC20 public acceptedToken;
+    address[] private _acceptedNFTs;
 
     mapping(address => mapping(uint256 => uint256)) public itemPrices;
-
-    bytes4 private constant _INTERFACE_ID_ERC1155 = 0xd9b67a26;
 
     /**
      * @param _acceptedToken accepted ERC20 token address
@@ -78,7 +79,7 @@ contract NftStore is
         address nftAddress,
         uint256 id,
         uint256 amounts
-    ) external virtual nonReentrant {
+    ) external virtual whenNotPaused nonReentrant {
         _buyItem(nftAddress, id, amounts);
     }
 
@@ -87,10 +88,14 @@ contract NftStore is
         uint256 id,
         uint256 price
     ) internal virtual {
-        require(_supportERC1155(nftAddress), "NFT address must be a valid ERC1155 implementation");
+        if (!exists(nftAddress)) {
+            _acceptedNFTs.push(nftAddress);
+        }
         require(price > 0, "Item price can't be 0");
 
         itemPrices[nftAddress][id] = price;
+
+        emit ItemPriceUpdated(nftAddress, id, price);
     }
 
     function _buyItem(
@@ -98,8 +103,8 @@ contract NftStore is
         uint256 id,
         uint256 amounts
     ) internal virtual {
-        require(_supportERC1155(nftAddress), "NFT address must be a valid ERC1155 implementation");
-        require(itemPrices[nftAddress][id] > 0, "Item doesn't exists");
+        require(exists(nftAddress), "NFT address is not acceptable");
+        require(itemPrices[nftAddress][id] > 0, "Item doesn't have a price");
 
         address sender = _msgSender();
 
@@ -116,15 +121,13 @@ contract NftStore is
 
         nftRegistry.mint(sender, id, amounts, "");
 
-        emit ProductBought(nftAddress, id, owner(), sender, amounts);
+        emit ProductBought(nftAddress, id, owner(), sender, itemPrices[nftAddress][id], amounts);
     }
 
-    /**
-     * @dev Check if address supports ERC1155
-     * @param nftAddress ERC1155 address
-     */
-    function _supportERC1155(address nftAddress) internal view returns (bool) {
-        return ERC165Upgradeable(nftAddress).supportsInterface(_INTERFACE_ID_ERC1155);
+    function exists(address nftAddress) internal view returns (bool exist) {
+        for (uint256 i; i < _acceptedNFTs.length; i++) {
+            if (_acceptedNFTs[i] == nftAddress) return true;
+        }
     }
 
     function version() public pure virtual returns (string memory) {
@@ -136,16 +139,18 @@ contract NftStore is
     uint256[50] private __gap;
 
     // EVENTS
+    event ItemPriceUpdated(address indexed nftAddress, uint256 id, uint256 price);
     event ProductBought(
         address indexed nftAddress,
         uint256 id,
         address indexed seller,
         address indexed buyer,
+        uint256 price,
         uint256 amounts
     );
 }
 
-contract NftStoreTestV2 is NftStore {
+contract MarketplaceTestV2 is Marketplace {
     function version() public pure virtual override returns (string memory) {
         return "2.0.0";
     }
