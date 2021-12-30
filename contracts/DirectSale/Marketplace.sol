@@ -33,8 +33,8 @@ contract Marketplace is
     IUniswapV2Pair internal _bnbBusd;
 
     /**
-    * @dev Price of the items in BUSD. Mapping of nft addres to another mapping of nft id to price.
-    */
+     * @dev Price of the items in BUSD. Mapping of nft addres to another mapping of nft id to price.
+     */
     mapping(address => mapping(uint256 => uint256)) public itemPrices;
 
     /**
@@ -121,7 +121,7 @@ contract Marketplace is
 
         address sender = _msgSender();
 
-        uint256 mafaBusdPrice = getMAFABUSDprice(); 
+        uint256 mafaBusdPrice = getMAFABUSDprice();
         uint256 itemPriceInMafa = (itemPrices[nftAddress][id].div(mafaBusdPrice)).mul(10**18);
 
         uint256 allowance = acceptedToken.allowance(sender, address(this));

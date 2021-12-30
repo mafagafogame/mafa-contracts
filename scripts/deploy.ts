@@ -5,8 +5,8 @@
 // Runtime Environment's members available in the global scope.
 import { ethers, upgrades } from "hardhat";
 import { MafaFake__factory } from "../typechain";
-import {abi} from "../artifacts/contracts/MafaCoin/MafaCoin.sol/MafaFake.json"
-import {Contract} from "ethers";
+import { abi } from "../artifacts/contracts/MafaCoin/MafaCoin.sol/MafaFake.json";
+import { Contract } from "ethers";
 async function main() {
   const [deployer] = await ethers.getSigners();
 
