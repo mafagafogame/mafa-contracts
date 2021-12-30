@@ -8,9 +8,9 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "@openzeppelin/contracts/utils/Address.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
 
 import "../NFTs/BaseERC1155.sol";
@@ -24,7 +24,8 @@ contract Marketplace is
     UUPSUpgradeable,
     ReentrancyGuardUpgradeable
 {
-    using SafeMath for uint256;
+    using SafeMathUpgradeable for uint256;
+    using AddressUpgradeable for address;
 
     IERC20 public acceptedToken;
     address[] internal _acceptedNFTs;
@@ -101,6 +102,7 @@ contract Marketplace is
         uint256 id,
         uint256 price
     ) internal virtual {
+        require(nftAddress.isContract(), "NFT address must be a contract");
         if (!exists(nftAddress)) {
             _acceptedNFTs.push(nftAddress);
         }
@@ -116,6 +118,7 @@ contract Marketplace is
         uint256 id,
         uint256 amounts
     ) internal virtual {
+        require(nftAddress.isContract(), "NFT address must be a contract");
         require(exists(nftAddress), "NFT address is not acceptable");
         require(itemPrices[nftAddress][id] > 0, "Item doesn't have a price");
 
