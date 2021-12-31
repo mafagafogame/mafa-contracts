@@ -18,13 +18,13 @@ contract MafaBox is BaseERC1155 {
     uint256[] public probabilities;
     uint256 public numberOfMafagafos;
 
-    MafagafoNft public mafagafo;
+    MafagafoNft public mafagafoContract;
 
-    function initialize(address mafagafoAddress, uint256[] memory _probabilities) public initializer {
-        require(mafagafoAddress.isContract(), "NFT address must be a contract");
+    function initialize(address _mafagafo, uint256[] memory _probabilities) public initializer {
+        require(_mafagafo.isContract(), "NFT address must be a contract");
         _requireProbabilitiesMatch(_probabilities);
 
-        mafagafo = MafagafoNft(mafagafoAddress);
+        mafagafoContract = MafagafoNft(_mafagafo);
         probabilities = _probabilities;
         numberOfMafagafos = probabilities.length;
 
@@ -33,6 +33,7 @@ contract MafaBox is BaseERC1155 {
     }
 
     function openBox(uint256 id) external {
+        require(balanceOf(_msgSender(), id) > 0, "You don't have any box to open");
         super._burn(_msgSender(), id, 1);
 
         uint256 randomNumber = _random();
@@ -42,7 +43,7 @@ contract MafaBox is BaseERC1155 {
         for (uint256 i = 0; i < probabilities.length; i++) {
             maxValue = maxValue.add(probabilities[i]);
             if (randomNumber < maxValue) {
-                mafagafo.mint(_msgSender(), i);
+                mafagafoContract.mint2(_msgSender(), "0", bytes32(i), 0, new uint32[](0));
                 mafagafoType = i;
             }
         }
