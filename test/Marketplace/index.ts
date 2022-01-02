@@ -88,8 +88,14 @@ describe("Unit tests", function () {
 
     describe("owner", function () {
       describe("set item price", function () {
-        it("owner should not be able to set the price of an item if price is 0", async function () {
+        it("owner should not be able to set an item price of a non contract NFT address", async function () {
           await expect(marketplace.setItemPrice(account1.address, 0, expandTo18Decimals(0))).to.be.revertedWith(
+            "NFT address must be a contract",
+          );
+        });
+
+        it("owner should not be able to set the price of an item to 0", async function () {
+          await expect(marketplace.setItemPrice(baseNft.address, 0, expandTo18Decimals(0))).to.be.revertedWith(
             "Item price can't be 0",
           );
         });
@@ -119,6 +125,10 @@ describe("Unit tests", function () {
     });
 
     describe("buy item", function () {
+      it("user shouldn't be able to buy an item passing a non contract NFT address", async function () {
+        await expect(marketplace.buyItem(account1.address, 0, 1)).to.be.revertedWith("NFT address must be a contract");
+      });
+
       it("user shouldn't be able to buy an item passing a NFT address that isn't acceptable", async function () {
         await expect(marketplace.buyItem(baseNft.address, 0, 1)).to.be.revertedWith("NFT address is not acceptable");
       });
