@@ -15,7 +15,7 @@ import "@openzeppelin/contracts/utils/Address.sol";
 import "../NFTs/BaseERC1155.sol";
 import "../NFTs/Egg.sol";
 
-contract Breeder is BaseERC1155 {
+contract Breeder is BaseNft {
     using SafeMath for uint256;
     using Address for address;
 

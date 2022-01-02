@@ -6,7 +6,7 @@ import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 
-import "./BaseERC1155.sol";
+import "./BaseNft.sol";
 import "./MafagafoNft.sol";
 
 contract MafaBox is BaseERC1155 {
@@ -32,6 +32,7 @@ contract MafaBox is BaseERC1155 {
         super.initialize("");
     }
 
+    // todo: chef if the caller is the current owner of the box
     function openBox(uint256 id) external {
         require(balanceOf(_msgSender(), id) > 0, "You don't have any box to open");
         super._burn(_msgSender(), id, 1);

@@ -28,6 +28,7 @@ contract Marketplace is
     using AddressUpgradeable for address;
 
     IERC20 public acceptedToken;
+
     address[] internal _acceptedNFTs;
 
     IUniswapV2Pair internal _mafaBnb;
