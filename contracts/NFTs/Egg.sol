@@ -25,16 +25,16 @@ contract Egg is EggBase {
 
     function mint(
         address _to,
-        bytes32 _version, // // todo: review this: I guess a uint16 should be enough
+        bytes32 _version, // todo: review this: I guess a uint16 should be enough
         bytes32 _genes,
         uint16 _generation,
         uint32[] memory _parentsIDs // todo: review this: should be uint256 we can potentially have more than 4294967295 mafagafos
     ) public virtual onlyRole(MINTER_ROLE) {
         super.mint(_to);
-        _tokenIdTracker.increment();
         // todo: missing code
 
         _layEgg(_to, _tokenIdTracker.current(), _version, _genes, _generation, _parentsIDs);
+        _tokenIdTracker.increment();
     }
 
     // hatch an egg after timer has passed

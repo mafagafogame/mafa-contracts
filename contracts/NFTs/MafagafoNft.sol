@@ -6,11 +6,11 @@ import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 
-import "./MafaBase.sol";
+import "./MafagafoBase.sol";
 import "./BaseNft.sol";
 import "./Egg.sol";
 
-contract MafagafoNft is MafaBase, BaseNft {
+contract MafagafoNft is MafagafoBase {
     using SafeMathUpgradeable for uint256;
     using AddressUpgradeable for address;
     using CountersUpgradeable for CountersUpgradeable.Counter;
