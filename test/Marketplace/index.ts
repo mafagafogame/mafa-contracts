@@ -22,6 +22,7 @@ describe("Unit tests", function () {
   let baseNft: BaseERC1155;
   let owner: SignerWithAddress;
   let account1: SignerWithAddress;
+  let mafaPrice: number;
   const MAFA_BNB = "0xC53C7F4736F4a6DA25e950e25c58011Fe26B4a93";
   const BNB_BUSD = "0x58F876857a02D6762E0101bb5C46A8c1ED44Dc16";
 
@@ -70,9 +71,9 @@ describe("Unit tests", function () {
         "https://api.pancakeswap.info/api/v2/tokens/0xaf44400a99a9693bf3c2e89b02652babacc5cdb9",
       );
       const data = await response.json();
-      const mafaPrice = parseFloat(data.data.price);
+      mafaPrice = parseFloat(data.data.price);
 
-      expect(parseFloat(ethers.utils.formatEther(await marketplace.getMAFABUSDprice()))).to.be.within(
+      expect(parseFloat(ethers.utils.formatEther(await marketplace.getMAFAtoBUSDprice()))).to.be.within(
         mafaPrice - 0.01,
         mafaPrice + 0.01,
       );
@@ -81,78 +82,54 @@ describe("Unit tests", function () {
     describe("non owner", function () {
       it("non owner user should not be able to set the price of an item", async function () {
         await expect(
-          marketplace.connect(account1).setItemPrice(baseNft.address, 0, expandTo18Decimals(100)),
+          marketplace.connect(account1).createItem(baseNft.address, 0, expandTo18Decimals(100)),
         ).to.be.revertedWith("Ownable: caller is not the owner");
       });
     });
 
     describe("owner", function () {
-      describe("set item price", function () {
-        it("owner should not be able to set an item price of a non contract NFT address", async function () {
-          await expect(marketplace.setItemPrice(account1.address, 0, expandTo18Decimals(0))).to.be.revertedWith(
+      describe("create item", function () {
+        it("owner should not be able to create an item passing a non contract NFT address", async function () {
+          await expect(marketplace.createItem(account1.address, 0, expandTo18Decimals(0))).to.be.revertedWith(
             "NFT address must be a contract",
           );
         });
 
-        it("owner should not be able to set the price of an item to 0", async function () {
-          await expect(marketplace.setItemPrice(baseNft.address, 0, expandTo18Decimals(0))).to.be.revertedWith(
+        it("owner should not be able to create an item with 0 price", async function () {
+          await expect(marketplace.createItem(baseNft.address, 0, expandTo18Decimals(0))).to.be.revertedWith(
             "Item price can't be 0",
           );
         });
 
-        it("owner should be able to set the price of an item", async function () {
-          await expect(marketplace.setItemPrice(baseNft.address, 0, expandTo18Decimals(100)))
-            .to.emit(marketplace, "ItemPriceUpdated")
-            .withArgs(baseNft.address, 0, expandTo18Decimals(100));
-
-          expect(await marketplace.itemPrices(baseNft.address, 0)).to.equal(expandTo18Decimals(100));
-        });
-
-        it("owner should be able to reset the price of an item", async function () {
-          await expect(marketplace.setItemPrice(baseNft.address, 0, expandTo18Decimals(100)))
-            .to.emit(marketplace, "ItemPriceUpdated")
-            .withArgs(baseNft.address, 0, expandTo18Decimals(100));
-
-          expect(await marketplace.itemPrices(baseNft.address, 0)).to.equal(expandTo18Decimals(100));
-
-          await expect(marketplace.setItemPrice(baseNft.address, 0, expandTo18Decimals(200)))
-            .to.emit(marketplace, "ItemPriceUpdated")
-            .withArgs(baseNft.address, 0, expandTo18Decimals(200));
-
-          expect(await marketplace.itemPrices(baseNft.address, 0)).to.equal(expandTo18Decimals(200));
+        it("owner should be able to create an item", async function () {
+          await expect(marketplace.createItem(baseNft.address, 0, expandTo18Decimals(100)))
+            .to.emit(marketplace, "ItemCreated")
+            .withArgs(baseNft.address, 0, 0, expandTo18Decimals(100));
         });
       });
     });
 
     describe("buy item", function () {
-      it("user shouldn't be able to buy an item passing a non contract NFT address", async function () {
-        await expect(marketplace.buyItem(account1.address, 0, 1)).to.be.revertedWith("NFT address must be a contract");
-      });
-
-      it("user shouldn't be able to buy an item passing a NFT address that isn't acceptable", async function () {
-        await expect(marketplace.buyItem(baseNft.address, 0, 1)).to.be.revertedWith("NFT address is not acceptable");
+      it("user shouldn't be able to buy an item passing an id that doesn't exists", async function () {
+        await expect(marketplace.buyItem(0, 1)).to.be.revertedWith("Item doesn't exists");
       });
 
       it("user should not be able to buy an item if he doesn't allow the transfer", async function () {
-        await marketplace.setItemPrice(baseNft.address, 0, expandTo18Decimals(100));
+        await marketplace.createItem(baseNft.address, 0, expandTo18Decimals(100));
 
-        await expect(marketplace.connect(account1).buyItem(baseNft.address, 0, 1)).to.be.revertedWith(
-          "Check the token allowance",
-        );
+        await expect(marketplace.connect(account1).buyItem(0, 1)).to.be.revertedWith("Check the token allowance");
       });
 
       it("user should not be able to buy an item if allowances are not enough", async function () {
-        await marketplace.setItemPrice(baseNft.address, 0, expandTo18Decimals(100));
+        await marketplace.createItem(baseNft.address, 0, expandTo18Decimals(100));
 
         await mafacoin.connect(account1).approve(marketplace.address, expandTo18Decimals(1));
 
-        await expect(marketplace.connect(account1).buyItem(baseNft.address, 0, 1)).to.be.revertedWith(
-          "Check the token allowance",
-        );
+        await expect(marketplace.connect(account1).buyItem(0, 1)).to.be.revertedWith("Check the token allowance");
       });
 
       it("user should be able to buy an item", async function () {
-        await marketplace.setItemPrice(baseNft.address, 0, expandTo18Decimals(100));
+        await marketplace.createItem(baseNft.address, 0, expandTo18Decimals(100));
 
         await mafacoin.connect(account1).approve(marketplace.address, ethers.constants.MaxUint256);
 
@@ -160,15 +137,12 @@ describe("Unit tests", function () {
         expect(await mafacoin.balanceOf(account1.address)).to.equal(expandTo18Decimals(100000));
         expect(await baseNft.balanceOf(account1.address, 0)).to.equal(0);
 
-        await expect(marketplace.connect(account1).buyItem(baseNft.address, 0, 1)).to.emit(
-          marketplace,
-          "ProductBought",
-        );
+        await expect(marketplace.connect(account1).buyItem(0, 1)).to.emit(marketplace, "ItemBought");
 
         expect(await baseNft.totalSupply(0)).to.equal(1);
         expect(parseFloat(ethers.utils.formatEther(await mafacoin.balanceOf(account1.address)))).to.be.within(
-          97000,
-          98000,
+          100000 - 100 / mafaPrice - 100,
+          100000 - 100 / mafaPrice + 100,
         );
         expect(await baseNft.balanceOf(account1.address, 0)).to.equal(1);
       });
