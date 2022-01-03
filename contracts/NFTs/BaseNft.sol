@@ -37,29 +37,6 @@ contract BaseNft is
 
     function _authorizeUpgrade(address newImplementation) internal override onlyRole(DEFAULT_ADMIN_ROLE) {}
 
-    //    function _beforeTokenTransfer(address from, address to, uint256 tokenId)
-    //    internal
-    //    whenNotPaused
-    //    override(ERC721, ERC721EnumerableUpgradeable)
-    //    {
-    //        super._beforeTokenTransfer(from, to, tokenId);
-    //    }
-
-    // todo: stress test burn scenarios
-    //    // The following functions are overrides required by Solidity.
-    //    function burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
-    //        super.burn(tokenId);
-    //    }
-
-    //    function tokenURI(uint256 tokenId)
-    //    public
-    //    view
-    //    override(ERC721Upgradeable)
-    //    returns (string memory)
-    //    {
-    //        return super.tokenURI(tokenId);
-    //    }
-
     // todo: stress test this
     function supportsInterface(bytes4 interfaceId)
         public
@@ -74,10 +51,10 @@ contract BaseNft is
             super.supportsInterface(interfaceId);
     }
 
-    //    function _baseURI
-    //    () internal view virtual override returns (string memory) {
-    //        return super._baseURI();
-    //    }
+    function setBaseURI(string memory baseURI) public virtual onlyRole(DEFAULT_ADMIN_ROLE){
+        _baseTokenURI = baseURI;
+        emit UriBaseChanged(baseURI);
+    }
 
     function baseURI() external view returns (string memory) {
         return super._baseURI();
@@ -127,6 +104,9 @@ contract BaseNft is
     function version() public pure virtual returns (string memory) {
         return "1.0.0";
     }
+
+
+    event UriBaseChanged(string to);
 
     uint256[50] private __gap;
 }
