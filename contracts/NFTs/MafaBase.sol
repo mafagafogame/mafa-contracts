@@ -3,6 +3,8 @@
 pragma solidity ^0.8.9;
 
 contract MafaBase {
+    mapping(uint256 => Mafagafo) public mafagafo;
+
     struct Mafagafo {
         bytes32 version;
         bytes32 genes;
@@ -12,8 +14,6 @@ contract MafaBase {
         uint64 cooldown;
         uint256 matings;
     }
-
-    mapping(uint256 => Mafagafo) public mafagafo;
 
     function _createMafagafo(
         address _to,

@@ -3,6 +3,8 @@
 pragma solidity ^0.8.9;
 
 contract EggBase {
+    mapping(uint256 => Egg) public egg;
+
     struct Egg {
         bytes32 version;
         bytes32 genes;
@@ -10,8 +12,6 @@ contract EggBase {
         uint32[] parentsIDs;
         uint64 timer;
     }
-
-    mapping(uint256 => Egg) public egg;
 
     function _layEgg(
         address _to,
