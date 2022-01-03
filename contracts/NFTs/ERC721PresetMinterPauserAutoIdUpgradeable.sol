@@ -50,7 +50,7 @@ contract ERC721PresetMinterPauserAutoIdUpgradeable is
 
     CountersUpgradeable.Counter internal _tokenIdTracker;
 
-    string private _baseTokenURI;
+    string internal _baseTokenURI;
 
     /**
      * @dev Grants `DEFAULT_ADMIN_ROLE`, `MINTER_ROLE` and `PAUSER_ROLE` to the
