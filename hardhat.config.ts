@@ -14,14 +14,17 @@ import "./tasks/clean";
 import { resolve } from "path";
 
 import { config as dotenvConfig } from "dotenv";
+import {Wallet} from "ethers";
 
 dotenvConfig({ path: resolve(__dirname, "./.env") });
 
 dotenv.config();
 
-const mnemonic = process.env.MNEMONIC;
+let mnemonic = process.env.MNEMONIC;
 if (!mnemonic) {
-  throw new Error("Please set MNEMONIC in a .env file");
+  console.warn("Please set MNEMONIC in a .env file. I create one random here");
+  mnemonic = Wallet.createRandom().mnemonic.phrase;
+  console.warn("RANDOM MNEMONIC used: " + mnemonic);
 }
 
 // This is a sample Hardhat task. To learn how to create your own go to
