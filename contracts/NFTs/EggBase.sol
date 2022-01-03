@@ -2,14 +2,16 @@
 
 pragma solidity ^0.8.9;
 
-contract EggBase {
+import "./BaseNft.sol";
+
+contract EggBase is BaseNft {
     mapping(uint256 => Egg) public egg;
 
     struct Egg {
         bytes32 version;
         bytes32 genes;
         uint16 generation;
-        uint32[] parentsIDs;
+        uint32[] parentsIDs; // todo: review this: should be uint256 we can potentially have more than 4294967295 mafagafos
         uint64 timer;
     }
 
