@@ -15,18 +15,19 @@ import "@openzeppelin/contracts/utils/Address.sol";
 import "../NFTs/BaseERC1155.sol";
 import "../NFTs/Egg.sol";
 
-contract Breeder is BaseERC1155 {
+contract Breeder is BaseNft {
     using SafeMath for uint256;
     using Address for address;
 
     Egg public egg;
 
     function initialize() public initializer {
-        super.initialize("https://ipfs.io/ipfs/QmWaurhfmT8df3tadivGyqErCR5bhu9wSB59GpLm192mLh/metadata/{id}.json");
+        super.initialize("Mafagafo Brooder", "MafaBrooder", "https://ipfs.io/ipfs/QmWaurhfmT8df3tadivGyqErCR5bhu9wSB59GpLm192mLh/metadata/{id}.json");
     }
 
     function breedEgg(uint256 id) external {
-        super._burn(_msgSender(), id, 1);
+        // todo: fix burn
+        // super._burn(_msgSender(), id, 1);
 
         // TODO: timer to egg hatch
     }
