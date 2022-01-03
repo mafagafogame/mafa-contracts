@@ -28,13 +28,14 @@ contract Marketplace is
     using AddressUpgradeable for address;
 
     IERC20 public acceptedToken;
-    address[] internal _acceptedNFTs;
+    address[] internal _receivedNFTs;
 
-    IUniswapV2Pair internal _mafaBnb;
-    IUniswapV2Pair internal _bnbBusd;
+    IUniswapV2Pair internal _mafaBnbPair;
+    IUniswapV2Pair internal _bnbBusdPair;
 
+    // TODO: This could be an upgradable problem. It would be better just a variable. Ex. EggPrice. We dont have that many items.
     /**
-     * @dev Price of the items in BUSD. Mapping of nft addres to another mapping of nft id to price.
+     * @dev Price of the items in BUSD. Mapping of nft address to another mapping of nft id to price.
      */
     mapping(address => mapping(uint256 => uint256)) public itemPrices;
 
@@ -49,8 +50,8 @@ contract Marketplace is
         address bnbBusd
     ) public initializer {
         acceptedToken = IERC20(_acceptedToken);
-        _mafaBnb = IUniswapV2Pair(mafaBnb);
-        _bnbBusd = IUniswapV2Pair(bnbBusd);
+        _mafaBnbPair = IUniswapV2Pair(mafaBnb);
+        _bnbBusdPair = IUniswapV2Pair(bnbBusd);
 
         __Pausable_init();
         __Ownable_init();
@@ -104,7 +105,7 @@ contract Marketplace is
     ) internal virtual {
         require(nftAddress.isContract(), "NFT address must be a contract");
         if (!exists(nftAddress)) {
-            _acceptedNFTs.push(nftAddress);
+            _receivedNFTs.push(nftAddress);
         }
         require(price > 0, "Item price can't be 0");
 
@@ -116,7 +117,7 @@ contract Marketplace is
     function _buyItem(
         address nftAddress,
         uint256 id,
-        uint256 amounts
+        uint256 amounts // todo: What is the use case for this?
     ) internal virtual {
         require(nftAddress.isContract(), "NFT address must be a contract");
         require(exists(nftAddress), "NFT address is not acceptable");
@@ -124,7 +125,7 @@ contract Marketplace is
 
         address sender = _msgSender();
 
-        uint256 mafaBusdPrice = getMAFABUSDprice();
+        uint256 mafaBusdPrice = _getMAFAtoBUSDprice();
         uint256 itemPriceInMafa = (itemPrices[nftAddress][id].div(mafaBusdPrice)).mul(10**18);
 
         uint256 allowance = acceptedToken.allowance(sender, address(this));
@@ -133,12 +134,12 @@ contract Marketplace is
         // Transfer sale amount to seller
         require(
             acceptedToken.transferFrom(sender, owner(), itemPriceInMafa),
-            "Transfering the sale amount to the seller failed"
+            "Fail transferring the sale amount to the seller"
         );
 
         BaseERC1155 nftRegistry = BaseERC1155(nftAddress);
 
-        nftRegistry.mint(sender, id, amounts, "");
+        nftRegistry.mint(sender, id, amounts, ""); // todo: items sold needs to be 721 for compatibility and future proof reasons
 
         emit ProductBought(nftAddress, id, owner(), sender, itemPriceInMafa, amounts);
     }
@@ -148,17 +149,17 @@ contract Marketplace is
      * @param nftAddress Address to be checked
      */
     function exists(address nftAddress) internal view virtual returns (bool exist) {
-        for (uint256 i; i < _acceptedNFTs.length; i++) {
-            if (_acceptedNFTs[i] == nftAddress) return true;
+        for (uint256 i; i < _receivedNFTs.length; i++) {
+            if (_receivedNFTs[i] == nftAddress) return true;
         }
     }
 
     /**
      * @dev gets the price of MAFA per BUSD.
      */
-    function getMAFABUSDprice() public view virtual returns (uint256 price) {
-        (uint256 reserves0LP0, uint256 reserves1LP0, ) = _mafaBnb.getReserves();
-        (uint256 reserves0LP1, uint256 reserves1LP1, ) = _bnbBusd.getReserves();
+    function _getMAFAtoBUSDprice() public view virtual returns (uint256 price) {
+        (uint256 reserves0LP0, uint256 reserves1LP0, ) = _mafaBnbPair.getReserves();
+        (uint256 reserves0LP1, uint256 reserves1LP1, ) = _bnbBusdPair.getReserves();
 
         return (reserves1LP1.mul(reserves1LP0).mul(10**18)).div(reserves0LP1.mul(reserves0LP0));
     }

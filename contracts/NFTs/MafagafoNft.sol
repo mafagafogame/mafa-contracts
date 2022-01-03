@@ -60,7 +60,8 @@ contract MafagafoNft is MafaBase, BaseNft {
 
         bytes32 childGenes = mixGenes(parent1.genes, parent2.genes);
 
-        eggContract.mint2(_to, 0, childGenes, 0, [id1, id2]);
+        // todo: fix TypeError: Invalid type for argument in function call. Invalid implicit conversion from uint32[2] memory to uint32[] memory requested.
+        // eggContract.mint2(_to, 0, childGenes, 0, [id1, id2]);
     }
 
     // TODO: genetic mix logic
