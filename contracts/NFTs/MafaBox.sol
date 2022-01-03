@@ -7,7 +7,7 @@ import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 
 import "./BaseERC1155.sol";
-import "./MafagafoNft.sol";
+import "./MafagafoAvatarNft.sol";
 
 contract MafaBox is BaseERC1155 {
     using SafeMathUpgradeable for uint256;
@@ -18,13 +18,13 @@ contract MafaBox is BaseERC1155 {
     uint256[] public probabilities;
     uint256 public numberOfMafagafos;
 
-    MafagafoNft public mafagafoContract;
+    MafagafoAvatarNft public mafagafoContract;
 
     function initialize(address _mafagafo, uint256[] memory _probabilities) public initializer {
         require(_mafagafo.isContract(), "NFT address must be a contract");
         _requireProbabilitiesMatch(_probabilities);
 
-        mafagafoContract = MafagafoNft(_mafagafo);
+        mafagafoContract = MafagafoAvatarNft(_mafagafo);
         probabilities = _probabilities;
         numberOfMafagafos = probabilities.length;
 

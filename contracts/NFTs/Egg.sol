@@ -6,18 +6,18 @@ import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 
 import "./EggBase.sol";
-import "./MafagafoNft.sol";
+import "./MafagafoAvatarNft.sol";
 
 contract Egg is EggBase {
     using SafeMathUpgradeable for uint256;
     using AddressUpgradeable for address;
     using CountersUpgradeable for CountersUpgradeable.Counter;
 
-    MafagafoNft public mafagafoContract;
+    MafagafoAvatarNft public mafagafoContract;
 
     function initialize(address mafagafoAddress) public initializer {
         require(mafagafoAddress.isContract(), "NFT address must be a contract");
-        mafagafoContract = MafagafoNft(mafagafoAddress);
+        mafagafoContract = MafagafoAvatarNft(mafagafoAddress);
 
         // todo: add the correct urlbase
         super.initialize("Egg", "EGG", "");
