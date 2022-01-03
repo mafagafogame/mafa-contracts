@@ -6,10 +6,9 @@ import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 
 import "./EggBase.sol";
-import "./BaseNft.sol";
 import "./MafagafoNft.sol";
 
-contract Egg is EggBase, BaseNft {
+contract Egg is EggBase {
     using SafeMathUpgradeable for uint256;
     using AddressUpgradeable for address;
     using CountersUpgradeable for CountersUpgradeable.Counter;
@@ -20,21 +19,22 @@ contract Egg is EggBase, BaseNft {
         require(mafagafoAddress.isContract(), "NFT address must be a contract");
         mafagafoContract = MafagafoNft(mafagafoAddress);
 
+        // todo: add the correct urlbase
         super.initialize("Egg", "EGG", "");
     }
 
-    function mint2(
+    function mint(
         address _to,
-        bytes32 _version,
+        bytes32 _version, // // todo: review this: I guess a uint16 should be enough
         bytes32 _genes,
         uint16 _generation,
-        uint32[] memory _parentsIDs
+        uint32[] memory _parentsIDs // todo: review this: should be uint256 we can potentially have more than 4294967295 mafagafos
     ) public virtual onlyRole(MINTER_ROLE) {
         super.mint(_to);
+        _tokenIdTracker.increment();
+        // todo: missing code
 
         _layEgg(_to, _tokenIdTracker.current(), _version, _genes, _generation, _parentsIDs);
-
-        _tokenIdTracker.increment();
     }
 
     // hatch an egg after timer has passed
