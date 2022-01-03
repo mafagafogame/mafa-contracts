@@ -146,6 +146,25 @@ describe("Unit tests", function () {
         );
         expect(await baseNft.balanceOf(account1.address, 0)).to.equal(1);
       });
+
+      it("user should be able to buy multiple amounts of an item", async function () {
+        await marketplace.createItem(baseNft.address, 0, expandTo18Decimals(100));
+
+        await mafacoin.connect(account1).approve(marketplace.address, ethers.constants.MaxUint256);
+
+        expect(await baseNft.totalSupply(0)).to.equal(0);
+        expect(await mafacoin.balanceOf(account1.address)).to.equal(expandTo18Decimals(100000));
+        expect(await baseNft.balanceOf(account1.address, 0)).to.equal(0);
+
+        await expect(marketplace.connect(account1).buyItem(0, 5)).to.emit(marketplace, "ItemBought");
+
+        expect(await baseNft.totalSupply(0)).to.equal(5);
+        expect(parseFloat(ethers.utils.formatEther(await mafacoin.balanceOf(account1.address)))).to.be.within(
+          100000 - (5 * 100) / mafaPrice - 100,
+          100000 - (5 * 100) / mafaPrice + 100,
+        );
+        expect(await baseNft.balanceOf(account1.address, 0)).to.equal(5);
+      });
     });
 
     describe("pause", function () {
