@@ -6,11 +6,11 @@ import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 
-import "./MafagafoBase.sol";
+import "./MafagafoAvatarBase.sol";
 import "./BaseNft.sol";
 import "./Egg.sol";
 
-contract MafagafoNft is MafagafoBase {
+contract MafagafoAvatarNft is MafagafoAvatarBase {
     using SafeMathUpgradeable for uint256;
     using AddressUpgradeable for address;
     using CountersUpgradeable for CountersUpgradeable.Counter;
@@ -27,7 +27,8 @@ contract MafagafoNft is MafagafoBase {
         require(eggAddress.isContract(), "NFT address must be a contract");
         eggContract = Egg(eggAddress);
 
-        super.initialize("MafagafoNft", "MAFA", "");
+        // todo: add address
+        super.initialize("Mafagafo Avatar Nft", "MAN", "");
     }
 
     function mint2(

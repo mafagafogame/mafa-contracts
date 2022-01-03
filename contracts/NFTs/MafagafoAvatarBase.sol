@@ -4,7 +4,7 @@ pragma solidity ^0.8.9;
 
 import "./BaseNft.sol";
 
-contract MafagafoBase is BaseNft {
+contract MafagafoAvatarBase is BaseNft {
     mapping(uint256 => Mafagafo) public mafagafo;
 
     struct Mafagafo {
