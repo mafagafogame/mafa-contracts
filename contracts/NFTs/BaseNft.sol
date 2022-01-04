@@ -51,7 +51,7 @@ contract BaseNft is
             super.supportsInterface(interfaceId);
     }
 
-    function setBaseURI(string memory baseURI) public virtual onlyRole(DEFAULT_ADMIN_ROLE){
+    function setBaseURI(string memory baseURI) public virtual onlyRole(DEFAULT_ADMIN_ROLE) {
         _baseTokenURI = baseURI;
         emit UriBaseChanged(baseURI);
     }
@@ -104,7 +104,6 @@ contract BaseNft is
     function version() public pure virtual returns (string memory) {
         return "1.0.0";
     }
-
 
     event UriBaseChanged(string to);
 

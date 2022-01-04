@@ -14,7 +14,7 @@ import "./tasks/clean";
 import { resolve } from "path";
 
 import { config as dotenvConfig } from "dotenv";
-import {Wallet} from "ethers";
+import { Wallet } from "ethers";
 
 dotenvConfig({ path: resolve(__dirname, "./.env") });
 
