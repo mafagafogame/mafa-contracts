@@ -16,7 +16,7 @@ import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
 import "../NFTs/BaseERC1155.sol";
 import "../NFTs/MafagafoAvatarNft.sol";
 
-contract Marketplace is
+contract MafaStore is
     Initializable,
     PausableUpgradeable,
     OwnableUpgradeable,
@@ -42,7 +42,7 @@ contract Marketplace is
 
     /**
      * @param _acceptedToken accepted ERC20 token address
-     * @param avatarAddress accepted avatar address to sell to the marketplace
+     * @param avatarAddress accepted avatar address to sell to the mafastore
      * @param mafaBnb LP token address of MAFA/BNB pair
      * @param bnbBusd LP token address of BNB/BUSD pair
      */
@@ -169,7 +169,7 @@ contract Marketplace is
     function _sellAvatar(uint256 tokenId) internal virtual {
         require(
             acceptedToken.balanceOf(address(this)) > 300,
-            "The marketplace is unable to receive new avatars for the moment"
+            "The mafastore is unable to receive new avatars for the moment"
         );
 
         address sender = _msgSender();
@@ -200,8 +200,6 @@ contract Marketplace is
 
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
-    uint256[50] private __gap;
-
     // EVENTS
     event ItemCreated(address indexed nftAddress, uint256 id, uint256 nftId, uint256 price);
     event ItemPriceUpdated(uint256 id, uint256 price);
@@ -215,9 +213,11 @@ contract Marketplace is
         uint256 amounts
     );
     event AvatarSold(address indexed seller, uint256 tokenId);
+
+    uint256[50] private __gap;
 }
 
-contract MarketplaceTestV2 is Marketplace {
+contract MafaStoreTestV2 is MafaStore {
     function version() public pure virtual override returns (string memory) {
         return "2.0.0";
     }
