@@ -29,6 +29,8 @@ contract MafagafoAvatarNft is MafagafoAvatarBase {
 
         // todo: add address
         super.initialize("Mafagafo Avatar Nft", "MAN", "");
+
+        super.mint(0x000000000000000000000000000000000000dEaD);
     }
 
     function mint(
@@ -59,14 +61,21 @@ contract MafagafoAvatarNft is MafagafoAvatarBase {
         bytes32 childGenes = mixGenes(parent1.genes, parent2.genes);
 
         // TODO: update version and generation
-        eggContract.mint(_msgSender(), 0, childGenes, 0, parent1Id, parent2Id);
+        eggContract.mint(_msgSender(), mafaVersion(), childGenes, 1, parent1Id, parent2Id);
 
         emit Mate(_msgSender(), parent1Id, parent2Id, 0, childGenes, 0);
     }
 
     // TODO: genetic mix logic
-    function mixGenes(bytes32 _genes1, bytes32 _genes2) internal returns (bytes32) {
+    function mixGenes(bytes32 _genes1, bytes32 _genes2) internal virtual returns (bytes32) {
         return "";
+    }
+
+    /**
+     * @dev mafagafoAvatar version
+     */
+    function mafaVersion() public pure virtual returns (uint16) {
+        return 0;
     }
 
     // EVENTS
