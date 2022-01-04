@@ -6,8 +6,8 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import fetch from "node-fetch";
 
 import {
-  BaseERC1155,
-  BaseERC1155__factory,
+  BrooderNft,
+  BrooderNft__factory,
   MafaCoin,
   Marketplace,
   MarketplaceTestV2,
@@ -19,15 +19,16 @@ import { expandTo18Decimals } from "../shared/utilities";
 describe("Unit tests", function () {
   let marketplace: Marketplace;
   let mafacoin: MafaCoin;
-  let baseNft: BaseERC1155;
+  let brooder: BrooderNft;
   let owner: SignerWithAddress;
   let account1: SignerWithAddress;
+  let account2: SignerWithAddress;
   let mafaPrice: number;
   const MAFA_BNB = "0xC53C7F4736F4a6DA25e950e25c58011Fe26B4a93";
   const BNB_BUSD = "0x58F876857a02D6762E0101bb5C46A8c1ED44Dc16";
 
   before(async function () {
-    [owner, account1] = await ethers.getSigners();
+    [owner, account1, account2] = await ethers.getSigners();
   });
 
   describe("Marketplace", function () {
@@ -42,8 +43,8 @@ describe("Unit tests", function () {
       await mafacoin.setLotteryFee(0);
       await mafacoin.transfer(account1.address, expandTo18Decimals(100000));
 
-      const baseNftFactory: BaseERC1155__factory = await ethers.getContractFactory("BaseERC1155");
-      baseNft = <BaseERC1155>await upgrades.deployProxy(baseNftFactory, [""], {
+      const brooderFactory: BrooderNft__factory = await ethers.getContractFactory("BrooderNft");
+      brooder = <BrooderNft>await upgrades.deployProxy(brooderFactory, [], {
         initializer: "initialize",
         kind: "uups",
       });
@@ -58,7 +59,7 @@ describe("Unit tests", function () {
         },
       );
 
-      await baseNft.grantRole(ethers.utils.id("MINTER_ROLE"), marketplace.address);
+      await brooder.grantRole(ethers.utils.id("MINTER_ROLE"), marketplace.address);
     });
 
     it("should be deployed with correct values", async function () {
@@ -80,10 +81,18 @@ describe("Unit tests", function () {
     });
 
     describe("non owner", function () {
-      it("non owner user should not be able to set the price of an item", async function () {
+      it("non owner user should not be able to create an item", async function () {
         await expect(
-          marketplace.connect(account1).createItem(baseNft.address, 0, expandTo18Decimals(100)),
+          marketplace.connect(account1).createItem(brooder.address, 0, expandTo18Decimals(100)),
         ).to.be.revertedWith("Ownable: caller is not the owner");
+      });
+
+      it("non owner user should not be able to update the price of an item", async function () {
+        await marketplace.createItem(brooder.address, 0, expandTo18Decimals(100));
+
+        await expect(marketplace.connect(account1).updateItemPrice(0, expandTo18Decimals(200))).to.be.revertedWith(
+          "Ownable: caller is not the owner",
+        );
       });
     });
 
@@ -96,15 +105,40 @@ describe("Unit tests", function () {
         });
 
         it("owner should not be able to create an item with 0 price", async function () {
-          await expect(marketplace.createItem(baseNft.address, 0, expandTo18Decimals(0))).to.be.revertedWith(
+          await expect(marketplace.createItem(brooder.address, 0, expandTo18Decimals(0))).to.be.revertedWith(
             "Item price can't be 0",
           );
         });
 
         it("owner should be able to create an item", async function () {
-          await expect(marketplace.createItem(baseNft.address, 0, expandTo18Decimals(100)))
+          await expect(marketplace.createItem(brooder.address, 0, expandTo18Decimals(100)))
             .to.emit(marketplace, "ItemCreated")
-            .withArgs(baseNft.address, 0, 0, expandTo18Decimals(100));
+            .withArgs(brooder.address, 0, 0, expandTo18Decimals(100));
+        });
+
+        it("owner should not be able to update the price of an item to 0", async function () {
+          await marketplace.createItem(brooder.address, 0, expandTo18Decimals(100));
+
+          await expect(marketplace.updateItemPrice(0, expandTo18Decimals(0))).to.be.revertedWith(
+            "Item price can't be 0",
+          );
+        });
+
+        it("owner should not be able to update the price of an item that doesn't exists", async function () {
+          await expect(marketplace.updateItemPrice(0, expandTo18Decimals(200))).to.be.revertedWith(
+            "Item doesn't exists",
+          );
+        });
+
+        it("owner should be able to update the price of an item", async function () {
+          await marketplace.createItem(brooder.address, 0, expandTo18Decimals(100));
+
+          await expect(marketplace.updateItemPrice(0, expandTo18Decimals(200)))
+            .to.emit(marketplace, "ItemPriceUpdated")
+            .withArgs(0, expandTo18Decimals(200));
+
+          const item = await marketplace.items(0);
+          expect(item[2]).to.equal(expandTo18Decimals(200));
         });
       });
     });
@@ -115,55 +149,65 @@ describe("Unit tests", function () {
       });
 
       it("user should not be able to buy an item if he doesn't allow the transfer", async function () {
-        await marketplace.createItem(baseNft.address, 0, expandTo18Decimals(100));
+        await marketplace.createItem(brooder.address, 0, expandTo18Decimals(100));
 
         await expect(marketplace.connect(account1).buyItem(0, 1)).to.be.revertedWith("Check the token allowance");
       });
 
       it("user should not be able to buy an item if allowances are not enough", async function () {
-        await marketplace.createItem(baseNft.address, 0, expandTo18Decimals(100));
+        await marketplace.createItem(brooder.address, 0, expandTo18Decimals(100));
 
         await mafacoin.connect(account1).approve(marketplace.address, expandTo18Decimals(1));
 
         await expect(marketplace.connect(account1).buyItem(0, 1)).to.be.revertedWith("Check the token allowance");
       });
 
+      it("user should not be able to buy an item if he doesn't have enough balance", async function () {
+        await marketplace.createItem(brooder.address, 0, expandTo18Decimals(100));
+
+        await mafacoin.connect(account2).approve(marketplace.address, ethers.constants.MaxUint256);
+
+        await expect(marketplace.connect(account2).buyItem(0, 1)).to.be.revertedWith(
+          "ERC20: transfer amount exceeds balance",
+        );
+      });
+
       it("user should be able to buy an item", async function () {
-        await marketplace.createItem(baseNft.address, 0, expandTo18Decimals(100));
+        await marketplace.createItem(brooder.address, 0, expandTo18Decimals(100));
 
         await mafacoin.connect(account1).approve(marketplace.address, ethers.constants.MaxUint256);
 
-        expect(await baseNft.totalSupply(0)).to.equal(0);
+        expect(await brooder.totalSupply(0)).to.equal(0);
         expect(await mafacoin.balanceOf(account1.address)).to.equal(expandTo18Decimals(100000));
-        expect(await baseNft.balanceOf(account1.address, 0)).to.equal(0);
+        expect(await brooder.balanceOf(account1.address, 0)).to.equal(0);
 
         await expect(marketplace.connect(account1).buyItem(0, 1)).to.emit(marketplace, "ItemBought");
 
-        expect(await baseNft.totalSupply(0)).to.equal(1);
+        expect(await brooder.totalSupply(0)).to.equal(1);
         expect(parseFloat(ethers.utils.formatEther(await mafacoin.balanceOf(account1.address)))).to.be.within(
           100000 - 100 / mafaPrice - 100,
           100000 - 100 / mafaPrice + 100,
         );
-        expect(await baseNft.balanceOf(account1.address, 0)).to.equal(1);
+        expect(await brooder.balanceOf(account1.address, 0)).to.equal(1);
       });
 
       it("user should be able to buy multiple amounts of an item", async function () {
-        await marketplace.createItem(baseNft.address, 0, expandTo18Decimals(100));
+        await marketplace.createItem(brooder.address, 0, expandTo18Decimals(100));
 
         await mafacoin.connect(account1).approve(marketplace.address, ethers.constants.MaxUint256);
 
-        expect(await baseNft.totalSupply(0)).to.equal(0);
+        expect(await brooder.totalSupply(0)).to.equal(0);
         expect(await mafacoin.balanceOf(account1.address)).to.equal(expandTo18Decimals(100000));
-        expect(await baseNft.balanceOf(account1.address, 0)).to.equal(0);
+        expect(await brooder.balanceOf(account1.address, 0)).to.equal(0);
 
         await expect(marketplace.connect(account1).buyItem(0, 5)).to.emit(marketplace, "ItemBought");
 
-        expect(await baseNft.totalSupply(0)).to.equal(5);
+        expect(await brooder.totalSupply(0)).to.equal(5);
         expect(parseFloat(ethers.utils.formatEther(await mafacoin.balanceOf(account1.address)))).to.be.within(
           100000 - (5 * 100) / mafaPrice - 100,
           100000 - (5 * 100) / mafaPrice + 100,
         );
-        expect(await baseNft.balanceOf(account1.address, 0)).to.equal(5);
+        expect(await brooder.balanceOf(account1.address, 0)).to.equal(5);
       });
     });
 
