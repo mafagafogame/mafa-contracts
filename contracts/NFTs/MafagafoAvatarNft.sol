@@ -30,6 +30,7 @@ contract MafagafoAvatarNft is MafagafoAvatarBase {
         // TODO: add address
         __BaseNft_init("Mafagafo Avatar Nft", "MAN", "");
 
+        // mint just one. this one will be the father of all g0 generation
         super.mint(0x000000000000000000000000000000000000dEaD);
     }
 
