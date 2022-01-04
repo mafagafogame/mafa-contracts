@@ -55,7 +55,7 @@ contract MafaBox is BaseERC1155 {
         uint256 sum = 0;
 
         for (uint256 i = 0; i < _probabilities.length; i++) {
-            sum.add(_probabilities[i]);
+            sum = sum.add(_probabilities[i]);
         }
 
         require(sum == 10000, "probabilities values sum must equal 10000");
