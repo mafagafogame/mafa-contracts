@@ -16,7 +16,6 @@ contract MafaBox is BaseERC1155 {
 
     CountersUpgradeable.Counter private _totalOpen;
     uint256[] public probabilities;
-    uint256 public numberOfMafagafos;
 
     MafagafoAvatarNft public mafagafoContract;
 
@@ -26,10 +25,9 @@ contract MafaBox is BaseERC1155 {
 
         mafagafoContract = MafagafoAvatarNft(_mafagafo);
         probabilities = _probabilities;
-        numberOfMafagafos = probabilities.length;
 
         // TODO migrate to cloudflare
-        super.initialize("");
+        __BaseERC1155_init("");
     }
 
     function openBox(uint256 id) external {

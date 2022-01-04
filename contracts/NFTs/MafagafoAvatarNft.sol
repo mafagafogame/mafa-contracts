@@ -27,8 +27,8 @@ contract MafagafoAvatarNft is MafagafoAvatarBase {
         require(eggAddress.isContract(), "NFT address must be a contract");
         eggContract = EggNft(eggAddress);
 
-        // todo: add address
-        super.initialize("Mafagafo Avatar Nft", "MAN", "");
+        // TODO: add address
+        __BaseNft_init("Mafagafo Avatar Nft", "MAN", "");
 
         super.mint(0x000000000000000000000000000000000000dEaD);
     }

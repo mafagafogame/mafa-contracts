@@ -29,7 +29,7 @@ contract BaseERC1155 is
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
-    function initialize(string memory uri_) public initializer {
+    function __BaseERC1155_init(string memory uri_) internal onlyInitializing {
         __ERC1155_init(uri_);
         __AccessControl_init();
         __Pausable_init();
