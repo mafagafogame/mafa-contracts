@@ -21,15 +21,15 @@ contract BaseNft is
     ReentrancyGuardUpgradeable,
     UUPSUpgradeable
 {
-    function initialize(
+    function __BaseNft_init(
         string memory name,
         string memory symbol,
         string memory baseTokenURI
-    ) public virtual override(ERC721PresetMinterPauserAutoIdUpgradeable) initializer {
+    ) internal onlyInitializing {
         __UUPSUpgradeable_init();
         __ReentrancyGuard_init();
         _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
-        super.initialize(name, symbol, baseTokenURI);
+        __ERC721PresetMinterPauserAutoId_init(name, symbol, baseTokenURI);
     }
 
     /// @custom:oz-upgrades-unsafe-allow constructor

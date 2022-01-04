@@ -17,14 +17,17 @@ contract EggNft is EggBase {
     MafagafoAvatarNft public mafagafoContract;
     BrooderNft public brooderContract;
 
-    function initialize(address mafagafoAddress, address brooderAddress) public initializer {
-        require(mafagafoAddress.isContract(), "Mafagafo NFT address must be a contract");
+    function initialize(address brooderAddress) public initializer {
         require(brooderAddress.isContract(), "Brooder NFT address must be a contract");
-        mafagafoContract = MafagafoAvatarNft(mafagafoAddress);
         brooderContract = BrooderNft(brooderAddress);
 
-        // todo: add the correct urlbase
-        super.initialize("Egg", "EGG", "");
+        // TODO: add the correct urlbase
+        __BaseNft_init("Egg", "EGG", "");
+    }
+
+    function setMafagafoContract(address mafagafoAddress) external virtual onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(mafagafoAddress.isContract(), "Mafagafo NFT address must be a contract");
+        mafagafoContract = MafagafoAvatarNft(mafagafoAddress);
     }
 
     function mint(

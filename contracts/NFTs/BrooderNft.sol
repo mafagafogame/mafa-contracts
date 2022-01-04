@@ -18,7 +18,7 @@ contract BrooderNft is BaseERC1155 {
     mapping(uint256 => Brooder) public brooder;
 
     function initialize() public initializer {
-        super.initialize("https://ipfs.io/ipfs/QmWaurhfmT8df3tadivGyqErCR5bhu9wSB59GpLm192mLh/metadata/{id}.json");
+        __BaseERC1155_init("");
     }
 
     function createBrooder(uint256 id, uint64 time) external virtual onlyRole(DEFAULT_ADMIN_ROLE) {
