@@ -14,8 +14,6 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
 
 import "../NFTs/BaseERC1155.sol";
-import "../NFTs/MafaBox.sol";
-import "../NFTs/Brooder.sol";
 
 contract Marketplace is
     Initializable,
