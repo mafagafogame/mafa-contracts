@@ -84,6 +84,19 @@ contract Marketplace is
     }
 
     /**
+     * @dev Update the price of an item
+     *  Can only be called by contract owner
+     * @param id Id of the item
+     * @param newPrice New price of the item
+     */
+    function updateItemPrice(
+        uint256 id,
+        uint256 newPrice
+    ) external virtual onlyOwner {
+        _updateItemPrice(id, newPrice);
+    }
+
+    /**
      * @dev Buy amounts of an item.
      * @param id ID on items array
      * @param amounts Amounts of items to be sold
@@ -103,6 +116,20 @@ contract Marketplace is
         items.push(Item(nftAddress, nftId, price));
 
         emit ItemCreated(nftAddress, items.length - 1, nftId, price);
+    }
+
+    function _updateItemPrice(
+        uint256 id,
+        uint256 newPrice
+    ) internal virtual {
+        require(id < items.length, "Item doesn't exists");
+        require(newPrice > 0, "Item price can't be 0");
+
+        Item storage item = items[id];
+
+        item.price = newPrice;
+
+        emit ItemPriceUpdated(id, newPrice);
     }
 
     function _buyItem(uint256 id, uint256 amounts) internal virtual {
@@ -153,6 +180,7 @@ contract Marketplace is
 
     // EVENTS
     event ItemCreated(address indexed nftAddress, uint256 id, uint256 nftId, uint256 price);
+    event ItemPriceUpdated(uint256 id, uint256 price);
     event ItemBought(
         address indexed nftAddress,
         uint256 id,
