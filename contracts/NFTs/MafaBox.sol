@@ -30,7 +30,7 @@ contract MafaBox is BaseERC1155 {
         __BaseERC1155_init("");
     }
 
-    function openBox(uint256 id) external {
+    function openBox(uint256 id) external virtual {
         require(balanceOf(_msgSender(), id) > 0, "You don't have any box to open");
         super._burn(_msgSender(), id, 1);
 
@@ -51,7 +51,7 @@ contract MafaBox is BaseERC1155 {
         _totalOpen.increment();
     }
 
-    function _requireProbabilitiesMatch(uint256[] memory _probabilities) internal pure {
+    function _requireProbabilitiesMatch(uint256[] memory _probabilities) internal pure virtual {
         uint256 sum = 0;
 
         for (uint256 i = 0; i < _probabilities.length; i++) {
@@ -61,7 +61,7 @@ contract MafaBox is BaseERC1155 {
         require(sum == 10000, "probabilities values sum must equal 10000");
     }
 
-    function _random() internal view returns (uint256 randomNumber) {
+    function _random() internal view virtual returns (uint256 randomNumber) {
         return
             uint256(keccak256(abi.encodePacked(block.difficulty, block.timestamp, _msgSender(), _totalOpen.current())))
                 .mod(10000);

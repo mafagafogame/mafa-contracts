@@ -11,10 +11,6 @@ import "./rarible/RoyaltiesV2Upgradeable.sol";
 import "./rarible/RoyaltiesV2UpgradeableImpl.sol";
 import "./mintable/LibMintable.sol";
 
-// Types: breeder, eggs, mafagafo, item, replay
-// quebrar em mais contratos
-
-// reference: https://medium.com/aisthisi/aisthisi-technical-deep-dive-part-2-5250b0d71ee
 contract BaseNft is
     ERC721PresetMinterPauserAutoIdUpgradeable,
     RoyaltiesV2UpgradeableImpl,
