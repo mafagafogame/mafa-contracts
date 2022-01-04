@@ -8,7 +8,11 @@ import fetch from "node-fetch";
 import {
   BrooderNft,
   BrooderNft__factory,
+  EggNft,
+  EggNft__factory,
   MafaCoin,
+  MafagafoAvatarNft,
+  MafagafoAvatarNft__factory,
   Marketplace,
   MarketplaceTestV2,
   MarketplaceTestV2__factory,
@@ -20,6 +24,8 @@ describe("Unit tests", function () {
   let marketplace: Marketplace;
   let mafacoin: MafaCoin;
   let brooder: BrooderNft;
+  let egg: EggNft;
+  let mafagafoAvatar: MafagafoAvatarNft;
   let owner: SignerWithAddress;
   let account1: SignerWithAddress;
   let account2: SignerWithAddress;
@@ -49,10 +55,24 @@ describe("Unit tests", function () {
         kind: "uups",
       });
 
+      const eggFactory: EggNft__factory = await ethers.getContractFactory("EggNft");
+      egg = <EggNft>await upgrades.deployProxy(eggFactory, [brooder.address], {
+        initializer: "initialize",
+        kind: "uups",
+      });
+
+      const mafagafoAvatarFactory: MafagafoAvatarNft__factory = await ethers.getContractFactory("MafagafoAvatarNft");
+      mafagafoAvatar = <MafagafoAvatarNft>await upgrades.deployProxy(mafagafoAvatarFactory, [egg.address], {
+        initializer: "initialize",
+        kind: "uups",
+      });
+
+      egg.setMafagafoContract(mafagafoAvatar.address);
+
       const marketplaceFactory: Marketplace__factory = await ethers.getContractFactory("Marketplace");
       marketplace = <Marketplace>await upgrades.deployProxy(
         marketplaceFactory,
-        [mafacoin.address, MAFA_BNB, BNB_BUSD],
+        [mafacoin.address, mafagafoAvatar.address, MAFA_BNB, BNB_BUSD],
         {
           initializer: "initialize",
           kind: "uups",
@@ -115,7 +135,9 @@ describe("Unit tests", function () {
             .to.emit(marketplace, "ItemCreated")
             .withArgs(brooder.address, 0, 0, expandTo18Decimals(100));
         });
+      });
 
+      describe("update item price", function () {
         it("owner should not be able to update the price of an item to 0", async function () {
           await marketplace.createItem(brooder.address, 0, expandTo18Decimals(100));
 
@@ -208,6 +230,57 @@ describe("Unit tests", function () {
           100000 - (5 * 100) / mafaPrice + 100,
         );
         expect(await brooder.balanceOf(account1.address, 0)).to.equal(5);
+      });
+    });
+
+    describe("sell avatar", function () {
+      it("user should not be able to sell an avatar if marketplace contract doesn't have enough MAFAs", async function () {
+        await expect(marketplace.connect(account1).sellAvatar(0)).to.be.revertedWith(
+          "The marketplace is unable to receive new avatars for the moment",
+        );
+      });
+
+      describe("after transfering some MAFAs to the marketplace", function () {
+        beforeEach(async function () {
+          await mafacoin.transfer(marketplace.address, expandTo18Decimals(100000));
+        });
+
+        it("user should not be able to sell an avatar that he doesn't own", async function () {
+          await expect(marketplace.connect(account1).sellAvatar(0)).to.be.revertedWith(
+            "You have to own this avatar to be able to sell it",
+          );
+        });
+
+        describe("after user has a nft to sell", function () {
+          beforeEach(async function () {
+            await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256)"](
+              account1.address,
+              0,
+              ethers.utils.id("0"),
+              0,
+              0,
+              0,
+            );
+          });
+
+          it("user should not be able to sell an avatar if he doesn't approve the transfer before", async function () {
+            await expect(marketplace.connect(account1).sellAvatar(1)).to.be.revertedWith(
+              "Check the token approval for this token ID",
+            );
+          });
+
+          it("user should be able to sell an avatar", async function () {
+            expect(await mafagafoAvatar.ownerOf(1)).to.equal(account1.address);
+
+            await mafagafoAvatar.connect(account1).approve(marketplace.address, 1);
+
+            await expect(marketplace.connect(account1).sellAvatar(1))
+              .to.be.emit(marketplace, "AvatarSold")
+              .withArgs(account1.address, 1);
+
+            expect(await mafagafoAvatar.ownerOf(1)).to.equal(marketplace.address);
+          });
+        });
       });
     });
 

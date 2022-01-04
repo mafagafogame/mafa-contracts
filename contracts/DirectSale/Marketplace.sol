@@ -14,6 +14,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
 
 import "../NFTs/BaseERC1155.sol";
+import "../NFTs/MafagafoAvatarNft.sol";
 
 contract Marketplace is
     Initializable,
@@ -32,6 +33,7 @@ contract Marketplace is
     }
 
     IERC20 public acceptedToken;
+    MafagafoAvatarNft public avatarContract;
 
     IUniswapV2Pair internal _mafaBnbPair;
     IUniswapV2Pair internal _bnbBusdPair;
@@ -40,15 +42,20 @@ contract Marketplace is
 
     /**
      * @param _acceptedToken accepted ERC20 token address
+     * @param avatarAddress accepted avatar address to sell to the marketplace
      * @param mafaBnb LP token address of MAFA/BNB pair
      * @param bnbBusd LP token address of BNB/BUSD pair
      */
     function initialize(
         address _acceptedToken,
+        address avatarAddress,
         address mafaBnb,
         address bnbBusd
     ) public initializer {
+        require(_acceptedToken.isContract(), "ERC20 token address must be a contract");
+        require(avatarAddress.isContract(), "Avatar NFT address must be a contract");
         acceptedToken = IERC20(_acceptedToken);
+        avatarContract = MafagafoAvatarNft(avatarAddress);
         _mafaBnbPair = IUniswapV2Pair(mafaBnb);
         _bnbBusdPair = IUniswapV2Pair(bnbBusd);
 
@@ -89,10 +96,7 @@ contract Marketplace is
      * @param id Id of the item
      * @param newPrice New price of the item
      */
-    function updateItemPrice(
-        uint256 id,
-        uint256 newPrice
-    ) external virtual onlyOwner {
+    function updateItemPrice(uint256 id, uint256 newPrice) external virtual onlyOwner {
         _updateItemPrice(id, newPrice);
     }
 
@@ -103,6 +107,14 @@ contract Marketplace is
      */
     function buyItem(uint256 id, uint256 amounts) external virtual whenNotPaused nonReentrant {
         _buyItem(id, amounts);
+    }
+
+    /**
+     * @dev Sell an avatar to this contract
+     * @param tokenId ERC721 token ID of the avatar to be sold
+     */
+    function sellAvatar(uint256 tokenId) external virtual whenNotPaused nonReentrant {
+        _sellAvatar(tokenId);
     }
 
     function _createItem(
@@ -118,10 +130,7 @@ contract Marketplace is
         emit ItemCreated(nftAddress, items.length - 1, nftId, price);
     }
 
-    function _updateItemPrice(
-        uint256 id,
-        uint256 newPrice
-    ) internal virtual {
+    function _updateItemPrice(uint256 id, uint256 newPrice) internal virtual {
         require(id < items.length, "Item doesn't exists");
         require(newPrice > 0, "Item price can't be 0");
 
@@ -157,6 +166,21 @@ contract Marketplace is
         emit ItemBought(item.nftAddress, id, item.nftId, owner(), sender, itemPriceInMafa, amounts);
     }
 
+    function _sellAvatar(uint256 tokenId) internal virtual {
+        require(
+            acceptedToken.balanceOf(address(this)) > 300,
+            "The marketplace is unable to receive new avatars for the moment"
+        );
+
+        address sender = _msgSender();
+        require(avatarContract.ownerOf(tokenId) == sender, "You have to own this avatar to be able to sell it");
+        require(avatarContract.getApproved(tokenId) == address(this), "Check the token approval for this token ID");
+
+        avatarContract.transferFrom(sender, address(this), tokenId);
+
+        emit AvatarSold(sender, tokenId);
+    }
+
     /**
      * @dev gets the price of MAFA per BUSD.
      */
@@ -190,6 +214,7 @@ contract Marketplace is
         uint256 price,
         uint256 amounts
     );
+    event AvatarSold(address indexed seller, uint256 tokenId);
 }
 
 contract MarketplaceTestV2 is Marketplace {
