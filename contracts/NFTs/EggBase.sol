@@ -8,40 +8,43 @@ contract EggBase is BaseNft {
     mapping(uint256 => Egg) public egg;
 
     struct Egg {
-        bytes32 version;
+        uint16 version;
         bytes32 genes;
-        uint16 generation;
-        uint32[] parentsIDs; // todo: review this: should be uint256 we can potentially have more than 4294967295 mafagafos
+        uint32 generation;
+        uint256 parent1Id;
+        uint256 parent2Id;
         uint64 timer;
     }
 
     function _layEgg(
         address _to,
         uint256 _id,
-        bytes32 _version,
+        uint16 _version,
         bytes32 _genes,
-        uint16 _generation,
-        uint32[] memory _parentsIDs
+        uint32 _generation,
+        uint256 _parent1Id,
+        uint256 _parent2Id
     ) internal virtual {
         egg[_id] = Egg({
             version: _version,
             genes: _genes,
             generation: _generation,
-            parentsIDs: _parentsIDs,
+            parent1Id: _parent1Id,
+            parent2Id: _parent2Id,
             timer: uint64(30 weeks)
         });
 
-        emit Layed(_to, _id, _version, _genes, _generation, _parentsIDs, uint64(30 weeks));
+        emit Layed(_to, _id, _version, _genes, _generation, [_parent1Id, _parent2Id], uint64(30 weeks));
     }
 
     // EVENTS
     event Layed(
         address indexed to,
         uint256 nftID,
-        bytes32 version,
+        uint16 version,
         bytes32 genes,
-        uint16 generation,
-        uint32[] parentsIDs,
+        uint32 generation,
+        uint256[2] parentsIDs,
         uint64 timer
     );
 }
