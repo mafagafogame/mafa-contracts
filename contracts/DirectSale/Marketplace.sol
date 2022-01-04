@@ -88,10 +88,7 @@ contract Marketplace is
      * @param id ID on items array
      * @param amounts Amounts of items to be sold
      */
-    function buyItem(
-        uint256 id,
-        uint256 amounts
-    ) external virtual whenNotPaused nonReentrant {
+    function buyItem(uint256 id, uint256 amounts) external virtual whenNotPaused nonReentrant {
         _buyItem(id, amounts);
     }
 
@@ -105,13 +102,10 @@ contract Marketplace is
 
         items.push(Item(nftAddress, nftId, price));
 
-        emit ItemCreated(nftAddress, items.length-1, nftId, price);
+        emit ItemCreated(nftAddress, items.length - 1, nftId, price);
     }
 
-    function _buyItem(
-        uint256 id,
-        uint256 amounts
-    ) internal virtual {
+    function _buyItem(uint256 id, uint256 amounts) internal virtual {
         require(id < items.length, "Item doesn't exists");
         Item memory item = items[id];
 
