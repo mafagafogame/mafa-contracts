@@ -51,7 +51,6 @@
     "hardhat-gas-reporter": "^1.0.6",
     "lint-staged": "^12.1.4",
     "mocha": "^9.1.3",
-    "node-fetch": "^3.1.0",
     "pancakeswap-peripheral": "^1.1.0-beta.0",
     "prettier": "^2.5.1",
     "prettier-plugin-solidity": "^1.0.0-beta.19",
@@ -95,5 +94,8 @@
     "slither:log": "python3 -m slither . --ignore-compile --filter-paths \"node_modules\" --disable-color --print human-summary > slither-audit.txt 2>&1",
     "slither:summary": "python3 -m slither . --ignore-compile --filter-paths \"node_modules\" --print human-summary",
     "slither": "python3 -m slither . --ignore-compile --filter-paths \"node_modules\""
+  },
+  "dependencies": {
+    "axios": "^0.24.0"
   }
 }

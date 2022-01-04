@@ -13,14 +13,12 @@ import {
   MafaBox__factory,
   MafaCoin,
   MafagafoAvatarNft,
-  MafagafoAvatarNft__factory,
-  Marketplace,
-  Marketplace__factory,
+  MafagafoAvatarNft__factory, MafaStore, MafaStore__factory,
 } from "../../typechain";
-import { expandTo18Decimals } from "../shared/utilities";
+import {deployMafaCoin, expandTo18Decimals} from "../shared/utilities";
 
 describe("Unit tests", function () {
-  let marketplace: Marketplace;
+  let mafastore: MafaStore;
   let mafacoin: MafaCoin;
   let brooder: BrooderNft;
   let egg: EggNft;
@@ -37,29 +35,22 @@ describe("Unit tests", function () {
 
   describe("MafaBox", function () {
     beforeEach(async function () {
-      const mafacoinArtifact: Artifact = await artifacts.readArtifact("MafaCoin");
-      mafacoin = <MafaCoin>await waffle.deployContract(owner, mafacoinArtifact);
-
-      await mafacoin.afterPreSale();
-      await mafacoin.setTeamBuyFee(0);
-      await mafacoin.setTeamSellFee(0);
-      await mafacoin.setLiquidyFee(0);
-      await mafacoin.setLotteryFee(0);
+      mafacoin = await deployMafaCoin(owner);
       await mafacoin.transfer(account1.address, expandTo18Decimals(100000));
 
-      const brooderFactory: BrooderNft__factory = await ethers.getContractFactory("BrooderNft");
+      const brooderFactory = <BrooderNft__factory>await ethers.getContractFactory("BrooderNft");
       brooder = <BrooderNft>await upgrades.deployProxy(brooderFactory, [], {
         initializer: "initialize",
         kind: "uups",
       });
 
-      const eggFactory: EggNft__factory = await ethers.getContractFactory("EggNft");
+      const eggFactory = <EggNft__factory>await ethers.getContractFactory("EggNft");
       egg = <EggNft>await upgrades.deployProxy(eggFactory, [brooder.address], {
         initializer: "initialize",
         kind: "uups",
       });
 
-      const mafagafoAvatarFactory: MafagafoAvatarNft__factory = await ethers.getContractFactory("MafagafoAvatarNft");
+      const mafagafoAvatarFactory = <MafagafoAvatarNft__factory>await ethers.getContractFactory("MafagafoAvatarNft");
       mafagafoAvatar = <MafagafoAvatarNft>await upgrades.deployProxy(mafagafoAvatarFactory, [egg.address], {
         initializer: "initialize",
         kind: "uups",
@@ -67,7 +58,7 @@ describe("Unit tests", function () {
 
       egg.setMafagafoContract(mafagafoAvatar.address);
 
-      const mafaBoxFactory: MafaBox__factory = await ethers.getContractFactory("MafaBox");
+      const mafaBoxFactory = <MafaBox__factory>await ethers.getContractFactory("MafaBox");
       mafaBox = <MafaBox>await upgrades.deployProxy(
         mafaBoxFactory,
         [mafagafoAvatar.address, [500, 1500, 2000, 2500, 3500]],
@@ -77,9 +68,9 @@ describe("Unit tests", function () {
         },
       );
 
-      const marketplaceFactory: Marketplace__factory = await ethers.getContractFactory("Marketplace");
-      marketplace = <Marketplace>await upgrades.deployProxy(
-        marketplaceFactory,
+      const mafastoreFactory: MafaStore__factory = <MafaStore__factory>await ethers.getContractFactory("MafaStore");
+      mafastore = <MafaStore>await upgrades.deployProxy(
+        mafastoreFactory,
         [mafacoin.address, MAFA_BNB, BNB_BUSD],
         {
           initializer: "initialize",
@@ -87,9 +78,9 @@ describe("Unit tests", function () {
         },
       );
 
-      await mafaBox.grantRole(ethers.utils.id("MINTER_ROLE"), marketplace.address);
+      await mafaBox.grantRole(ethers.utils.id("MINTER_ROLE"), mafastore.address);
       await mafagafoAvatar.grantRole(ethers.utils.id("MINTER_ROLE"), mafaBox.address);
-      await marketplace.createItem(mafaBox.address, 0, expandTo18Decimals(100));
+      await mafastore.createItem(mafaBox.address, 0, expandTo18Decimals(100));
     });
 
     it("should be deployed with correct values", async function () {
@@ -99,7 +90,7 @@ describe("Unit tests", function () {
       expect(await mafaBox.probabilities(2)).to.equal(2000);
       expect(await mafaBox.probabilities(3)).to.equal(2500);
       expect(await mafaBox.probabilities(4)).to.equal(3500);
-      const item = await marketplace.items(0);
+      const item = await mafastore.items(0);
       expect(item[0]).to.equal(mafaBox.address);
     });
 
@@ -108,9 +99,9 @@ describe("Unit tests", function () {
     });
 
     it("user should be able to open a box and receive a random mafagafo", async function () {
-      await mafacoin.connect(account1).approve(marketplace.address, ethers.constants.MaxUint256);
+      await mafacoin.connect(account1).approve(mafastore.address, ethers.constants.MaxUint256);
 
-      await marketplace.connect(account1).buyItem(0, 3);
+      await mafastore.connect(account1).buyItem(0, 3);
 
       expect(await mafaBox.balanceOf(account1.address, 0)).to.equal(3);
 

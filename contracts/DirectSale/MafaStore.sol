@@ -15,7 +15,7 @@ import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
 
 import "../NFTs/BaseERC1155.sol";
 
-contract Marketplace is
+contract MafaStore is
     Initializable,
     PausableUpgradeable,
     OwnableUpgradeable,
@@ -149,8 +149,6 @@ contract Marketplace is
 
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
-    uint256[50] private __gap;
-
     // EVENTS
     event ItemCreated(address indexed nftAddress, uint256 id, uint256 nftId, uint256 price);
     event ItemBought(
@@ -162,9 +160,11 @@ contract Marketplace is
         uint256 price,
         uint256 amounts
     );
+
+    uint256[50] private __gap;
 }
 
-contract MarketplaceTestV2 is Marketplace {
+contract MafaStoreTestV2 is MafaStore {
     function version() public pure virtual override returns (string memory) {
         return "2.0.0";
     }
