@@ -8,50 +8,47 @@ import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 
 import "./MafagafoAvatarBase.sol";
 import "./BaseNft.sol";
-import "./Egg.sol";
+import "./EggNft.sol";
 
 contract MafagafoAvatarNft is MafagafoAvatarBase {
     using SafeMathUpgradeable for uint256;
     using AddressUpgradeable for address;
     using CountersUpgradeable for CountersUpgradeable.Counter;
 
-    Egg public eggContract;
+    EggNft public eggContract;
 
-    modifier onlyOwnerOf(uint256 parent1, uint256 parent2) {
-        require(ownerOf(parent1) == _msgSender(), "Sender must be the owner of 1st parent");
-        require(ownerOf(parent2) == _msgSender(), "Sender must be the owner of 2nd parent");
+    modifier onlyOwnerOf(uint256 parent1Id, uint256 parent2Id) {
+        require(ownerOf(parent1Id) == _msgSender(), "Sender must be the owner of 1st parent");
+        require(ownerOf(parent2Id) == _msgSender(), "Sender must be the owner of 2nd parent");
         _;
     }
 
     function initialize(address eggAddress) public initializer {
         require(eggAddress.isContract(), "NFT address must be a contract");
-        eggContract = Egg(eggAddress);
+        eggContract = EggNft(eggAddress);
 
         // todo: add address
         super.initialize("Mafagafo Avatar Nft", "MAN", "");
     }
 
-    function mint2(
+    function mint(
         address _to,
-        bytes32 _version,
+        uint16 _version,
         bytes32 _genes,
-        uint16 _generation,
-        uint32[] memory _parentsIDs
+        uint32 _generation,
+        uint256 _parent1Id,
+        uint256 _parent2Id
     ) public virtual onlyRole(MINTER_ROLE) {
         super.mint(_to);
 
-        _createMafagafo(_to, _tokenIdTracker.current(), _version, _genes, _generation, _parentsIDs);
+        _createMafagafo(_to, _tokenIdTracker.current(), _version, _genes, _generation, _parent1Id, _parent2Id);
 
         _tokenIdTracker.increment();
     }
 
-    function mate(
-        address _to,
-        uint32 id1,
-        uint32 id2
-    ) public virtual onlyOwnerOf(id1, id2) {
-        Mafagafo memory parent1 = mafagafo[id1];
-        Mafagafo memory parent2 = mafagafo[id2];
+    function mate(uint256 parent1Id, uint256 parent2Id) public virtual onlyOwnerOf(parent1Id, parent2Id) {
+        Mafagafo memory parent1 = mafagafo[parent1Id];
+        Mafagafo memory parent2 = mafagafo[parent2Id];
 
         require(parent1.matings < 1, "1st parent has already mated");
         require(parent2.matings < 1, "2nd parent has already mated");
@@ -59,14 +56,26 @@ contract MafagafoAvatarNft is MafagafoAvatarBase {
         parent1.matings.add(1);
         parent2.matings.add(1);
 
-        // bytes32 childGenes = mixGenes(parent1.genes, parent2.genes);
+        bytes32 childGenes = mixGenes(parent1.genes, parent2.genes);
 
-        // todo: fix TypeError: Invalid type for argument in function call. Invalid implicit conversion from uint32[2] memory to uint32[] memory requested.
-        // eggContract.mint2(_to, 0, childGenes, 0, [id1, id2]);
+        // TODO: update version and generation
+        eggContract.mint(_msgSender(), 0, childGenes, 0, parent1Id, parent2Id);
+
+        emit Mate(_msgSender(), parent1Id, parent2Id, 0, childGenes, 0);
     }
 
     // TODO: genetic mix logic
     function mixGenes(bytes32 _genes1, bytes32 _genes2) internal returns (bytes32) {
         return "";
     }
+
+    // EVENTS
+    event Mate(
+        address to,
+        uint256 parent1Id,
+        uint256 parent2Id,
+        uint16 eggVersion,
+        bytes32 eggGenes,
+        uint32 eggGeneration
+    );
 }
