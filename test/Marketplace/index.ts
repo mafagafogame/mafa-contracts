@@ -1,23 +1,18 @@
 /* eslint-disable camelcase */
 import { expect } from "chai";
-import { artifacts, ethers, waffle, upgrades } from "hardhat";
-import type { Artifact } from "hardhat/types";
+import { ethers, upgrades } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import fetch from "node-fetch";
 
 import {
   BaseERC1155,
   BaseERC1155__factory,
-  MafaCoin,
-  Marketplace,
-  MarketplaceTestV2,
-  MarketplaceTestV2__factory,
-  Marketplace__factory,
+  MafaCoin, MafaCoin__factory, MafaStore, MafaStore__factory, MafaStoreTestV2, MafaStoreTestV2__factory,
 } from "../../typechain";
-import { expandTo18Decimals } from "../shared/utilities";
+import {deployMafaCoin, expandTo18Decimals} from "../shared/utilities";
+import axios from "axios";
 
-describe("Unit tests", function () {
-  let marketplace: Marketplace;
+describe("MafaStore", function () {
+  let mafastore: MafaStore;
   let mafacoin: MafaCoin;
   let baseNft: BaseERC1155;
   let owner: SignerWithAddress;
@@ -30,27 +25,20 @@ describe("Unit tests", function () {
     [owner, account1] = await ethers.getSigners();
   });
 
-  describe("Marketplace", function () {
+  describe("MafaStore", function () {
     beforeEach(async function () {
-      const mafacoinArtifact: Artifact = await artifacts.readArtifact("MafaCoin");
-      mafacoin = <MafaCoin>await waffle.deployContract(owner, mafacoinArtifact);
-
-      await mafacoin.afterPreSale();
-      await mafacoin.setTeamBuyFee(0);
-      await mafacoin.setTeamSellFee(0);
-      await mafacoin.setLiquidyFee(0);
-      await mafacoin.setLotteryFee(0);
+      mafacoin = await deployMafaCoin(owner);
       await mafacoin.transfer(account1.address, expandTo18Decimals(100000));
 
-      const baseNftFactory: BaseERC1155__factory = await ethers.getContractFactory("BaseERC1155");
+      const baseNftFactory: BaseERC1155__factory = <BaseERC1155__factory>await ethers.getContractFactory("BaseERC1155");
       baseNft = <BaseERC1155>await upgrades.deployProxy(baseNftFactory, [""], {
         initializer: "initialize",
         kind: "uups",
       });
 
-      const marketplaceFactory: Marketplace__factory = await ethers.getContractFactory("Marketplace");
-      marketplace = <Marketplace>await upgrades.deployProxy(
-        marketplaceFactory,
+      const mafastoreFactory: MafaStore__factory = <MafaStore__factory>await ethers.getContractFactory("MafaStore");
+      mafastore = <MafaStore>await upgrades.deployProxy(
+        mafastoreFactory,
         [mafacoin.address, MAFA_BNB, BNB_BUSD],
         {
           initializer: "initialize",
@@ -58,22 +46,22 @@ describe("Unit tests", function () {
         },
       );
 
-      await baseNft.grantRole(ethers.utils.id("MINTER_ROLE"), marketplace.address);
+      await baseNft.grantRole(ethers.utils.id("MINTER_ROLE"), mafastore.address);
     });
 
     it("should be deployed with correct values", async function () {
-      expect(await marketplace.acceptedToken()).to.equal(mafacoin.address);
-      expect(await marketplace.owner()).to.equal(owner.address);
+      expect(await mafastore.acceptedToken()).to.equal(mafacoin.address);
+      expect(await mafastore.owner()).to.equal(owner.address);
     });
 
     it("should return the correct MAFABUSD price", async function () {
-      const response = await fetch(
+      const response = await axios(
         "https://api.pancakeswap.info/api/v2/tokens/0xaf44400a99a9693bf3c2e89b02652babacc5cdb9",
       );
-      const data = await response.json();
+      const data = await response.data;
       mafaPrice = parseFloat(data.data.price);
 
-      expect(parseFloat(ethers.utils.formatEther(await marketplace.getMAFAtoBUSDprice()))).to.be.within(
+      expect(parseFloat(ethers.utils.formatEther(await mafastore.getMAFAtoBUSDprice()))).to.be.within(
         mafaPrice - 0.01,
         mafaPrice + 0.01,
       );
@@ -82,7 +70,7 @@ describe("Unit tests", function () {
     describe("non owner", function () {
       it("non owner user should not be able to set the price of an item", async function () {
         await expect(
-          marketplace.connect(account1).createItem(baseNft.address, 0, expandTo18Decimals(100)),
+          mafastore.connect(account1).createItem(baseNft.address, 0, expandTo18Decimals(100)),
         ).to.be.revertedWith("Ownable: caller is not the owner");
       });
     });
@@ -90,20 +78,20 @@ describe("Unit tests", function () {
     describe("owner", function () {
       describe("create item", function () {
         it("owner should not be able to create an item passing a non contract NFT address", async function () {
-          await expect(marketplace.createItem(account1.address, 0, expandTo18Decimals(0))).to.be.revertedWith(
+          await expect(mafastore.createItem(account1.address, 0, expandTo18Decimals(0))).to.be.revertedWith(
             "NFT address must be a contract",
           );
         });
 
         it("owner should not be able to create an item with 0 price", async function () {
-          await expect(marketplace.createItem(baseNft.address, 0, expandTo18Decimals(0))).to.be.revertedWith(
+          await expect(mafastore.createItem(baseNft.address, 0, expandTo18Decimals(0))).to.be.revertedWith(
             "Item price can't be 0",
           );
         });
 
         it("owner should be able to create an item", async function () {
-          await expect(marketplace.createItem(baseNft.address, 0, expandTo18Decimals(100)))
-            .to.emit(marketplace, "ItemCreated")
+          await expect(mafastore.createItem(baseNft.address, 0, expandTo18Decimals(100)))
+            .to.emit(mafastore, "ItemCreated")
             .withArgs(baseNft.address, 0, 0, expandTo18Decimals(100));
         });
       });
@@ -111,33 +99,33 @@ describe("Unit tests", function () {
 
     describe("buy item", function () {
       it("user shouldn't be able to buy an item passing an id that doesn't exists", async function () {
-        await expect(marketplace.buyItem(0, 1)).to.be.revertedWith("Item doesn't exists");
+        await expect(mafastore.buyItem(0, 1)).to.be.revertedWith("Item doesn't exists");
       });
 
       it("user should not be able to buy an item if he doesn't allow the transfer", async function () {
-        await marketplace.createItem(baseNft.address, 0, expandTo18Decimals(100));
+        await mafastore.createItem(baseNft.address, 0, expandTo18Decimals(100));
 
-        await expect(marketplace.connect(account1).buyItem(0, 1)).to.be.revertedWith("Check the token allowance");
+        await expect(mafastore.connect(account1).buyItem(0, 1)).to.be.revertedWith("Check the token allowance");
       });
 
       it("user should not be able to buy an item if allowances are not enough", async function () {
-        await marketplace.createItem(baseNft.address, 0, expandTo18Decimals(100));
+        await mafastore.createItem(baseNft.address, 0, expandTo18Decimals(100));
 
-        await mafacoin.connect(account1).approve(marketplace.address, expandTo18Decimals(1));
+        await mafacoin.connect(account1).approve(mafastore.address, expandTo18Decimals(1));
 
-        await expect(marketplace.connect(account1).buyItem(0, 1)).to.be.revertedWith("Check the token allowance");
+        await expect(mafastore.connect(account1).buyItem(0, 1)).to.be.revertedWith("Check the token allowance");
       });
 
       it("user should be able to buy an item", async function () {
-        await marketplace.createItem(baseNft.address, 0, expandTo18Decimals(100));
+        await mafastore.createItem(baseNft.address, 0, expandTo18Decimals(100));
 
-        await mafacoin.connect(account1).approve(marketplace.address, ethers.constants.MaxUint256);
+        await mafacoin.connect(account1).approve(mafastore.address, ethers.constants.MaxUint256);
 
         expect(await baseNft.totalSupply(0)).to.equal(0);
         expect(await mafacoin.balanceOf(account1.address)).to.equal(expandTo18Decimals(100000));
         expect(await baseNft.balanceOf(account1.address, 0)).to.equal(0);
 
-        await expect(marketplace.connect(account1).buyItem(0, 1)).to.emit(marketplace, "ItemBought");
+        await expect(mafastore.connect(account1).buyItem(0, 1)).to.emit(mafastore, "ItemBought");
 
         expect(await baseNft.totalSupply(0)).to.equal(1);
         expect(parseFloat(ethers.utils.formatEther(await mafacoin.balanceOf(account1.address)))).to.be.within(
@@ -148,15 +136,15 @@ describe("Unit tests", function () {
       });
 
       it("user should be able to buy multiple amounts of an item", async function () {
-        await marketplace.createItem(baseNft.address, 0, expandTo18Decimals(100));
+        await mafastore.createItem(baseNft.address, 0, expandTo18Decimals(100));
 
-        await mafacoin.connect(account1).approve(marketplace.address, ethers.constants.MaxUint256);
+        await mafacoin.connect(account1).approve(mafastore.address, ethers.constants.MaxUint256);
 
         expect(await baseNft.totalSupply(0)).to.equal(0);
         expect(await mafacoin.balanceOf(account1.address)).to.equal(expandTo18Decimals(100000));
         expect(await baseNft.balanceOf(account1.address, 0)).to.equal(0);
 
-        await expect(marketplace.connect(account1).buyItem(0, 5)).to.emit(marketplace, "ItemBought");
+        await expect(mafastore.connect(account1).buyItem(0, 5)).to.emit(mafastore, "ItemBought");
 
         expect(await baseNft.totalSupply(0)).to.equal(5);
         expect(parseFloat(ethers.utils.formatEther(await mafacoin.balanceOf(account1.address)))).to.be.within(
@@ -169,31 +157,31 @@ describe("Unit tests", function () {
 
     describe("pause", function () {
       it("contract should initiate unpaused", async function () {
-        expect(await marketplace.paused()).to.equal(false);
+        expect(await mafastore.paused()).to.equal(false);
       });
 
       it("owner should be able to pause/unpause contract", async function () {
-        await marketplace.pause();
-        expect(await marketplace.paused()).to.equal(true);
+        await mafastore.pause();
+        expect(await mafastore.paused()).to.equal(true);
 
-        await marketplace.unpause();
-        expect(await marketplace.paused()).to.equal(false);
+        await mafastore.unpause();
+        expect(await mafastore.paused()).to.equal(false);
       });
     });
 
     describe("upgradable", function () {
       it("should initiate on version 1.0.0", async function () {
-        expect(await marketplace.version()).to.equal("1.0.0");
+        expect(await mafastore.version()).to.equal("1.0.0");
       });
 
       it("should be upgradable", async function () {
-        expect(await marketplace.version()).to.equal("1.0.0");
-        const marketplaceFactoryV2: MarketplaceTestV2__factory = await ethers.getContractFactory("MarketplaceTestV2");
-        const marketplaceV2 = <MarketplaceTestV2>(
-          await upgrades.upgradeProxy(marketplace, marketplaceFactoryV2, { kind: "uups" })
+        expect(await mafastore.version()).to.equal("1.0.0");
+        const mafastoreFactoryV2: MafaStoreTestV2__factory = <MafaStoreTestV2__factory>await ethers.getContractFactory("MafaStoreTestV2");
+        const mafastoreV2 = <MafaStoreTestV2>(
+          await upgrades.upgradeProxy(mafastore, mafastoreFactoryV2, { kind: "uups" })
         );
 
-        expect(await marketplaceV2.version()).to.equal("2.0.0");
+        expect(await mafastoreV2.version()).to.equal("2.0.0");
       });
     });
   });
