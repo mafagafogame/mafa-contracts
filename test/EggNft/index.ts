@@ -12,7 +12,7 @@ import {
   MafagafoAvatarNft,
   MafagafoAvatarNft__factory,
 } from "../../typechain";
-import { deployMafaCoin, expandTo18Decimals } from "../shared/utilities";
+import { bigNumberToFloat, daysToUnixDate, deployMafaCoin, expandTo18Decimals } from "../shared/utilities";
 
 describe("Unit tests", function () {
   let mafacoin: MafaCoin;
@@ -60,6 +60,7 @@ describe("Unit tests", function () {
       );
 
       await mafagafoAvatar.grantRole(ethers.utils.id("MINTER_ROLE"), egg.address);
+      await brooder.grantRole(ethers.utils.id("BURNER_ROLE"), egg.address);
     });
 
     it("should be deployed with correct values", async function () {
@@ -105,7 +106,7 @@ describe("Unit tests", function () {
       });
 
       it("user should be able to hatch an egg if hatch date has passed", async function () {
-        await ethers.provider.send("evm_increaseTime", [210 * 24 * 60 * 60]);
+        await ethers.provider.send("evm_increaseTime", [daysToUnixDate(210)]);
         await ethers.provider.send("evm_mine", []);
 
         const blockNumber = await ethers.provider.getBlockNumber();
@@ -118,6 +119,43 @@ describe("Unit tests", function () {
 
         expect(await egg.balanceOf(account1.address)).to.equal(0);
         expect(await mafagafoAvatar.ownerOf(1)).to.equal(account1.address);
+      });
+    });
+
+    describe("breed egg", function () {
+      beforeEach(async function () {
+        await brooder.createBrooder(0, daysToUnixDate(20));
+
+        await brooder.mint(account1.address, 0, 1, ethers.utils.formatBytes32String(""));
+      });
+
+      it("user should not be able to breed an egg that is not owned by him", async function () {
+        await expect(egg.breedEgg(0, 0)).to.be.revertedWith("Sender must be the owner of the egg");
+      });
+
+      it("user should not be able to breed an egg that is not owned by him", async function () {
+        await expect(egg.connect(account1).breedEgg(0, 1)).to.be.revertedWith("You don't own any of this brooder");
+      });
+
+      it("user should be able to breed an egg", async function () {
+        const blockNumber = await ethers.provider.getBlockNumber();
+        const block = await ethers.provider.getBlock(blockNumber);
+        const timestamp = block.timestamp;
+
+        expect((await egg.egg(0)).hatchDate.toNumber()).to.be.greaterThan(timestamp + daysToUnixDate(200));
+
+        await expect(egg.connect(account1).breedEgg(0, 0))
+          .to.emit(egg, "EggBreeded")
+          .withArgs(0, 0, timestamp + 1 + daysToUnixDate(20));
+
+        expect((await egg.egg(0)).hatchDate.toNumber()).to.be.equal(timestamp + 1 + daysToUnixDate(20));
+
+        await expect(egg.connect(account1).hatchEgg(0)).to.be.revertedWith("Egg is not in time to hatch");
+
+        await ethers.provider.send("evm_increaseTime", [daysToUnixDate(20)]);
+        await ethers.provider.send("evm_mine", []);
+
+        await expect(egg.connect(account1).hatchEgg(0)).to.emit(egg, "EggHatched");
       });
     });
   });

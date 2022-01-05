@@ -11,8 +11,10 @@ contract BrooderNft is BaseERC1155 {
     using SafeMathUpgradeable for uint256;
     using AddressUpgradeable for address;
 
+    bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
+
     struct Brooder {
-        uint64 breedTime;
+        uint256 breedTime;
     }
 
     mapping(uint256 => Brooder) public brooder;
@@ -27,7 +29,7 @@ contract BrooderNft is BaseERC1155 {
      * @param id ID of the brooder
      * @param breedTime time to breed an egg with this brooder
      */
-    function createBrooder(uint256 id, uint64 breedTime) external virtual onlyRole(DEFAULT_ADMIN_ROLE) {
+    function createBrooder(uint256 id, uint256 breedTime) external virtual onlyRole(DEFAULT_ADMIN_ROLE) {
         brooder[id] = Brooder(breedTime);
 
         emit BrooderCreated(id, breedTime);
@@ -37,10 +39,19 @@ contract BrooderNft is BaseERC1155 {
      * @dev returns the breed time of a brooder
      * @param id ID of the brooder
      */
-    function getBrooder(uint256 id) external virtual returns (uint64) {
+    function getBrooder(uint256 id) external virtual returns (uint256) {
         return (brooder[id].breedTime);
     }
 
+    /**
+     * @dev burns a brooder that have been used
+     * @param from User who used the brooder
+     * @param id ID of the brooder
+     */
+    function onUse(address from, uint256 id) external virtual onlyRole(BURNER_ROLE) {
+        super._burn(from, id, 1);
+    }
+
     // EVENTS
-    event BrooderCreated(uint256 id, uint64 time);
+    event BrooderCreated(uint256 id, uint256 time);
 }
