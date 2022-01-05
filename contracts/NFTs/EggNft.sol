@@ -45,13 +45,14 @@ contract EggNft is EggBase {
         _tokenIdTracker.increment();
     }
 
-    // hatch an egg after timer has passed
-    function hatchEgg(uint256 id) public virtual onlyRole(MINTER_ROLE) {
+    // hatch an egg after enough time has passed
+    function hatchEgg(uint256 id) public virtual {
         require(ownerOf(id) == _msgSender(), "Sender must be the owner of the egg");
 
         Egg memory _egg = egg[id];
         require(block.timestamp < _egg.timer, "Egg is not in time to hatch");
 
+        super._burn(id);
         mafagafoContract.mint(_msgSender(), _egg.version, _egg.genes, _egg.generation, _egg.parent1Id, _egg.parent2Id);
     }
 
@@ -59,8 +60,12 @@ contract EggNft is EggBase {
         require(ownerOf(id) == _msgSender(), "Sender must be the owner of the egg");
         require(brooderContract.balanceOf(_msgSender(), brooderId) > 0, "You don't own any of this brooder");
 
-        uint64 time = brooderContract.getBrooder(brooderId);
-        egg[id].timer = egg[id].timer - time;
+        Egg storage _egg = egg[id];
+
+        uint64 newTimer = brooderContract.getBrooder(brooderId);
+        _egg.timer = newTimer;
+        _egg.breeding = true;
+        _egg.brooderType = bytes32(brooderId);
 
         brooderContract.burn(_msgSender(), brooderId, 1);
     }

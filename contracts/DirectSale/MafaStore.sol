@@ -188,7 +188,7 @@ contract MafaStore is
     /**
      * @dev Withdraw BNB from this contract
      * @param to receiver address
-     * @param amount amount to withdraw  
+     * @param amount amount to withdraw
      */
     function withdraw(address payable to, uint256 amount) external virtual onlyOwner {
         require(amount <= payable(address(this)).balance, "You are trying to withdraw more funds than available");
@@ -199,7 +199,7 @@ contract MafaStore is
      * @dev Withdraw any ERC20 token from this contract
      * @param tokenAddress ERC20 token to withdraw
      * @param to receiver address
-     * @param amount amount to withdraw  
+     * @param amount amount to withdraw
      */
     function withdrawERC20(
         address tokenAddress,
@@ -221,7 +221,7 @@ contract MafaStore is
      * @dev Withdraw any ERC721 token from this contract
      * @param tokenAddress ERC721 token to withdraw
      * @param to receiver address
-     * @param tokenId ID of the NFT to withdraw 
+     * @param tokenId ID of the NFT to withdraw
      */
     function withdrawERC721(
         address tokenAddress,
@@ -243,7 +243,7 @@ contract MafaStore is
      * @dev Withdraw any ERC1155 token from this contract
      * @param tokenAddress ERC1155 token to withdraw
      * @param to receiver address
-     * @param id ID of the token to withdraw 
+     * @param id ID of the token to withdraw
      * @param amount amount to withdraw
      */
     function withdrawERC1155(
