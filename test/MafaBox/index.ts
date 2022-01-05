@@ -13,13 +13,10 @@ import {
   MafaCoin,
   MafagafoAvatarNft,
   MafagafoAvatarNft__factory,
-  MafaStore,
-  MafaStore__factory,
 } from "../../typechain";
 import { deployMafaCoin, expandTo18Decimals } from "../shared/utilities";
 
 describe("Unit tests", function () {
-  let mafastore: MafaStore;
   let mafacoin: MafaCoin;
   let brooder: BrooderNft;
   let egg: EggNft;
@@ -27,8 +24,6 @@ describe("Unit tests", function () {
   let mafaBox: MafaBox;
   let owner: SignerWithAddress;
   let account1: SignerWithAddress;
-  const MAFA_BNB = "0xC53C7F4736F4a6DA25e950e25c58011Fe26B4a93";
-  const BNB_BUSD = "0x58F876857a02D6762E0101bb5C46A8c1ED44Dc16";
 
   before(async function () {
     [owner, account1] = await ethers.getSigners();
