@@ -69,15 +69,7 @@ describe("Unit tests", function () {
         },
       );
 
-      const mafastoreFactory: MafaStore__factory = <MafaStore__factory>await ethers.getContractFactory("MafaStore");
-      mafastore = <MafaStore>await upgrades.deployProxy(mafastoreFactory, [mafacoin.address, MAFA_BNB, BNB_BUSD], {
-        initializer: "initialize",
-        kind: "uups",
-      });
-
-      await mafaBox.grantRole(ethers.utils.id("MINTER_ROLE"), mafastore.address);
       await mafagafoAvatar.grantRole(ethers.utils.id("MINTER_ROLE"), mafaBox.address);
-      await mafastore.createItem(mafaBox.address, 0, expandTo18Decimals(100));
     });
 
     it("should be deployed with correct values", async function () {
@@ -87,8 +79,6 @@ describe("Unit tests", function () {
       expect(await mafaBox.probabilities(2)).to.equal(2000);
       expect(await mafaBox.probabilities(3)).to.equal(2500);
       expect(await mafaBox.probabilities(4)).to.equal(3500);
-      const item = await mafastore.items(0);
-      expect(item[0]).to.equal(mafaBox.address);
     });
 
     it("user shouldn't be able to open a box if he doesn't have any", async function () {
@@ -96,9 +86,7 @@ describe("Unit tests", function () {
     });
 
     it("user should be able to open a box and receive a random mafagafo", async function () {
-      await mafacoin.connect(account1).approve(mafastore.address, ethers.constants.MaxUint256);
-
-      await mafastore.connect(account1).buyItem(0, 3);
+      await mafaBox.mint(account1.address, 0, 3, ethers.utils.id(""));
 
       expect(await mafaBox.balanceOf(account1.address, 0)).to.equal(3);
 
