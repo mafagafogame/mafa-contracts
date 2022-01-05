@@ -16,7 +16,7 @@ import {
   MafaStoreTestV2,
   MafaStoreTestV2__factory,
 } from "../../typechain";
-import { deployMafaCoin, expandTo18Decimals } from "../shared/utilities";
+import { bigNumberToFloat, deployMafaCoin, expandTo18Decimals } from "../shared/utilities";
 import axios from "axios";
 
 describe("MafaStore", function () {
@@ -86,10 +86,7 @@ describe("MafaStore", function () {
       const data = await response.data;
       mafaPrice = parseFloat(data.data.price);
 
-      expect(parseFloat(ethers.utils.formatEther(await mafastore.getMAFAtoBUSDprice()))).to.be.within(
-        mafaPrice - 0.01,
-        mafaPrice + 0.01,
-      );
+      expect(bigNumberToFloat(await mafastore.getMAFAtoBUSDprice())).to.be.within(mafaPrice - 0.01, mafaPrice + 0.01);
     });
 
     describe("non owner", function () {
@@ -218,7 +215,7 @@ describe("MafaStore", function () {
         await expect(mafastore.connect(account1).buyItem(0, 1)).to.emit(mafastore, "ItemBought");
 
         expect(await brooder.totalSupply(0)).to.equal(1);
-        expect(parseFloat(ethers.utils.formatEther(await mafacoin.balanceOf(account1.address)))).to.be.within(
+        expect(bigNumberToFloat(await mafacoin.balanceOf(account1.address))).to.be.within(
           100000 - 100 / mafaPrice - 100,
           100000 - 100 / mafaPrice + 100,
         );
@@ -237,7 +234,7 @@ describe("MafaStore", function () {
         await expect(mafastore.connect(account1).buyItem(0, 5)).to.emit(mafastore, "ItemBought");
 
         expect(await brooder.totalSupply(0)).to.equal(5);
-        expect(parseFloat(ethers.utils.formatEther(await mafacoin.balanceOf(account1.address)))).to.be.within(
+        expect(bigNumberToFloat(await mafacoin.balanceOf(account1.address))).to.be.within(
           100000 - (5 * 100) / mafaPrice - 100,
           100000 - (5 * 100) / mafaPrice + 100,
         );
@@ -298,23 +295,20 @@ describe("MafaStore", function () {
 
     describe("withdraw tokens", function () {
       it("owner should be able to withdraw BNB from the contract", async function () {
-        const previousBalance = parseFloat(ethers.utils.formatEther(await owner.getBalance()));
+        const previousBalance = bigNumberToFloat(await owner.getBalance());
 
         await owner.sendTransaction({
           to: mafastore.address,
           value: expandTo18Decimals(2),
         });
-        expect(parseFloat(ethers.utils.formatEther(await owner.getBalance()))).to.be.within(
+        expect(bigNumberToFloat(await owner.getBalance())).to.be.within(
           previousBalance - 2 - 0.01,
           previousBalance - 2,
         );
 
         await mafastore.withdraw(owner.address, expandTo18Decimals(2));
 
-        expect(parseFloat(ethers.utils.formatEther(await owner.getBalance()))).to.be.within(
-          previousBalance - 0.01,
-          previousBalance,
-        );
+        expect(bigNumberToFloat(await owner.getBalance())).to.be.within(previousBalance - 0.01, previousBalance);
       });
 
       it("owner should be able to withdraw ERC20 token from the contract", async function () {

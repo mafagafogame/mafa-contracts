@@ -11,7 +11,7 @@ describe("TimeLockedWallet", function () {
   let address1: SignerWithAddress;
   let timestamp: number;
 
-  const oneDay = 7 * 24 * 60 * 60;
+  const oneWeek = 7 * 24 * 60 * 60;
 
   before(async function () {
     [owner, address1] = await ethers.getSigners();
@@ -27,7 +27,7 @@ describe("TimeLockedWallet", function () {
     mafacoin = await mafacoin.deployed();
 
     const TimeLockedWalletFactory: TimeLockedWallet__factory = await ethers.getContractFactory("TimeLockedWallet");
-    timeLockedWallet = await TimeLockedWalletFactory.deploy(address1.address, mafacoin.address, timestamp + oneDay);
+    timeLockedWallet = await TimeLockedWalletFactory.deploy(address1.address, mafacoin.address, timestamp + oneWeek);
     timeLockedWallet = await timeLockedWallet.deployed();
   });
 
@@ -49,6 +49,6 @@ describe("TimeLockedWallet", function () {
     const contractTimestamp = block.timestamp;
 
     expect(createdAt).to.equal(contractTimestamp);
-    expect(unlockDate).to.equal(timestamp + oneDay);
+    expect(unlockDate).to.equal(timestamp + oneWeek);
   });
 });

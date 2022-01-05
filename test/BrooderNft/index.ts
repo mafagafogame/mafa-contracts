@@ -4,12 +4,13 @@ import { ethers, upgrades } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 import { BrooderNft, BrooderNft__factory } from "../../typechain";
+import { daysToUnixDate } from "../shared/utilities";
 
 describe("Unit tests", function () {
   let brooder: BrooderNft;
   let account1: SignerWithAddress;
 
-  const fiveDays = 5 * 24 * 60 * 60;
+  const fiveDays = daysToUnixDate(5);
 
   before(async function () {
     [, account1] = await ethers.getSigners();

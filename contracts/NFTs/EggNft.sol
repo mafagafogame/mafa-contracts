@@ -69,12 +69,14 @@ contract EggNft is EggBase {
 
         Egg storage _egg = egg[id];
 
-        uint64 newTimer = brooderContract.getBrooder(brooderId);
-        _egg.hatchDate = block.timestamp + newTimer;
+        uint256 newTimer = block.timestamp + brooderContract.getBrooder(brooderId);
+        _egg.hatchDate = newTimer;
         _egg.breeding = true;
         _egg.brooderType = bytes32(brooderId);
 
-        brooderContract.burn(_msgSender(), brooderId, 1);
+        brooderContract.onUse(_msgSender(), brooderId);
+
+        emit EggBreeded(id, brooderId, newTimer);
     }
 
     // EVENTS
@@ -86,4 +88,5 @@ contract EggNft is EggBase {
         uint32 generation,
         uint256[2] parentsIDs
     );
+    event EggBreeded(uint256 id, uint256 brooderId, uint256 newTimer);
 }

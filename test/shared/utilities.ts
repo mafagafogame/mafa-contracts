@@ -8,6 +8,14 @@ export function expandTo18Decimals(n: number): BigNumber {
   return ethers.BigNumber.from(n).mul(ethers.BigNumber.from(10).pow(18));
 }
 
+export function bigNumberToFloat(n: BigNumber): number {
+  return parseFloat(ethers.utils.formatEther(n));
+}
+
+export function daysToUnixDate(days: number): number {
+  return days * 24 * 60 * 60;
+}
+
 export async function deployMafaCoin(owner: SignerWithAddress) {
   const mafacoinArtifact: Artifact = await artifacts.readArtifact("MafaCoin");
   const mafacoin = <MafaCoin>await waffle.deployContract(owner, mafacoinArtifact);
