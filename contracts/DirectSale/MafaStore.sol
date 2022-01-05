@@ -97,7 +97,7 @@ contract MafaStore is
     /**
      * @dev list all items. to be used on the frontend
      */
-    function listItems() external view returns (Item[]){
+    function listItems() external view returns (Item[] memory){
         return items;
     }
 
