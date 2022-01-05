@@ -95,6 +95,13 @@ contract MafaStore is
     }
 
     /**
+     * @dev list all items. to be used on the frontend
+     */
+    function listItems() external view returns (Item[]){
+        return items;
+    }
+
+    /**
      * @dev Update the price of an item
      *  Can only be called by contract owner
      * @param id Id of the item
