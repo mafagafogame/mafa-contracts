@@ -13,7 +13,7 @@ contract EggBase is BaseNft {
         uint32 generation;
         uint256 parent1Id;
         uint256 parent2Id;
-        uint64 timer;
+        uint256 hatchDate;
         bool breeding;
         bytes32 brooderType;
     }
@@ -33,12 +33,12 @@ contract EggBase is BaseNft {
             generation: _generation,
             parent1Id: _parent1Id,
             parent2Id: _parent2Id,
-            timer: uint64(30 weeks),
+            hatchDate: block.timestamp + 30 weeks,
             breeding: false,
             brooderType: bytes32("none")
         });
 
-        emit Layed(_to, _id, _version, _genes, _generation, [_parent1Id, _parent2Id], uint64(30 weeks));
+        emit Layed(_to, _id, _version, _genes, _generation, [_parent1Id, _parent2Id], block.timestamp + 30 weeks);
     }
 
     // EVENTS
@@ -49,6 +49,6 @@ contract EggBase is BaseNft {
         bytes32 genes,
         uint32 generation,
         uint256[2] parentsIDs,
-        uint64 timer
+        uint256 hatchDate
     );
 }

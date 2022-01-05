@@ -38,11 +38,9 @@ contract EggNft is EggBase {
         uint256 _parent1Id,
         uint256 _parent2Id
     ) public virtual onlyRole(MINTER_ROLE) {
-        super.mint(_to);
-
         _layEgg(_to, _tokenIdTracker.current(), _version, _genes, _generation, _parent1Id, _parent2Id);
 
-        _tokenIdTracker.increment();
+        super.mint(_to);
     }
 
     // hatch an egg after enough time has passed
@@ -50,10 +48,19 @@ contract EggNft is EggBase {
         require(ownerOf(id) == _msgSender(), "Sender must be the owner of the egg");
 
         Egg memory _egg = egg[id];
-        require(block.timestamp < _egg.timer, "Egg is not in time to hatch");
+        require(block.timestamp >= _egg.hatchDate, "Egg is not in time to hatch");
 
         super._burn(id);
         mafagafoContract.mint(_msgSender(), _egg.version, _egg.genes, _egg.generation, _egg.parent1Id, _egg.parent2Id);
+
+        emit EggHatched(
+            id,
+            block.timestamp,
+            _egg.version,
+            _egg.genes,
+            _egg.generation,
+            [_egg.parent1Id, _egg.parent2Id]
+        );
     }
 
     function breedEgg(uint256 id, uint256 brooderId) public virtual {
@@ -63,10 +70,20 @@ contract EggNft is EggBase {
         Egg storage _egg = egg[id];
 
         uint64 newTimer = brooderContract.getBrooder(brooderId);
-        _egg.timer = newTimer;
+        _egg.hatchDate = block.timestamp + newTimer;
         _egg.breeding = true;
         _egg.brooderType = bytes32(brooderId);
 
         brooderContract.burn(_msgSender(), brooderId, 1);
     }
+
+    // EVENTS
+    event EggHatched(
+        uint256 id,
+        uint256 hatchDate,
+        uint16 version,
+        bytes32 genes,
+        uint32 generation,
+        uint256[2] parentsIDs
+    );
 }
