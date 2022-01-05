@@ -19,6 +19,10 @@ contract MafaBox is BaseERC1155 {
 
     MafagafoAvatarNft public mafagafoContract;
 
+    /**
+     * @param _mafagafo MafagafoAvatarNft address
+     * @param _probabilities array of probabilities for each mafagafo
+     */
     function initialize(address _mafagafo, uint256[] memory _probabilities) public initializer {
         require(_mafagafo.isContract(), "NFT address must be a contract");
         _requireProbabilitiesMatch(_probabilities);
@@ -30,6 +34,10 @@ contract MafaBox is BaseERC1155 {
         __BaseERC1155_init("");
     }
 
+    /**
+     * @dev Open a mystery box and mint a random mafagafo (from generation 0) to sender
+     * @param id box type
+     */
     function openBox(uint256 id) external virtual {
         require(balanceOf(_msgSender(), id) > 0, "You don't have any box to open");
         super._burn(_msgSender(), id, 1);
@@ -51,6 +59,10 @@ contract MafaBox is BaseERC1155 {
         _totalOpen.increment();
     }
 
+    /**
+     * @dev requires that probabilities array sum equals 10000
+     * @param _probabilities array of probabilities
+     */
     function _requireProbabilitiesMatch(uint256[] memory _probabilities) internal pure virtual {
         uint256 sum = 0;
 
@@ -61,6 +73,9 @@ contract MafaBox is BaseERC1155 {
         require(sum == 10000, "probabilities values sum must equal 10000");
     }
 
+    /**
+     * @dev generates a random number between 0 and 10000
+     */
     function _random() internal view virtual returns (uint256 randomNumber) {
         return
             uint256(keccak256(abi.encodePacked(block.difficulty, block.timestamp, _msgSender(), _totalOpen.current())))
