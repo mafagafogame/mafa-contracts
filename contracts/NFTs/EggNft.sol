@@ -28,6 +28,7 @@ contract EggNft is EggBase {
     function setMafagafoContract(address mafagafoAddress) external virtual onlyRole(DEFAULT_ADMIN_ROLE) {
         require(mafagafoAddress.isContract(), "Mafagafo NFT address must be a contract");
         mafagafoContract = MafagafoAvatarNft(mafagafoAddress);
+        grantRole(MINTER_ROLE, mafagafoAddress);
     }
 
     function mint(
