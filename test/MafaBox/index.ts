@@ -1,7 +1,6 @@
 /* eslint-disable camelcase */
 import { expect } from "chai";
-import { artifacts, ethers, waffle, upgrades } from "hardhat";
-import type { Artifact } from "hardhat/types";
+import { ethers, upgrades } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 import {
