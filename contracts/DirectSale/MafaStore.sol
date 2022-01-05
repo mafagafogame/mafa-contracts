@@ -8,9 +8,12 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC1155/utils/ERC1155ReceiverUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
 
 import "../NFTs/BaseERC1155.sol";
@@ -21,7 +24,8 @@ contract MafaStore is
     PausableUpgradeable,
     OwnableUpgradeable,
     UUPSUpgradeable,
-    ReentrancyGuardUpgradeable
+    ReentrancyGuardUpgradeable,
+    ERC1155ReceiverUpgradeable
 {
     using SafeMathUpgradeable for uint256;
     using AddressUpgradeable for address;
@@ -168,7 +172,7 @@ contract MafaStore is
 
     function _sellAvatar(uint256 tokenId) internal virtual {
         require(
-            acceptedToken.balanceOf(address(this)) > 300,
+            acceptedToken.balanceOf(address(this)) >= 300,
             "The mafastore is unable to receive new avatars for the moment"
         );
 
@@ -179,6 +183,84 @@ contract MafaStore is
         avatarContract.transferFrom(sender, address(this), tokenId);
 
         emit AvatarSold(sender, tokenId);
+    }
+
+    /**
+     * @dev Withdraw BNB from this contract
+     * @param to receiver address
+     * @param amount amount to withdraw  
+     */
+    function withdraw(address payable to, uint256 amount) external virtual onlyOwner {
+        require(amount <= payable(address(this)).balance, "You are trying to withdraw more funds than available");
+        to.transfer(amount);
+    }
+
+    /**
+     * @dev Withdraw any ERC20 token from this contract
+     * @param tokenAddress ERC20 token to withdraw
+     * @param to receiver address
+     * @param amount amount to withdraw  
+     */
+    function withdrawERC20(
+        address tokenAddress,
+        address to,
+        uint256 amount
+    ) external virtual onlyOwner {
+        require(tokenAddress.isContract(), "ERC20 token address must be a contract");
+
+        IERC20 tokenContract = IERC20(tokenAddress);
+        require(
+            tokenContract.balanceOf(address(this)) >= amount,
+            "You are trying to withdraw more funds than available"
+        );
+
+        tokenContract.transfer(to, amount);
+    }
+
+    /**
+     * @dev Withdraw any ERC721 token from this contract
+     * @param tokenAddress ERC721 token to withdraw
+     * @param to receiver address
+     * @param tokenId ID of the NFT to withdraw 
+     */
+    function withdrawERC721(
+        address tokenAddress,
+        address to,
+        uint256 tokenId
+    ) external virtual onlyOwner {
+        require(tokenAddress.isContract(), "ERC721 token address must be a contract");
+
+        IERC721 tokenContract = IERC721(tokenAddress);
+        require(
+            tokenContract.ownerOf(tokenId) == address(this),
+            "Mafastore doesn't own the NFT you are trying to withdraw"
+        );
+
+        tokenContract.safeTransferFrom(address(this), to, tokenId);
+    }
+
+    /**
+     * @dev Withdraw any ERC1155 token from this contract
+     * @param tokenAddress ERC1155 token to withdraw
+     * @param to receiver address
+     * @param id ID of the token to withdraw 
+     * @param amount amount to withdraw
+     */
+    function withdrawERC1155(
+        address tokenAddress,
+        address to,
+        uint256 id,
+        uint256 amount
+    ) external virtual onlyOwner {
+        require(tokenAddress.isContract(), "ERC1155 token address must be a contract");
+
+        IERC1155 tokenContract = IERC1155(tokenAddress);
+        require(
+            tokenContract.balanceOf(address(this), id) >= amount,
+            "Mafastore doesn't own the amount of tokens to withdraw"
+        );
+
+        tokenContract.safeTransferFrom(address(this), to, id, amount, "");
     }
 
     /**
@@ -199,6 +281,38 @@ contract MafaStore is
     }
 
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
+
+    // MUST IMPLEMENT TO BE ABLE TO RECEIVE TOKENS
+    receive() external payable {}
+
+    function onERC1155Received(
+        address,
+        address,
+        uint256,
+        uint256,
+        bytes memory
+    ) public virtual returns (bytes4) {
+        return this.onERC1155Received.selector;
+    }
+
+    function onERC1155BatchReceived(
+        address,
+        address,
+        uint256[] memory,
+        uint256[] memory,
+        bytes memory
+    ) public virtual returns (bytes4) {
+        return this.onERC1155BatchReceived.selector;
+    }
+
+    function onERC721Received(
+        address,
+        address,
+        uint256,
+        bytes memory
+    ) public virtual returns (bytes4) {
+        return this.onERC721Received.selector;
+    }
 
     // EVENTS
     event ItemCreated(address indexed nftAddress, uint256 id, uint256 nftId, uint256 price);

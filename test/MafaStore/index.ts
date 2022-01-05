@@ -106,6 +106,30 @@ describe("MafaStore", function () {
           "Ownable: caller is not the owner",
         );
       });
+
+      it("non owner user should not be able to withdraw BNB", async function () {
+        await expect(mafastore.connect(account1).withdraw(account1.address, expandTo18Decimals(1))).to.be.revertedWith(
+          "Ownable: caller is not the owner",
+        );
+      });
+
+      it("non owner user should not be able to withdraw ERC20", async function () {
+        await expect(
+          mafastore.connect(account1).withdrawERC20(mafacoin.address, account1.address, expandTo18Decimals(1)),
+        ).to.be.revertedWith("Ownable: caller is not the owner");
+      });
+
+      it("non owner user should not be able to withdraw ERC721", async function () {
+        await expect(
+          mafastore.connect(account1).withdrawERC721(mafagafoAvatar.address, account1.address, 1),
+        ).to.be.revertedWith("Ownable: caller is not the owner");
+      });
+
+      it("non owner user should not be able to withdraw ERC1155", async function () {
+        await expect(
+          mafastore.connect(account1).withdrawERC1155(brooder.address, account1.address, 1, 2),
+        ).to.be.revertedWith("Ownable: caller is not the owner");
+      });
     });
 
     describe("owner", function () {
@@ -154,7 +178,7 @@ describe("MafaStore", function () {
     });
 
     describe("buy item", function () {
-      it("user shouldn't be able to buy an item passing an id that doesn't exists", async function () {
+      it("user should not be able to buy an item passing an id that doesn't exists", async function () {
         await expect(mafastore.buyItem(0, 1)).to.be.revertedWith("Item doesn't exists");
       });
 
@@ -272,6 +296,70 @@ describe("MafaStore", function () {
       });
     });
 
+    describe("withdraw tokens", function () {
+      it("owner should be able to withdraw BNB from the contract", async function () {
+        const previousBalance = parseFloat(ethers.utils.formatEther(await owner.getBalance()));
+
+        await owner.sendTransaction({
+          to: mafastore.address,
+          value: expandTo18Decimals(2),
+        });
+        expect(parseFloat(ethers.utils.formatEther(await owner.getBalance()))).to.be.within(
+          previousBalance - 2 - 0.01,
+          previousBalance - 2,
+        );
+
+        await mafastore.withdraw(owner.address, expandTo18Decimals(2));
+
+        expect(parseFloat(ethers.utils.formatEther(await owner.getBalance()))).to.be.within(
+          previousBalance - 0.01,
+          previousBalance,
+        );
+      });
+
+      it("owner should be able to withdraw ERC20 token from the contract", async function () {
+        const previousBalance = await mafacoin.balanceOf(owner.address);
+
+        await mafacoin.transfer(mafastore.address, expandTo18Decimals(2));
+        expect(await mafacoin.balanceOf(owner.address)).to.equal(previousBalance.sub(expandTo18Decimals(2)));
+
+        await mafastore.withdrawERC20(mafacoin.address, owner.address, expandTo18Decimals(2));
+
+        expect(await mafacoin.balanceOf(owner.address)).to.equal(previousBalance);
+      });
+
+      it("owner should be able to withdraw ER721 token from the contract", async function () {
+        await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256)"](
+          owner.address,
+          0,
+          ethers.utils.id("0"),
+          0,
+          0,
+          0,
+        );
+
+        const previousOwner = await mafagafoAvatar.ownerOf(1);
+
+        await mafagafoAvatar.transferFrom(owner.address, mafastore.address, 1);
+        expect(await mafagafoAvatar.ownerOf(1)).to.equal(mafastore.address);
+
+        await mafastore.withdrawERC721(mafagafoAvatar.address, owner.address, 1);
+        expect(await mafagafoAvatar.ownerOf(1)).to.equal(previousOwner);
+      });
+
+      it("owner should be able to withdraw ERC1155 token from the contract", async function () {
+        await brooder.mint(owner.address, 0, 3, ethers.utils.id(""));
+
+        const previousBalance = await brooder.balanceOf(owner.address, 0);
+
+        await brooder.safeTransferFrom(owner.address, mafastore.address, 0, 3, ethers.utils.id(""));
+        expect(await brooder.balanceOf(mafastore.address, 0)).to.equal(3);
+
+        await mafastore.withdrawERC1155(brooder.address, owner.address, 0, 3);
+        expect(await brooder.balanceOf(owner.address, 0)).to.equal(previousBalance);
+      });
+    });
+
     describe("pause", function () {
       it("contract should initiate unpaused", async function () {
         expect(await mafastore.paused()).to.equal(false);
@@ -286,22 +374,24 @@ describe("MafaStore", function () {
       });
     });
 
-    describe("upgradable", function () {
-      it("should initiate on version 1.0.0", async function () {
-        expect(await mafastore.version()).to.equal("1.0.0");
-      });
+    // COMMENTING THIS BECAUSE QUICKNODE IS RECEIVING TOO MUCH REQUESTS
 
-      it("should be upgradable", async function () {
-        expect(await mafastore.version()).to.equal("1.0.0");
-        const mafastoreFactoryV2: MafaStoreTestV2__factory = <MafaStoreTestV2__factory>(
-          await ethers.getContractFactory("MafaStoreTestV2")
-        );
-        const mafastoreV2 = <MafaStoreTestV2>(
-          await upgrades.upgradeProxy(mafastore, mafastoreFactoryV2, { kind: "uups" })
-        );
+    // describe("upgradable", function () {
+    //   it("should initiate on version 1.0.0", async function () {
+    //     expect(await mafastore.version()).to.equal("1.0.0");
+    //   });
 
-        expect(await mafastoreV2.version()).to.equal("2.0.0");
-      });
-    });
+    //   it("should be upgradable", async function () {
+    //     expect(await mafastore.version()).to.equal("1.0.0");
+    //     const mafastoreFactoryV2: MafaStoreTestV2__factory = <MafaStoreTestV2__factory>(
+    //       await ethers.getContractFactory("MafaStoreTestV2")
+    //     );
+    //     const mafastoreV2 = <MafaStoreTestV2>(
+    //       await upgrades.upgradeProxy(mafastore, mafastoreFactoryV2, { kind: "uups" })
+    //     );
+
+    //     expect(await mafastoreV2.version()).to.equal("2.0.0");
+    //   });
+    // });
   });
 });
