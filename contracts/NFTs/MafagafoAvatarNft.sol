@@ -3,6 +3,7 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/math/MathUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 
@@ -42,29 +43,29 @@ contract MafagafoAvatarNft is MafagafoAvatarBase {
         uint256 _parent1Id,
         uint256 _parent2Id
     ) public virtual onlyRole(MINTER_ROLE) {
-        super.mint(_to);
-
         _createMafagafo(_to, _tokenIdTracker.current(), _version, _genes, _generation, _parent1Id, _parent2Id);
-
-        _tokenIdTracker.increment();
+        
+        super.mint(_to);
     }
 
     function mate(uint256 parent1Id, uint256 parent2Id) public virtual onlyOwnerOf(parent1Id, parent2Id) {
-        Mafagafo memory parent1 = mafagafo[parent1Id];
-        Mafagafo memory parent2 = mafagafo[parent2Id];
+        require(parent1Id != parent2Id, "You must use different mafagafos to mate");
+
+        Mafagafo storage parent1 = mafagafo[parent1Id];
+        Mafagafo storage parent2 = mafagafo[parent2Id];
 
         require(parent1.matings < 1, "1st parent has already mated");
         require(parent2.matings < 1, "2nd parent has already mated");
 
-        parent1.matings.add(1);
-        parent2.matings.add(1);
+        parent1.matings = parent1.matings.add(1);
+        parent2.matings = parent2.matings.add(1);
 
         bytes32 childGenes = mixGenes(parent1.genes, parent2.genes);
+        uint32 generation = uint32(MathUpgradeable.max(parent1.generation, parent2.generation) + 1);
 
-        // TODO: update version and generation
-        eggContract.mint(_msgSender(), mafaVersion(), childGenes, 1, parent1Id, parent2Id);
+        eggContract.mint(_msgSender(), mafaVersion(), childGenes, generation, parent1Id, parent2Id);
 
-        emit Mate(_msgSender(), parent1Id, parent2Id, 0, childGenes, 0);
+        emit Mate(_msgSender(), parent1Id, parent2Id, mafaVersion(), childGenes, generation);
     }
 
     // TODO: genetic mix logic
