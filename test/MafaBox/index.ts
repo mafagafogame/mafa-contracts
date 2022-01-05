@@ -10,30 +10,23 @@ import {
   EggNft__factory,
   MafaBox,
   MafaBox__factory,
-  MafaCoin,
   MafagafoAvatarNft,
   MafagafoAvatarNft__factory,
 } from "../../typechain";
-import { deployMafaCoin, expandTo18Decimals } from "../shared/utilities";
 
 describe("Unit tests", function () {
-  let mafacoin: MafaCoin;
   let brooder: BrooderNft;
   let egg: EggNft;
   let mafagafoAvatar: MafagafoAvatarNft;
   let mafaBox: MafaBox;
-  let owner: SignerWithAddress;
   let account1: SignerWithAddress;
 
   before(async function () {
-    [owner, account1] = await ethers.getSigners();
+    [, account1] = await ethers.getSigners();
   });
 
   describe("MafaBox", function () {
     beforeEach(async function () {
-      mafacoin = await deployMafaCoin(owner);
-      await mafacoin.transfer(account1.address, expandTo18Decimals(100000));
-
       const brooderFactory = <BrooderNft__factory>await ethers.getContractFactory("BrooderNft");
       brooder = <BrooderNft>await upgrades.deployProxy(brooderFactory, [], {
         initializer: "initialize",
@@ -52,7 +45,7 @@ describe("Unit tests", function () {
         kind: "uups",
       });
 
-      egg.setMafagafoContract(mafagafoAvatar.address);
+      await egg.setMafagafoContract(mafagafoAvatar.address);
 
       const mafaBoxFactory = <MafaBox__factory>await ethers.getContractFactory("MafaBox");
       mafaBox = <MafaBox>await upgrades.deployProxy(
@@ -76,7 +69,7 @@ describe("Unit tests", function () {
       expect(await mafaBox.probabilities(4)).to.equal(3500);
     });
 
-    it("user shouldn't be able to open a box if he doesn't have any", async function () {
+    it("user should not be able to open a box if he doesn't have any", async function () {
       await expect(mafaBox.connect(account1).openBox(0)).to.be.revertedWith("You don't have any box to open");
     });
 
