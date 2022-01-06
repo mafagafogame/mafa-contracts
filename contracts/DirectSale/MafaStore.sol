@@ -159,7 +159,7 @@ contract MafaStore is
     /**
      * @dev list all items. to be used on the frontend
      */
-    function listItems() external view returns (Item[] memory){
+    function listItems() external view returns (Item[] memory) {
         return items;
     }
 
@@ -221,7 +221,7 @@ contract MafaStore is
         address sender = _msgSender();
 
         uint256 mafaBusdPrice = getMAFAtoBUSDprice();
-        uint256 itemPriceInMAFA = (item.price.mul(amounts).div(mafaBusdPrice)).mul(10**18);
+        uint256 itemPriceInMAFA = (item.price.mul(amounts).mul(10**18).div(mafaBusdPrice));
 
         uint256 allowance = acceptedToken.allowance(sender, address(this));
         require(allowance >= itemPriceInMAFA, "Check the token allowance");
@@ -250,13 +250,10 @@ contract MafaStore is
         require(avatarContract.getApproved(tokenId) == address(this), "Check the token approval for this token ID");
 
         uint256 mafaBusdPrice = getMAFAtoBUSDprice();
-        uint256 sellPriceInMAFA = (uint256(300).mul(10**18).div(mafaBusdPrice)).mul(10**18);
+        uint256 sellPriceInMAFA = (uint256(300).mul(10**36).div(mafaBusdPrice));
 
         // Transfer 300 BUSD in mafa to avatar seller
-        require(
-            acceptedToken.transfer(sender, sellPriceInMAFA),
-            "Fail transferring the amount to the seller"
-        );
+        require(acceptedToken.transfer(sender, sellPriceInMAFA), "Fail transferring the amount to the seller");
 
         avatarContract.transferFrom(sender, address(this), tokenId);
 
