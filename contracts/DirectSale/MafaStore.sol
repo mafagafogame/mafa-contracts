@@ -165,9 +165,7 @@ contract MafaStore is
      * @dev Remove an item
      * @param toDeleteIndex The array ID from items to be removed
      */
-    function removeItemFromStore(
-        uint256 toDeleteIndex
-    ) external virtual onlyOwner {
+    function removeItemFromStore(uint256 toDeleteIndex) external virtual onlyOwner {
         require(toDeleteIndex < items.length, "id should be between 0 and items length");
 
         Item memory toDelete = items[toDeleteIndex];
@@ -182,7 +180,7 @@ contract MafaStore is
         // Delete the slot where the moved value was stored
         items.pop();
 
-        emit ItemDeleted(toDeleteIndex,  toDelete.nftAddress, toDelete.tokenId, toDelete.price);
+        emit ItemDeleted(toDeleteIndex, toDelete.nftAddress, toDelete.tokenId, toDelete.price);
     }
 
     /**
@@ -202,7 +200,8 @@ contract MafaStore is
         _updateItemPrice(id, newPrice);
     }
 
-    // todo: check if the id is really the item the user wats to buy. Ex.: when we delete an item, we move the last item to the deleted position
+    // todo: check if the id is really the item the user wats to buy. 
+    // Ex.: when we delete an item, we move the last item to the deleted position
     /**
      * @dev Buy amounts of an item.
      * @param id ID on items array
@@ -416,11 +415,11 @@ contract MafaStore is
     );
     event AvatarSold(address indexed seller, uint256 tokenId);
 
-    event AcceptedTokenChanged(address indexed Addr);
-    event AvatarAddressChanged(address indexed Addr);
-    event MafaBnbPairChanged(address indexed Addr);
-    event BnbBusdPairChanged(address indexed Addr);
-    event ItemDeleted(uint256 toDeleteIndex,  address indexed NftAddress, uint256 ItemId, uint256 Price);
+    event AcceptedTokenChanged(address indexed addr);
+    event AvatarAddressChanged(address indexed addr);
+    event MafaBnbPairChanged(address indexed addr);
+    event BnbBusdPairChanged(address indexed addr);
+    event ItemDeleted(uint256 toDeleteIndex, address indexed nftAddress, uint256 itemId, uint256 price);
 
     uint256[50] private __gap;
 }
