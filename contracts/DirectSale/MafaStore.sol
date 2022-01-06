@@ -34,7 +34,7 @@ contract MafaStore is
         // nft contract
         address nftAddress;
         // nft id
-        uint256 nftId;
+        uint256 tokenId;
         // TODO: check if this price is really multiplied by 10**18
         // price in USD. Value is multiplied by 10**18.
         uint256 price;
@@ -145,15 +145,44 @@ contract MafaStore is
      * @dev Create a new item
      *  Can only be called by contract owner
      * @param nftAddress Address of ERC1155 inventory of items
-     * @param nftId ID of the ERC1155 NFT
+     * @param tokenId of the ERC1155 NFT. it is the item category. tokenId is not the nft id.
      * @param price Price of the item
      */
-    function createItem(
+    function addItemToBeSold(
         address nftAddress,
-        uint256 nftId,
+        uint256 tokenId,
         uint256 price
     ) external virtual onlyOwner {
-        _createItem(nftAddress, nftId, price);
+        require(nftAddress.isContract(), "NFT address must be a contract");
+        require(price > 0, "Item price can't be 0");
+
+        items.push(Item(nftAddress, tokenId, price));
+
+        emit ItemCreated(nftAddress, items.length - 1, tokenId, price);
+    }
+
+    /**
+     * @dev Remove an item
+     * @param toDeleteIndex The array ID from items to be removed
+     */
+    function removeItemFromStore(
+        uint256 toDeleteIndex
+    ) external virtual onlyOwner {
+        require(toDeleteIndex < items.length, "id should be between 0 and items length");
+
+        Item memory toDelete = items[toDeleteIndex];
+
+        uint256 lastIndex = items.length - 1;
+
+        if (lastIndex != toDeleteIndex) {
+            // Move the last value to the index where the value to delete is
+            items[toDeleteIndex] = toDelete;
+        }
+
+        // Delete the slot where the moved value was stored
+        items.pop();
+
+        emit ItemDeleted(toDeleteIndex,  toDelete.nftAddress, toDelete.tokenId, toDelete.price);
     }
 
     /**
@@ -173,48 +202,13 @@ contract MafaStore is
         _updateItemPrice(id, newPrice);
     }
 
+    // todo: check if the id is really the item the user wats to buy. Ex.: when we delete an item, we move the last item to the deleted position
     /**
      * @dev Buy amounts of an item.
      * @param id ID on items array
      * @param amounts Amounts of items to be sold
      */
     function buyItem(uint256 id, uint256 amounts) external virtual whenNotPaused nonReentrant {
-        _buyItem(id, amounts);
-    }
-
-    /**
-     * @dev Sell an avatar to this contract
-     * @param tokenId ERC721 token ID of the avatar to be sold
-     */
-    function sellAvatar(uint256 tokenId) external virtual whenNotPaused nonReentrant {
-        _sellAvatar(tokenId);
-    }
-
-    function _createItem(
-        address nftAddress,
-        uint256 nftId,
-        uint256 price
-    ) internal virtual {
-        require(nftAddress.isContract(), "NFT address must be a contract");
-        require(price > 0, "Item price can't be 0");
-
-        items.push(Item(nftAddress, nftId, price));
-
-        emit ItemCreated(nftAddress, items.length - 1, nftId, price);
-    }
-
-    function _updateItemPrice(uint256 id, uint256 newPrice) internal virtual {
-        require(id < items.length, "Item doesn't exists");
-        require(newPrice > 0, "Item price can't be 0");
-
-        Item storage item = items[id];
-
-        item.price = newPrice;
-
-        emit ItemPriceUpdated(id, newPrice);
-    }
-
-    function _buyItem(uint256 id, uint256 amounts) internal virtual {
         require(id < items.length, "Item doesn't exists");
         Item memory item = items[id];
 
@@ -234,9 +228,28 @@ contract MafaStore is
 
         BaseERC1155 nftRegistry = BaseERC1155(item.nftAddress);
 
-        nftRegistry.mint(sender, item.nftId, amounts, "");
+        nftRegistry.mint(sender, item.tokenId, amounts, "");
 
-        emit ItemBought(item.nftAddress, id, item.nftId, owner(), sender, itemPriceInMAFA, amounts);
+        emit ItemBought(item.nftAddress, id, item.tokenId, owner(), sender, itemPriceInMAFA, amounts);
+    }
+
+    /**
+     * @dev Sell an avatar to this contract
+     * @param tokenId ERC721 token ID of the avatar to be sold
+     */
+    function sellAvatar(uint256 tokenId) external virtual whenNotPaused nonReentrant {
+        _sellAvatar(tokenId);
+    }
+
+    function _updateItemPrice(uint256 id, uint256 newPrice) internal virtual {
+        require(id < items.length, "Item doesn't exists");
+        require(newPrice > 0, "Item price can't be 0");
+
+        Item storage item = items[id];
+
+        item.price = newPrice;
+
+        emit ItemPriceUpdated(id, newPrice);
     }
 
     function _sellAvatar(uint256 tokenId) internal virtual {
@@ -393,12 +406,12 @@ contract MafaStore is
     }
 
     // EVENTS
-    event ItemCreated(address indexed nftAddress, uint256 id, uint256 nftId, uint256 price);
+    event ItemCreated(address indexed nftAddress, uint256 id, uint256 tokenId, uint256 price);
     event ItemPriceUpdated(uint256 id, uint256 price);
     event ItemBought(
         address indexed nftAddress,
         uint256 id,
-        uint256 nftId,
+        uint256 tokenId,
         address indexed seller,
         address indexed buyer,
         uint256 price,
@@ -410,6 +423,7 @@ contract MafaStore is
     event AvatarAddressChanged(address indexed Addr);
     event MafaBnbPairChanged(address indexed Addr);
     event BnbBusdPairChanged(address indexed Addr);
+    event ItemDeleted(uint256 toDeleteIndex,  address indexed NftAddress, uint256 ItemId, uint256 Price);
 
     uint256[50] private __gap;
 }
