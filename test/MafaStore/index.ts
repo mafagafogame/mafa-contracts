@@ -59,9 +59,9 @@ describe("MafaStore", function () {
         kind: "uups",
       });
 
-      egg.setMafagafoContract(mafagafoAvatar.address);
+      await egg.setMafagafoContract(mafagafoAvatar.address);
 
-      const mafastoreFactory: MafaStore__factory = <MafaStore__factory>await ethers.getContractFactory("MafaStore");
+      const mafastoreFactory: MafaStore__factory = await ethers.getContractFactory("MafaStore");
       mafastore = <MafaStore>await upgrades.deployProxy(
         mafastoreFactory,
         [mafacoin.address, mafagafoAvatar.address, MAFA_BNB, BNB_BUSD],
@@ -280,6 +280,7 @@ describe("MafaStore", function () {
 
           it("user should be able to sell an avatar", async function () {
             expect(await mafagafoAvatar.ownerOf(1)).to.equal(account1.address);
+            expect(await mafacoin.balanceOf(mafastore.address)).to.equal(expandTo18Decimals(100000));
 
             await mafagafoAvatar.connect(account1).approve(mafastore.address, 1);
 
@@ -287,6 +288,14 @@ describe("MafaStore", function () {
               .to.be.emit(mafastore, "AvatarSold")
               .withArgs(account1.address, 1);
 
+            expect(bigNumberToFloat(await mafacoin.balanceOf(account1.address))).to.be.within(
+              100000 + 300 / mafaPrice - 100,
+              100000 + 300 / mafaPrice + 100,
+            );
+            expect(bigNumberToFloat(await mafacoin.balanceOf(mafastore.address))).to.be.within(
+              100000 - 300 / mafaPrice - 100,
+              100000 - 300 / mafaPrice + 100,
+            );
             expect(await mafagafoAvatar.ownerOf(1)).to.equal(mafastore.address);
           });
         });
