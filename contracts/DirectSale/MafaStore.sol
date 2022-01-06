@@ -159,22 +159,22 @@ contract MafaStore is
         address sender = _msgSender();
 
         uint256 mafaBusdPrice = getMAFAtoBUSDprice();
-        uint256 itemPriceInMafa = (item.price.mul(amounts).div(mafaBusdPrice)).mul(10**18);
+        uint256 itemPriceInMAFA = (item.price.mul(amounts).div(mafaBusdPrice)).mul(10**18);
 
         uint256 allowance = acceptedToken.allowance(sender, address(this));
-        require(allowance >= itemPriceInMafa, "Check the token allowance");
+        require(allowance >= itemPriceInMAFA, "Check the token allowance");
 
-        // Transfer sale amount to seller
+        // Transfer item price amount to owner
         require(
-            acceptedToken.transferFrom(sender, owner(), itemPriceInMafa),
-            "Fail transferring the sale amount to the seller"
+            acceptedToken.transferFrom(sender, owner(), itemPriceInMAFA),
+            "Fail transferring the item price amount to owner"
         );
 
         BaseERC1155 nftRegistry = BaseERC1155(item.nftAddress);
 
         nftRegistry.mint(sender, item.nftId, amounts, "");
 
-        emit ItemBought(item.nftAddress, id, item.nftId, owner(), sender, itemPriceInMafa, amounts);
+        emit ItemBought(item.nftAddress, id, item.nftId, owner(), sender, itemPriceInMAFA, amounts);
     }
 
     function _sellAvatar(uint256 tokenId) internal virtual {
@@ -186,6 +186,15 @@ contract MafaStore is
         address sender = _msgSender();
         require(avatarContract.ownerOf(tokenId) == sender, "You have to own this avatar to be able to sell it");
         require(avatarContract.getApproved(tokenId) == address(this), "Check the token approval for this token ID");
+
+        uint256 mafaBusdPrice = getMAFAtoBUSDprice();
+        uint256 sellPriceInMAFA = (uint256(300).mul(10**18).div(mafaBusdPrice)).mul(10**18);
+
+        // Transfer 300 BUSD in mafa to avatar seller
+        require(
+            acceptedToken.transfer(sender, sellPriceInMAFA),
+            "Fail transferring the amount to the seller"
+        );
 
         avatarContract.transferFrom(sender, address(this), tokenId);
 
