@@ -31,8 +31,12 @@ contract MafaStore is
     using AddressUpgradeable for address;
 
     struct Item {
+        // nft contract
         address nftAddress;
+        // nft id
         uint256 nftId;
+        // TODO: check if this price is really multiplied by 10**18
+        // price in USD. Value is multiplied by 10**18.
         uint256 price;
     }
 
@@ -42,6 +46,7 @@ contract MafaStore is
     IUniswapV2Pair internal _mafaBnbPair;
     IUniswapV2Pair internal _bnbBusdPair;
 
+    // list of items available to sell
     Item[] public items;
 
     /**
@@ -58,6 +63,9 @@ contract MafaStore is
     ) public initializer {
         require(_acceptedToken.isContract(), "ERC20 token address must be a contract");
         require(avatarAddress.isContract(), "Avatar NFT address must be a contract");
+        require(mafaBnb.isContract(), "MafaBnbPair address must be a contract");
+        require(bnbBusd.isContract(), "BnbBusdPair address must be a contract");
+
         acceptedToken = IERC20(_acceptedToken);
         avatarContract = MafagafoAvatarNft(avatarAddress);
         _mafaBnbPair = IUniswapV2Pair(mafaBnb);
@@ -68,13 +76,67 @@ contract MafaStore is
         __UUPSUpgradeable_init();
     }
 
+    /**
+     * @dev Update the accepted token
+     * @param addr of the token
+     */
+    function setAcceptedToken(address addr) external virtual onlyOwner {
+        // todo: check if this this check is enough isContract()
+        require(addr.isContract(), "ERC20 token address must be a contract");
+        acceptedToken = IERC20(addr);
+
+        emit AcceptedTokenChanged(addr);
+    }
+
+    /**
+     * @dev Update the avatar token
+     * @param addr of the token
+     */
+    function setAvatarAddress(address addr) external virtual onlyOwner {
+        // todo: check if this this check is enough isContract()
+        require(addr.isContract(), "Avatar NFT address must be a contract");
+        avatarContract = MafagafoAvatarNft(addr);
+
+        emit AvatarAddressChanged(addr);
+    }
+
+    /**
+     * @dev Update the mafa bnb pair token
+     * @param addr of the token
+     */
+    function setMafaBnbPair(address addr) external virtual onlyOwner {
+        // todo: check if this this check is enough isContract()
+        require(addr.isContract(), "MafaBnbPair address must be a contract");
+        _mafaBnbPair = IUniswapV2Pair(addr);
+
+        emit MafaBnbPairChanged(addr);
+    }
+
+    /**
+     * @dev Update the bnb busd pair token
+     * @param addr of the token
+     */
+    function setBnbBusdPair(address addr) external virtual onlyOwner {
+        // todo: check if this this check is enough isContract()
+        require(addr.isContract(), "BnbBusdPair address must be a contract");
+        _bnbBusdPair = IUniswapV2Pair(addr);
+
+        emit BnbBusdPairChanged(addr);
+    }
+
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
+    /**
+     * @dev pause the contract
+     */
     function pause() public virtual onlyOwner {
         _pause();
     }
 
+    /**
+     * @dev unpause the contract
+     */
     function unpause() public virtual onlyOwner {
         _unpause();
     }
@@ -340,6 +402,11 @@ contract MafaStore is
         uint256 amounts
     );
     event AvatarSold(address indexed seller, uint256 tokenId);
+
+    event AcceptedTokenChanged(address indexed Addr);
+    event AvatarAddressChanged(address indexed Addr);
+    event MafaBnbPairChanged(address indexed Addr);
+    event BnbBusdPairChanged(address indexed Addr);
 
     uint256[50] private __gap;
 }
