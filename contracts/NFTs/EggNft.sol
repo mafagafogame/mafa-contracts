@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
@@ -25,10 +26,27 @@ contract EggNft is EggBase {
         __BaseNft_init("Egg", "EGG", "");
     }
 
-    function setMafagafoContract(address mafagafoAddress) external virtual onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(mafagafoAddress.isContract(), "Mafagafo NFT address must be a contract");
-        mafagafoContract = MafagafoAvatarNft(mafagafoAddress);
-        grantRole(MINTER_ROLE, mafagafoAddress);
+    /**
+     * @dev Update the mafagafo contract
+     * @param addr of the NFT
+     */
+    function setMafagafoAddress(address addr) external virtual onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(addr.isContract(), "Mafagafo NFT address must be a contract");
+        mafagafoContract = MafagafoAvatarNft(addr);
+        grantRole(MINTER_ROLE, addr);
+
+        emit MafagafoAddressChanged(addr);
+    }
+
+    /**
+     * @dev Update the brooder contract
+     * @param addr of the brooder
+     */
+    function setBrooderAddress(address addr) external virtual onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(addr.isContract(), "Brooder address must be a contract");
+        brooderContract = BrooderNft(addr);
+
+        emit BrooderAddressChanged(addr);
     }
 
     function mint(
@@ -90,4 +108,6 @@ contract EggNft is EggBase {
         uint256[2] parentsIDs
     );
     event EggBreeded(uint256 id, uint256 brooderId, uint256 newTimer);
+    event MafagafoAddressChanged(address indexed addr);
+    event BrooderAddressChanged(address indexed addr);
 }

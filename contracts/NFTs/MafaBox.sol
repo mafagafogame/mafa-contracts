@@ -35,6 +35,27 @@ contract MafaBox is BaseERC1155 {
     }
 
     /**
+     * @dev Update the mafagafo contract
+     * @param addr of the NFT
+     */
+    function setMafagafoAddress(address addr) external virtual onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(addr.isContract(), "Mafagafo NFT address must be a contract");
+        mafagafoContract = MafagafoAvatarNft(addr);
+
+        emit MafagafoAddressChanged(addr);
+    }
+
+    /**
+     * @dev Update the array of probabilities
+     * @param newProbabilities new probabilities array
+     */
+    function setProbabilities(uint256[] memory newProbabilities) external virtual onlyRole(DEFAULT_ADMIN_ROLE) {
+        probabilities = newProbabilities;
+
+        emit ProbabilitiesAddressChanged(newProbabilities);
+    }
+
+    /**
      * @dev Open a mystery box and mint a random mafagafo (from generation 0) to sender
      * @param id box type
      */
@@ -85,4 +106,6 @@ contract MafaBox is BaseERC1155 {
 
     // EVENTS
     event BoxOpened(uint256 boxID, address sender, uint256 mafagafoType, uint256 totalOpen);
+    event MafagafoAddressChanged(address indexed addr);
+    event ProbabilitiesAddressChanged(uint256[] newProbabilities);
 }
