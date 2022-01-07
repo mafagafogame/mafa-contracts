@@ -22,20 +22,23 @@ import { daysToUnixDate, expandTo18Decimals } from "../test/shared/utilities";
 
 async function main() {
   // MAINNET LPs
-  const MAFA_BNB = "0xC53C7F4736F4a6DA25e950e25c58011Fe26B4a93";
-  const BNB_BUSD = "0x58F876857a02D6762E0101bb5C46A8c1ED44Dc16";
+  // const MAFA_BNB = "0xC53C7F4736F4a6DA25e950e25c58011Fe26B4a93";
+  // const BNB_BUSD = "0x58F876857a02D6762E0101bb5C46A8c1ED44Dc16";
 
   // TESTNET LPs
-  // const MAFA_BNB = "0x1EbE95b1805DB419621e568E630D6e954f19082E";
-  // const BNB_BUSD = "0x85EcDcdd01EbE0BfD0Aba74B81Ca6d7F4A53582b";
+  const MAFA_BNB = "0xb6692F1237DbbDD691Aaa801DFce92BC75E32Cb8";
+  const BNB_BUSD = "0x85EcDcdd01EbE0BfD0Aba74B81Ca6d7F4A53582b";
 
   const [deployer] = await ethers.getSigners();
 
   console.log("Deploying contracts with the account:", deployer.address);
 
   const MafaCoinFactory: MafaCoin__factory = await ethers.getContractFactory("MafaCoin");
-  let mafacoin = await MafaCoinFactory.deploy();
-  mafacoin = await mafacoin.deployed();
+  // MAINET MAFACOIN
+  // const mafacoin = MafaCoinFactory.attach("0xaf44400a99a9693bf3c2e89b02652babacc5cdb9");
+
+  // TESTNET MAFACOIN
+  const mafacoin = MafaCoinFactory.attach("0xa76a7d869c42a0021B9aB69E5012aD3fc38dEaA1");
 
   console.log("Deployed mafacoin at:", mafacoin.address);
 
@@ -94,26 +97,65 @@ async function main() {
 
   console.log("Deployed mafabox at:", mafaBox.address);
 
-  await brooder.grantRole(ethers.utils.id("MINTER_ROLE"), mafastore.address);
-  await mafagafoAvatar.grantRole(ethers.utils.id("MINTER_ROLE"), mafaBox.address);
-  await mafagafoAvatar.grantRole(ethers.utils.id("MINTER_ROLE"), egg.address);
-  await brooder.grantRole(ethers.utils.id("BURNER_ROLE"), egg.address);
+  await (await brooder.grantRole(ethers.utils.id("MINTER_ROLE"), mafastore.address)).wait(1);
+  await (await mafagafoAvatar.grantRole(ethers.utils.id("MINTER_ROLE"), mafaBox.address)).wait(1);
+  await (await mafagafoAvatar.grantRole(ethers.utils.id("MINTER_ROLE"), egg.address)).wait(1);
+  await (await brooder.grantRole(ethers.utils.id("BURNER_ROLE"), egg.address)).wait(1);
 
   console.log("Roles granted");
 
-  await brooder.createBrooder(0, daysToUnixDate(20));
-  await brooder.createBrooder(1, daysToUnixDate(10));
-  await brooder.createBrooder(2, daysToUnixDate(5));
+  await (await brooder.createBrooder(0, daysToUnixDate(20))).wait(1);
+  await (await brooder.createBrooder(1, daysToUnixDate(10))).wait(1);
+  await (await brooder.createBrooder(2, daysToUnixDate(5))).wait(1);
 
   console.log("Brooders created");
 
-  await mafastore.createItem(mafaBox.address, 0, expandTo18Decimals(50));
+  await (
+    await mafastore.addItemToBeSold(
+      mafaBox.address,
+      0,
+      ethers.utils.formatBytes32String("mafabox"),
+      expandTo18Decimals(50),
+    )
+  ).wait(1);
+
   console.log("MafaBox created at the store");
 
-  await mafastore.createItem(brooder.address, 0, expandTo18Decimals(50));
-  await mafastore.createItem(brooder.address, 1, expandTo18Decimals(100));
-  await mafastore.createItem(brooder.address, 2, expandTo18Decimals(150));
+  await (
+    await mafastore.addItemToBeSold(
+      brooder.address,
+      0,
+      ethers.utils.formatBytes32String("brooder 0"),
+      expandTo18Decimals(50),
+    )
+  ).wait(1);
+  await (
+    await mafastore.addItemToBeSold(
+      brooder.address,
+      1,
+      ethers.utils.formatBytes32String("brooder 1"),
+      expandTo18Decimals(100),
+    )
+  ).wait(1);
+  await (
+    await mafastore.addItemToBeSold(
+      brooder.address,
+      2,
+      ethers.utils.formatBytes32String("brooder 2"),
+      expandTo18Decimals(150),
+    )
+  ).wait(1);
+
   console.log("Brooders created at the store");
+
+  await (await mafagafoAvatar.setBaseURI("https://jsonkeeper.com/b/B8X8/")).wait(1);
+  await (await egg.setBaseURI("https://jsonkeeper.com/b/Q6WL/")).wait(1);
+  await (await mafaBox.setTokenUri(0, "https://jsonkeeper.com/b/8JCM/")).wait(1);
+  await (await brooder.setTokenUri(0, "https://jsonkeeper.com/b/SEKZ/")).wait(1);
+  await (await brooder.setTokenUri(1, "https://jsonkeeper.com/b/SEKZ/")).wait(1);
+  await (await brooder.setTokenUri(2, "https://jsonkeeper.com/b/SEKZ/")).wait(1);
+
+  console.log("NFTs uris setted");
 }
 
 // We recommend this pattern to be able to use async/await everywhere

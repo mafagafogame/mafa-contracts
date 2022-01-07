@@ -92,12 +92,37 @@ describe("MafaStore", function () {
     describe("non owner", function () {
       it("non owner user should not be able to create an item", async function () {
         await expect(
-          mafastore.connect(account1).createItem(brooder.address, 0, expandTo18Decimals(100)),
+          mafastore
+            .connect(account1)
+            .addItemToBeSold(
+              brooder.address,
+              0,
+              ethers.utils.formatBytes32String("brooder 0"),
+              expandTo18Decimals(100),
+            ),
         ).to.be.revertedWith("Ownable: caller is not the owner");
       });
 
+      it("non owner user should not be able to remove an item", async function () {
+        await mafastore.addItemToBeSold(
+          brooder.address,
+          0,
+          ethers.utils.formatBytes32String("brooder 0"),
+          expandTo18Decimals(100),
+        );
+
+        await expect(mafastore.connect(account1).removeItemFromStore(0)).to.be.revertedWith(
+          "Ownable: caller is not the owner",
+        );
+      });
+
       it("non owner user should not be able to update the price of an item", async function () {
-        await mafastore.createItem(brooder.address, 0, expandTo18Decimals(100));
+        await mafastore.addItemToBeSold(
+          brooder.address,
+          0,
+          ethers.utils.formatBytes32String("brooder 0"),
+          expandTo18Decimals(100),
+        );
 
         await expect(mafastore.connect(account1).updateItemPrice(0, expandTo18Decimals(200))).to.be.revertedWith(
           "Ownable: caller is not the owner",
@@ -130,29 +155,116 @@ describe("MafaStore", function () {
     });
 
     describe("owner", function () {
-      describe("create item", function () {
-        it("owner should not be able to create an item passing a non contract NFT address", async function () {
-          await expect(mafastore.createItem(account1.address, 0, expandTo18Decimals(0))).to.be.revertedWith(
-            "NFT address must be a contract",
-          );
+      describe("add item", function () {
+        it("owner should not be able to add an item passing a non contract NFT address", async function () {
+          await expect(
+            mafastore.addItemToBeSold(
+              account1.address,
+              0,
+              ethers.utils.formatBytes32String("brooder 0"),
+              expandTo18Decimals(0),
+            ),
+          ).to.be.revertedWith("NFT address must be a contract");
         });
 
-        it("owner should not be able to create an item with 0 price", async function () {
-          await expect(mafastore.createItem(brooder.address, 0, expandTo18Decimals(0))).to.be.revertedWith(
-            "Item price can't be 0",
-          );
+        it("owner should not be able to add an item with 0 price", async function () {
+          await expect(
+            mafastore.addItemToBeSold(
+              brooder.address,
+              0,
+              ethers.utils.formatBytes32String("brooder 0"),
+              expandTo18Decimals(0),
+            ),
+          ).to.be.revertedWith("Item price can't be 0");
         });
 
-        it("owner should be able to create an item", async function () {
-          await expect(mafastore.createItem(brooder.address, 0, expandTo18Decimals(100)))
-            .to.emit(mafastore, "ItemCreated")
-            .withArgs(brooder.address, 0, 0, expandTo18Decimals(100));
+        it("owner should be able to add an item", async function () {
+          await expect(
+            mafastore.addItemToBeSold(
+              brooder.address,
+              0,
+              ethers.utils.formatBytes32String("brooder 0"),
+              expandTo18Decimals(100),
+            ),
+          )
+            .to.emit(mafastore, "ItemAdded")
+            .withArgs(brooder.address, 0, 0, ethers.utils.formatBytes32String("brooder 0"), expandTo18Decimals(100));
+
+          const item = await mafastore.items(0);
+          expect(item[2]).to.equal(ethers.utils.formatBytes32String("brooder 0"));
+        });
+      });
+
+      describe("remove item", function () {
+        it("owner should not be able to remove an item that doesn't exists", async function () {
+          await expect(mafastore.removeItemFromStore(0)).to.be.revertedWith("Id should be between 0 and items length");
+        });
+
+        it("owner should be able to remove an item", async function () {
+          await mafastore.addItemToBeSold(
+            brooder.address,
+            0,
+            ethers.utils.formatBytes32String("brooder 0"),
+            expandTo18Decimals(100),
+          );
+
+          await expect(mafastore.removeItemFromStore(0))
+            .to.emit(mafastore, "ItemDeleted")
+            .withArgs(0, brooder.address, 0, expandTo18Decimals(100));
+
+          const itemsList = await mafastore.listItems();
+          expect(itemsList.length).to.equal(0);
+        });
+
+        it("items list should readjust on item removal", async function () {
+          await mafastore.addItemToBeSold(
+            brooder.address,
+            0,
+            ethers.utils.formatBytes32String("brooder 0"),
+            expandTo18Decimals(100),
+          );
+
+          await mafastore.addItemToBeSold(
+            brooder.address,
+            1,
+            ethers.utils.formatBytes32String("brooder 1"),
+            expandTo18Decimals(150),
+          );
+
+          await mafastore.addItemToBeSold(
+            brooder.address,
+            2,
+            ethers.utils.formatBytes32String("brooder 2"),
+            expandTo18Decimals(200),
+          );
+
+          await mafastore.addItemToBeSold(
+            brooder.address,
+            3,
+            ethers.utils.formatBytes32String("brooder 3"),
+            expandTo18Decimals(250),
+          );
+
+          await expect(mafastore.removeItemFromStore(1))
+            .to.emit(mafastore, "ItemDeleted")
+            .withArgs(1, brooder.address, 1, expandTo18Decimals(150));
+
+          const itemsList = await mafastore.listItems();
+          expect(itemsList.length).to.equal(3);
+          expect(itemsList[1].tokenId).to.equal(3);
+          expect(itemsList[1].title).to.equal(ethers.utils.formatBytes32String("brooder 3"));
+          expect(itemsList[1].price).to.equal(expandTo18Decimals(250));
         });
       });
 
       describe("update item price", function () {
         it("owner should not be able to update the price of an item to 0", async function () {
-          await mafastore.createItem(brooder.address, 0, expandTo18Decimals(100));
+          await mafastore.addItemToBeSold(
+            brooder.address,
+            0,
+            ethers.utils.formatBytes32String("brooder 0"),
+            expandTo18Decimals(100),
+          );
 
           await expect(mafastore.updateItemPrice(0, expandTo18Decimals(0))).to.be.revertedWith("Item price can't be 0");
         });
@@ -162,49 +274,95 @@ describe("MafaStore", function () {
         });
 
         it("owner should be able to update the price of an item", async function () {
-          await mafastore.createItem(brooder.address, 0, expandTo18Decimals(100));
+          await mafastore.addItemToBeSold(
+            brooder.address,
+            0,
+            ethers.utils.formatBytes32String("brooder 0"),
+            expandTo18Decimals(100),
+          );
 
           await expect(mafastore.updateItemPrice(0, expandTo18Decimals(200)))
             .to.emit(mafastore, "ItemPriceUpdated")
             .withArgs(0, expandTo18Decimals(200));
 
           const item = await mafastore.items(0);
-          expect(item[2]).to.equal(expandTo18Decimals(200));
+          expect(item[3]).to.equal(expandTo18Decimals(200));
         });
       });
     });
 
     describe("buy item", function () {
       it("user should not be able to buy an item passing an id that doesn't exists", async function () {
-        await expect(mafastore.buyItem(0, 1)).to.be.revertedWith("Item doesn't exists");
-      });
-
-      it("user should not be able to buy an item if he doesn't allow the transfer", async function () {
-        await mafastore.createItem(brooder.address, 0, expandTo18Decimals(100));
-
-        await expect(mafastore.connect(account1).buyItem(0, 1)).to.be.revertedWith("Check the token allowance");
-      });
-
-      it("user should not be able to buy an item if allowances are not enough", async function () {
-        await mafastore.createItem(brooder.address, 0, expandTo18Decimals(100));
-
-        await mafacoin.connect(account1).approve(mafastore.address, expandTo18Decimals(1));
-
-        await expect(mafastore.connect(account1).buyItem(0, 1)).to.be.revertedWith("Check the token allowance");
-      });
-
-      it("user should not be able to buy an item if he doesn't have enough balance", async function () {
-        await mafastore.createItem(brooder.address, 0, expandTo18Decimals(100));
-
-        await mafacoin.connect(account2).approve(mafastore.address, ethers.constants.MaxUint256);
-
-        await expect(mafastore.connect(account2).buyItem(0, 1)).to.be.revertedWith(
-          "ERC20: transfer amount exceeds balance",
+        await expect(mafastore.buyItem(0, ethers.utils.formatBytes32String("brooder 0"), 1)).to.be.revertedWith(
+          "Item doesn't exists",
         );
       });
 
+      it("user should not be able to buy an item if he doesn't allow the transfer", async function () {
+        await mafastore.addItemToBeSold(
+          brooder.address,
+          0,
+          ethers.utils.formatBytes32String("brooder 0"),
+          expandTo18Decimals(100),
+        );
+
+        await expect(
+          mafastore.connect(account1).buyItem(0, ethers.utils.formatBytes32String("brooder 0"), 1),
+        ).to.be.revertedWith("Check the token allowance");
+      });
+
+      it("user should not be able to buy an item if allowances are not enough", async function () {
+        await mafastore.addItemToBeSold(
+          brooder.address,
+          0,
+          ethers.utils.formatBytes32String("brooder 0"),
+          expandTo18Decimals(100),
+        );
+
+        await mafacoin.connect(account1).approve(mafastore.address, expandTo18Decimals(1));
+
+        await expect(
+          mafastore.connect(account1).buyItem(0, ethers.utils.formatBytes32String("brooder 0"), 1),
+        ).to.be.revertedWith("Check the token allowance");
+      });
+
+      it("user should not be able to buy an item if he doesn't have enough balance", async function () {
+        await mafastore.addItemToBeSold(
+          brooder.address,
+          0,
+          ethers.utils.formatBytes32String("brooder 0"),
+          expandTo18Decimals(100),
+        );
+
+        await mafacoin.connect(account2).approve(mafastore.address, ethers.constants.MaxUint256);
+
+        await expect(
+          mafastore.connect(account2).buyItem(0, ethers.utils.formatBytes32String("brooder 0"), 1),
+        ).to.be.revertedWith("ERC20: transfer amount exceeds balance");
+      });
+
+      it("user should not be able to buy an item passing wrong item title", async function () {
+        await mafastore.addItemToBeSold(
+          brooder.address,
+          0,
+          ethers.utils.formatBytes32String("brooder 0"),
+          expandTo18Decimals(100),
+        );
+
+        await mafacoin.connect(account1).approve(mafastore.address, ethers.constants.MaxUint256);
+
+        await expect(
+          mafastore.connect(account1).buyItem(0, ethers.utils.formatBytes32String("mafagafador"), 1),
+        ).to.be.revertedWith("Title argument must match requested item title");
+      });
+
       it("user should be able to buy an item", async function () {
-        await mafastore.createItem(brooder.address, 0, expandTo18Decimals(100));
+        await mafastore.addItemToBeSold(
+          brooder.address,
+          0,
+          ethers.utils.formatBytes32String("brooder 0"),
+          expandTo18Decimals(100),
+        );
 
         await mafacoin.connect(account1).approve(mafastore.address, ethers.constants.MaxUint256);
 
@@ -212,7 +370,10 @@ describe("MafaStore", function () {
         expect(await mafacoin.balanceOf(account1.address)).to.equal(expandTo18Decimals(100000));
         expect(await brooder.balanceOf(account1.address, 0)).to.equal(0);
 
-        await expect(mafastore.connect(account1).buyItem(0, 1)).to.emit(mafastore, "ItemBought");
+        await expect(mafastore.connect(account1).buyItem(0, ethers.utils.formatBytes32String("brooder 0"), 1)).to.emit(
+          mafastore,
+          "ItemBought",
+        );
 
         expect(await brooder.totalSupply(0)).to.equal(1);
         expect(bigNumberToFloat(await mafacoin.balanceOf(account1.address))).to.be.within(
@@ -223,7 +384,12 @@ describe("MafaStore", function () {
       });
 
       it("user should be able to buy multiple amounts of an item", async function () {
-        await mafastore.createItem(brooder.address, 0, expandTo18Decimals(100));
+        await mafastore.addItemToBeSold(
+          brooder.address,
+          0,
+          ethers.utils.formatBytes32String("brooder 0"),
+          expandTo18Decimals(100),
+        );
 
         await mafacoin.connect(account1).approve(mafastore.address, ethers.constants.MaxUint256);
 
@@ -231,12 +397,15 @@ describe("MafaStore", function () {
         expect(await mafacoin.balanceOf(account1.address)).to.equal(expandTo18Decimals(100000));
         expect(await brooder.balanceOf(account1.address, 0)).to.equal(0);
 
-        await expect(mafastore.connect(account1).buyItem(0, 5)).to.emit(mafastore, "ItemBought");
+        await expect(mafastore.connect(account1).buyItem(0, ethers.utils.formatBytes32String("brooder 0"), 5)).to.emit(
+          mafastore,
+          "ItemBought",
+        );
 
         expect(await brooder.totalSupply(0)).to.equal(5);
         expect(bigNumberToFloat(await mafacoin.balanceOf(account1.address))).to.be.within(
-          100000 - (5 * 100) / mafaPrice - 100,
-          100000 - (5 * 100) / mafaPrice + 100,
+          100000 - (5 * 100) / mafaPrice - 150,
+          100000 - (5 * 100) / mafaPrice + 150,
         );
         expect(await brooder.balanceOf(account1.address, 0)).to.equal(5);
       });

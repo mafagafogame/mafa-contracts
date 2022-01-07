@@ -31,11 +31,12 @@ contract MafaStore is
     using AddressUpgradeable for address;
 
     struct Item {
-        // nft contract
-        address nftAddress;
-        // nft id
+        // token contract
+        address tokenContract;
+        // token id
         uint256 tokenId;
-        // TODO: check if this price is really multiplied by 10**18
+        // item title
+        bytes32 title;
         // price in USD. Value is multiplied by 10**18.
         uint256 price;
     }
@@ -81,7 +82,6 @@ contract MafaStore is
      * @param addr of the token
      */
     function setAcceptedToken(address addr) external virtual onlyOwner {
-        // todo: check if this this check is enough isContract()
         require(addr.isContract(), "ERC20 token address must be a contract");
         acceptedToken = IERC20(addr);
 
@@ -93,7 +93,6 @@ contract MafaStore is
      * @param addr of the token
      */
     function setAvatarAddress(address addr) external virtual onlyOwner {
-        // todo: check if this this check is enough isContract()
         require(addr.isContract(), "Avatar NFT address must be a contract");
         avatarContract = MafagafoAvatarNft(addr);
 
@@ -105,7 +104,6 @@ contract MafaStore is
      * @param addr of the token
      */
     function setMafaBnbPair(address addr) external virtual onlyOwner {
-        // todo: check if this this check is enough isContract()
         require(addr.isContract(), "MafaBnbPair address must be a contract");
         _mafaBnbPair = IUniswapV2Pair(addr);
 
@@ -117,7 +115,6 @@ contract MafaStore is
      * @param addr of the token
      */
     function setBnbBusdPair(address addr) external virtual onlyOwner {
-        // todo: check if this this check is enough isContract()
         require(addr.isContract(), "BnbBusdPair address must be a contract");
         _bnbBusdPair = IUniswapV2Pair(addr);
 
@@ -142,47 +139,46 @@ contract MafaStore is
     }
 
     /**
-     * @dev Create a new item
+     * @dev Add a new item
      *  Can only be called by contract owner
-     * @param nftAddress Address of ERC1155 inventory of items
-     * @param tokenId of the ERC1155 NFT. it is the item category. tokenId is not the nft id.
+     * @param tokenContract Address of ERC1155 inventory of items
+     * @param tokenId of the ERC1155 contract. it is the item category.
+     * @param title Item title name
      * @param price Price of the item
      */
     function addItemToBeSold(
-        address nftAddress,
+        address tokenContract,
         uint256 tokenId,
+        bytes32 title,
         uint256 price
     ) external virtual onlyOwner {
-        require(nftAddress.isContract(), "NFT address must be a contract");
+        require(tokenContract.isContract(), "NFT address must be a contract");
         require(price > 0, "Item price can't be 0");
 
-        items.push(Item(nftAddress, tokenId, price));
+        items.push(Item(tokenContract, tokenId, title, price));
 
-        emit ItemCreated(nftAddress, items.length - 1, tokenId, price);
+        emit ItemAdded(tokenContract, items.length - 1, tokenId, title, price);
     }
 
     /**
      * @dev Remove an item
      * @param toDeleteIndex The array ID from items to be removed
      */
-    function removeItemFromStore(
-        uint256 toDeleteIndex
-    ) external virtual onlyOwner {
-        require(toDeleteIndex < items.length, "id should be between 0 and items length");
+    function removeItemFromStore(uint256 toDeleteIndex) external virtual onlyOwner {
+        require(toDeleteIndex < items.length, "Id should be between 0 and items length");
 
         Item memory toDelete = items[toDeleteIndex];
 
         uint256 lastIndex = items.length - 1;
-
         if (lastIndex != toDeleteIndex) {
             // Move the last value to the index where the value to delete is
-            items[toDeleteIndex] = toDelete;
+            items[toDeleteIndex] = items[lastIndex];
         }
 
         // Delete the slot where the moved value was stored
         items.pop();
 
-        emit ItemDeleted(toDeleteIndex,  toDelete.nftAddress, toDelete.tokenId, toDelete.price);
+        emit ItemDeleted(toDeleteIndex, toDelete.tokenContract, toDelete.tokenId, toDelete.price);
     }
 
     /**
@@ -199,18 +195,31 @@ contract MafaStore is
      * @param newPrice New price of the item
      */
     function updateItemPrice(uint256 id, uint256 newPrice) external virtual onlyOwner {
-        _updateItemPrice(id, newPrice);
+        require(id < items.length, "Item doesn't exists");
+        require(newPrice > 0, "Item price can't be 0");
+
+        Item storage item = items[id];
+
+        item.price = newPrice;
+
+        emit ItemPriceUpdated(id, newPrice);
     }
 
-    // todo: check if the id is really the item the user wats to buy. Ex.: when we delete an item, we move the last item to the deleted position
+    // Ex.: when we delete an item, we move the last item to the deleted position
     /**
      * @dev Buy amounts of an item.
      * @param id ID on items array
+     * @param title Item title name
      * @param amounts Amounts of items to be sold
      */
-    function buyItem(uint256 id, uint256 amounts) external virtual whenNotPaused nonReentrant {
+    function buyItem(
+        uint256 id,
+        bytes32 title,
+        uint256 amounts
+    ) external virtual whenNotPaused nonReentrant {
         require(id < items.length, "Item doesn't exists");
         Item memory item = items[id];
+        require(item.title == title, "Title argument must match requested item title");
 
         address sender = _msgSender();
 
@@ -226,11 +235,11 @@ contract MafaStore is
             "Fail transferring the item price amount to owner"
         );
 
-        BaseERC1155 nftRegistry = BaseERC1155(item.nftAddress);
+        BaseERC1155 nftRegistry = BaseERC1155(item.tokenContract);
 
         nftRegistry.mint(sender, item.tokenId, amounts, "");
 
-        emit ItemBought(item.nftAddress, id, item.tokenId, owner(), sender, itemPriceInMAFA, amounts);
+        emit ItemBought(item.tokenContract, id, item.tokenId, owner(), sender, itemPriceInMAFA, amounts);
     }
 
     /**
@@ -238,21 +247,6 @@ contract MafaStore is
      * @param tokenId ERC721 token ID of the avatar to be sold
      */
     function sellAvatar(uint256 tokenId) external virtual whenNotPaused nonReentrant {
-        _sellAvatar(tokenId);
-    }
-
-    function _updateItemPrice(uint256 id, uint256 newPrice) internal virtual {
-        require(id < items.length, "Item doesn't exists");
-        require(newPrice > 0, "Item price can't be 0");
-
-        Item storage item = items[id];
-
-        item.price = newPrice;
-
-        emit ItemPriceUpdated(id, newPrice);
-    }
-
-    function _sellAvatar(uint256 tokenId) internal virtual {
         require(
             acceptedToken.balanceOf(address(this)) >= 300,
             "The mafastore is unable to receive new avatars for the moment"
@@ -403,10 +397,11 @@ contract MafaStore is
     }
 
     // EVENTS
-    event ItemCreated(address indexed nftAddress, uint256 id, uint256 tokenId, uint256 price);
+    event ItemAdded(address indexed tokenContract, uint256 id, uint256 tokenId, bytes32 title, uint256 price);
+    event ItemDeleted(uint256 toDeleteIndex, address indexed tokenContract, uint256 itemId, uint256 price);
     event ItemPriceUpdated(uint256 id, uint256 price);
     event ItemBought(
-        address indexed nftAddress,
+        address indexed tokenContract,
         uint256 id,
         uint256 tokenId,
         address indexed seller,
@@ -415,12 +410,10 @@ contract MafaStore is
         uint256 amounts
     );
     event AvatarSold(address indexed seller, uint256 tokenId);
-
-    event AcceptedTokenChanged(address indexed Addr);
-    event AvatarAddressChanged(address indexed Addr);
-    event MafaBnbPairChanged(address indexed Addr);
-    event BnbBusdPairChanged(address indexed Addr);
-    event ItemDeleted(uint256 toDeleteIndex,  address indexed NftAddress, uint256 ItemId, uint256 Price);
+    event AcceptedTokenChanged(address indexed addr);
+    event AvatarAddressChanged(address indexed addr);
+    event MafaBnbPairChanged(address indexed addr);
+    event BnbBusdPairChanged(address indexed addr);
 
     uint256[50] private __gap;
 }
