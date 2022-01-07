@@ -52,9 +52,14 @@ contract MafagafoAvatarNft is MafagafoAvatarBase {
         bytes32 _genes,
         uint32 _generation,
         uint256 _parent1Id,
-        uint256 _parent2Id
+        uint256 _parent2Id,
+        uint256 matings,
+        uint64 cooldown,
+        uint8 _rarity,
+        uint8 _breed,
+        bytes32 _genes
     ) public virtual onlyRole(MINTER_ROLE) {
-        _createMafagafo(_to, _tokenIdTracker.current(), _version, _genes, _generation, _parent1Id, _parent2Id);
+        _createMafagafo(_to, _tokenIdTracker.current(), _version, _genes, _generation, _parent1Id, _parent2Id, matings, cooldown, _rarity, _breed, _genes);
 
         super.mint(_to);
     }
