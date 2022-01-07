@@ -35,6 +35,17 @@ contract MafagafoAvatarNft is MafagafoAvatarBase {
         super.mint(0x000000000000000000000000000000000000dEaD);
     }
 
+    /**
+     * @dev Update the egg contract
+     * @param addr of the NFT
+     */
+    function setEggAddress(address addr) external virtual onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(addr.isContract(), "Egg NFT address must be a contract");
+        eggContract = EggNft(addr);
+
+        emit EggAddressChanged(addr);
+    }
+
     function mint(
         address _to,
         uint16 _version,
@@ -89,4 +100,5 @@ contract MafagafoAvatarNft is MafagafoAvatarBase {
         bytes32 eggGenes,
         uint32 eggGeneration
     );
+    event EggAddressChanged(address indexed addr);
 }
