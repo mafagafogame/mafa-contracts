@@ -350,10 +350,27 @@ contract MafaStore is
      * @dev gets the price of MAFA per BUSD.
      */
     function getMAFAtoBUSDprice() public view virtual returns (uint256 price) {
-        (uint256 reserves0LP0, uint256 reserves1LP0, ) = _mafaBnbPair.getReserves();
-        (uint256 reserves0LP1, uint256 reserves1LP1, ) = _bnbBusdPair.getReserves();
+        if (_mafaBnbPair.token1() == _bnbBusdPair.token0()) {
+            (uint256 reserves0LP0, uint256 reserves1LP0, ) = _mafaBnbPair.getReserves();
+            (uint256 reserves0LP1, uint256 reserves1LP1, ) = _bnbBusdPair.getReserves();
 
-        return (reserves1LP1.mul(reserves1LP0).mul(10**18)).div(reserves0LP1.mul(reserves0LP0));
+            return (reserves1LP1.mul(reserves1LP0).mul(10**18)).div(reserves0LP1.mul(reserves0LP0));
+        } else if (_mafaBnbPair.token1() == _bnbBusdPair.token1()) {
+            (uint256 reserves0LP0, uint256 reserves1LP0, ) = _mafaBnbPair.getReserves();
+            (uint256 reserves1LP1, uint256 reserves0LP1, ) = _bnbBusdPair.getReserves();
+
+            return (reserves1LP1.mul(reserves1LP0).mul(10**18)).div(reserves0LP1.mul(reserves0LP0));
+        } else if (_mafaBnbPair.token0() == _bnbBusdPair.token0()) {
+            (uint256 reserves1LP0, uint256 reserves0LP0, ) = _mafaBnbPair.getReserves();
+            (uint256 reserves0LP1, uint256 reserves1LP1, ) = _bnbBusdPair.getReserves();
+
+            return (reserves1LP1.mul(reserves1LP0).mul(10**18)).div(reserves0LP1.mul(reserves0LP0));
+        } else {
+            (uint256 reserves1LP0, uint256 reserves0LP0, ) = _mafaBnbPair.getReserves();
+            (uint256 reserves1LP1, uint256 reserves0LP1, ) = _bnbBusdPair.getReserves();
+
+            return (reserves1LP1.mul(reserves1LP0).mul(10**18)).div(reserves0LP1.mul(reserves0LP0));
+        }
     }
 
     /**
@@ -361,10 +378,7 @@ contract MafaStore is
      * @param id ID on items array
      * @param amounts Amounts of the items
      */
-    function getItemPriceInMAFA(
-        uint256 id,
-        uint256 amounts
-    ) external view virtual returns (uint256 price) {
+    function getItemPriceInMAFA(uint256 id, uint256 amounts) external view virtual returns (uint256 price) {
         require(amounts > 0, "Amounts must be greater than zero");
         require(id < items.length, "Item doesn't exists");
         Item memory item = items[id];
