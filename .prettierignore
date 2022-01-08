@@ -6,6 +6,7 @@ coverage*
 typechain
 typechain-types
 abis
+website
 
 # files
 *.env

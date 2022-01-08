@@ -27,7 +27,7 @@ async function main() {
 
   // TESTNET LPs
   const MAFA_BNB = "0xb6692F1237DbbDD691Aaa801DFce92BC75E32Cb8";
-  const BNB_BUSD = "0x85EcDcdd01EbE0BfD0Aba74B81Ca6d7F4A53582b";
+  const BNB_BUSD = "0x6204cFf92d89bcFe3AaB986469800A9031a3EE45";
 
   const [deployer] = await ethers.getSigners();
 
@@ -97,6 +97,7 @@ async function main() {
 
   console.log("Deployed mafabox at:", mafaBox.address);
 
+  await (await mafaBox.grantRole(ethers.utils.id("MINTER_ROLE"), mafastore.address)).wait(1);
   await (await brooder.grantRole(ethers.utils.id("MINTER_ROLE"), mafastore.address)).wait(1);
   await (await mafagafoAvatar.grantRole(ethers.utils.id("MINTER_ROLE"), mafaBox.address)).wait(1);
   await (await mafagafoAvatar.grantRole(ethers.utils.id("MINTER_ROLE"), egg.address)).wait(1);
