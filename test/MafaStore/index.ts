@@ -59,7 +59,7 @@ describe("MafaStore", function () {
         kind: "uups",
       });
 
-      await egg.setMafagafoContract(mafagafoAvatar.address);
+      await egg.setMafagafoAddress(mafagafoAvatar.address);
 
       const mafastoreFactory: MafaStore__factory = await ethers.getContractFactory("MafaStore");
       mafastore = <MafaStore>await upgrades.deployProxy(
@@ -292,6 +292,19 @@ describe("MafaStore", function () {
     });
 
     describe("buy item", function () {
+      it("user should not be able to buy 0 amounts of an item", async function () {
+        await mafastore.addItemToBeSold(
+          brooder.address,
+          0,
+          ethers.utils.formatBytes32String("brooder 0"),
+          expandTo18Decimals(100),
+        );
+
+        await expect(mafastore.buyItem(0, ethers.utils.formatBytes32String("brooder 0"), 0)).to.be.revertedWith(
+          "Amounts must be greater than zero",
+        );
+      });
+
       it("user should not be able to buy an item passing an id that doesn't exists", async function () {
         await expect(mafastore.buyItem(0, ethers.utils.formatBytes32String("brooder 0"), 1)).to.be.revertedWith(
           "Item doesn't exists",

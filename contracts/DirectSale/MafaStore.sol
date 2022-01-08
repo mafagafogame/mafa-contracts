@@ -217,7 +217,7 @@ contract MafaStore is
         bytes32 title,
         uint256 amounts
     ) external virtual whenNotPaused nonReentrant {
-        require(amounts > 0, "Amounts must be greater than 0");
+        require(amounts > 0, "Amounts must be greater than zero");
         require(id < items.length, "Item doesn't exists");
         Item memory item = items[id];
         require(item.title == title, "Title argument must match requested item title");
@@ -365,7 +365,7 @@ contract MafaStore is
         uint256 id,
         uint256 amounts
     ) external view virtual returns (uint256 price) {
-        require(amounts > 0, "Amounts must be greater than 0");
+        require(amounts > 0, "Amounts must be greater than zero");
         require(id < items.length, "Item doesn't exists");
         Item memory item = items[id];
 
