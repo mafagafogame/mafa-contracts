@@ -49,7 +49,7 @@ describe("Unit tests", function () {
         kind: "uups",
       });
 
-      await egg.setMafagafoContract(mafagafoAvatar.address);
+      await egg.setMafagafoAddress(mafagafoAvatar.address);
       await egg["mint(address,uint16,bytes32,uint32,uint256,uint256)"](
         account1.address,
         0,

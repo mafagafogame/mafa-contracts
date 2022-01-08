@@ -69,7 +69,7 @@ async function main() {
 
   console.log("Deployed mafagafoAvatar at:", mafagafoAvatar.address);
 
-  await egg.setMafagafoContract(mafagafoAvatar.address);
+  await egg.setMafagafoAddress(mafagafoAvatar.address);
 
   const mafastoreFactory: MafaStore__factory = await ethers.getContractFactory("MafaStore");
   let mafastore = <MafaStore>await upgrades.deployProxy(

@@ -45,7 +45,7 @@ describe("Unit tests", function () {
         kind: "uups",
       });
 
-      await egg.setMafagafoContract(mafagafoAvatar.address);
+      await egg.setMafagafoAddress(mafagafoAvatar.address);
 
       const mafaBoxFactory = <MafaBox__factory>await ethers.getContractFactory("MafaBox");
       mafaBox = <MafaBox>await upgrades.deployProxy(
