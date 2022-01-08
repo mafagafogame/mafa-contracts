@@ -356,6 +356,23 @@ contract MafaStore is
     }
 
     /**
+     * @dev gets the price in MAFA of an item.
+     * @param id ID on items array
+     * @param amounts Amounts of the items
+     */
+    function getItemPriceInMAFA(
+        uint256 id,
+        uint256 amounts
+    ) external view virtual returns (uint256 price) {
+        require(id < items.length, "Item doesn't exists");
+        Item memory item = items[id];
+
+        uint256 mafaBusdPrice = getMAFAtoBUSDprice();
+
+        return (item.price.mul(amounts).mul(10**18).div(mafaBusdPrice));
+    }
+
+    /**
      * @dev upgradable version
      */
     function version() public pure virtual returns (string memory) {
