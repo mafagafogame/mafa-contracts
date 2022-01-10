@@ -70,6 +70,7 @@ contract BaseERC1155 is
         _mint(account, id, amount, data);
     }
 
+    // todo: create a function that sends an airdrop of elements to a batch of users
     function mintBatch(
         address to,
         uint256[] memory ids,
@@ -96,8 +97,6 @@ contract BaseERC1155 is
 
     function _authorizeUpgrade(address newImplementation) internal override onlyRole(UPGRADER_ROLE) {}
 
-    uint256[50] private __gap;
-
     // The following functions are overrides required by Solidity.
 
     function supportsInterface(bytes4 interfaceId)
@@ -108,4 +107,7 @@ contract BaseERC1155 is
     {
         return super.supportsInterface(interfaceId);
     }
+
+    // this should be the latest space to allocate. do not add anything bellow this
+    uint256[50] private __gap;
 }

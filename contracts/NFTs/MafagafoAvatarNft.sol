@@ -101,4 +101,7 @@ contract MafagafoAvatarNft is MafagafoAvatarBase {
         uint32 eggGeneration
     );
     event EggAddressChanged(address indexed addr);
+
+    // this should be the latest space to allocate. do not add anything bellow this
+    uint256[50] private __gap;
 }

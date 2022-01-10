@@ -54,4 +54,7 @@ contract BrooderNft is BaseERC1155 {
 
     // EVENTS
     event BrooderCreated(uint256 id, uint256 time);
+
+    // this should be the latest space to allocate. do not add anything bellow this
+    uint256[50] private __gap;
 }

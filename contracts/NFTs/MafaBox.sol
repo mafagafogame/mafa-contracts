@@ -108,4 +108,7 @@ contract MafaBox is BaseERC1155 {
     event BoxOpened(uint256 boxID, address sender, uint256 mafagafoType, uint256 totalOpen);
     event MafagafoAddressChanged(address indexed addr);
     event ProbabilitiesAddressChanged(uint256[] newProbabilities);
+
+    // this should be the latest space to allocate. do not add anything bellow this
+    uint256[50] private __gap;
 }

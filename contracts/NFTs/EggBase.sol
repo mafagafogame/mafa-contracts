@@ -51,4 +51,7 @@ contract EggBase is BaseNft {
         uint256[2] parentsIDs,
         uint256 hatchDate
     );
+
+    // this should be the latest space to allocate. do not add anything bellow this
+    uint256[50] private __gap;
 }

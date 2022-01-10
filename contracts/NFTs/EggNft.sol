@@ -110,4 +110,7 @@ contract EggNft is EggBase {
     event EggBreeded(uint256 id, uint256 brooderId, uint256 newTimer);
     event MafagafoAddressChanged(address indexed addr);
     event BrooderAddressChanged(address indexed addr);
+
+    // this should be the latest space to allocate. do not add anything bellow this
+    uint256[50] private __gap;
 }
