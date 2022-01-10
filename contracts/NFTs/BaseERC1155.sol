@@ -80,6 +80,61 @@ contract BaseERC1155 is
         _mintBatch(to, ids, amounts, data);
     }
 
+    function multiMint(
+        address[] memory addresses,
+        uint256[] memory ids,
+        uint256[] memory amounts,
+        bytes memory data
+    ) public onlyRole(MINTER_ROLE) {
+        require(addresses.length == amounts.length, "addresses and amounts arrays must be equal");
+        require(addresses.length <= 200, "Can't mint to more than 200 addresses in one batch");
+
+        for (uint8 i = 0; i < addresses.length; i++) {
+            _mint(addresses[i], ids[i], amounts[i], data);
+        }
+    }
+
+    function multiMintEqualId(
+        address[] memory addresses,
+        uint256 id,
+        uint256[] memory amounts,
+        bytes memory data
+    ) public onlyRole(MINTER_ROLE) {
+        require(addresses.length == amounts.length, "addresses and amounts arrays must be equal");
+        require(addresses.length <= 200, "Can't mint to more than 200 addresses in one batch");
+
+        for (uint8 i = 0; i < addresses.length; i++) {
+            _mint(addresses[i], id, amounts[i], data);
+        }
+    }
+
+    function multiMintEqualAmount(
+        address[] memory addresses,
+        uint256[] memory ids,
+        uint256 amount,
+        bytes memory data
+    ) public onlyRole(MINTER_ROLE) {
+        require(addresses.length <= 200, "Can't mint to more than 200 addresses in one batch");
+
+        for (uint8 i = 0; i < addresses.length; i++) {
+            _mint(addresses[i], ids[i], amount, data);
+        }
+    }
+
+
+    function multiMintEqualIdAndAmount(
+        address[] memory addresses,
+        uint256 id,
+        uint256 amount,
+        bytes memory data
+    ) public onlyRole(MINTER_ROLE) {
+        require(addresses.length <= 200, "Can't mint to more than 200 addresses in one batch");
+        
+        for (uint8 i = 0; i < addresses.length; i++) {
+            _mint(addresses[i], id, amount, data);
+        }
+    }
+
     function _beforeTokenTransfer(
         address operator,
         address from,
