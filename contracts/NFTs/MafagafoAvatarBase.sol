@@ -8,24 +8,28 @@ contract MafagafoAvatarBase is BaseNft {
     mapping(uint256 => Mafagafo) public mafagafo;
 
     struct Mafagafo {
+        // how rare a mafagafo is
+        uint8 rarity;
+        // the breed
+        uint8 breed;
         // version
         uint16 version;
+        // emblem position
+        uint16 emblem;
         // number or distance of parents to the g0.
         uint32 generation;
+        // When it was born
+        uint64 birthTime;
+        // date time to be available to reproduce again
+        uint64 cooldown;
+        // experience points
+        uint64 experience;
         // reference to the parents
         uint256 parent1Id;
         // reference to the parents
         uint256 parent2Id;
-        // When it was born
-        uint64 birthTime;
         // number of times it reproduced
         uint256 matings;
-        // date time to be available to reproduce again
-        uint64 cooldown;
-        //
-        uint8 rarity;
-        //
-        uint8 breed;
         // genetic code
         bytes32 genes;
 
