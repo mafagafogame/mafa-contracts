@@ -123,7 +123,6 @@ contract BaseERC1155 is
         }
     }
 
-
     function multiMintEqualIdAndAmount(
         address[] memory addresses,
         uint256 id,
@@ -131,7 +130,7 @@ contract BaseERC1155 is
         bytes memory data
     ) public onlyRole(MINTER_ROLE) {
         require(addresses.length <= 250, "Can't mint to more than 250 addresses in one batch");
-        
+
         for (uint8 i = 0; i < addresses.length; i++) {
             _mint(addresses[i], id, amount, data);
         }

@@ -56,32 +56,37 @@ contract MafaBox is BaseERC1155 {
     }
 
     /**
-     * @dev Open a mystery box and mint a random mafagafo (from generation 0) to sender
+     * @dev Open an amount mystery box and mint a random mafagafo (from generation 0) to sender
      * @param id box type
+     * @param amount Amount of boxes to open
      */
-    function openBox(uint256 id) external virtual {
+    function openBox(uint256 id, uint256 amount) external virtual {
+        require(amount > 0, "You must open at least 1 box");
+        require(amount <= 150, "You can only open at most 150 box at a time");
         require(balanceOf(_msgSender(), id) > 0, "You don't have any box to open");
-        super._burn(_msgSender(), id, 1);
+        super._burn(_msgSender(), id, amount);
 
-        uint256 randomNumber = _random();
+        uint256[] memory mafagafoTypes = new uint256[](amount);
+        for (uint256 i = 0; i < amount; i++) {
+            uint256 randomNumber = _random();
 
-        uint256 maxValue = 0;
-        uint256 mafagafoType;
-        for (uint256 i = 0; i < probabilities.length; i++) {
-            maxValue = maxValue.add(probabilities[i]);
-            if (randomNumber < maxValue) {
-                mafagafoContract.mint(_msgSender(), mafagafoContract.mafaVersion(), bytes32(i), 0, 0, 0);
-                mafagafoType = i;
-                break;
+            uint256 mafagafoType = 0;
+            uint256 maxValue = 0;
+            for (uint256 j = 0; j < probabilities.length; j++) {
+                maxValue = maxValue.add(probabilities[j]);
+                if (randomNumber < maxValue) {
+                    mafagafoContract.mint(_msgSender(), mafagafoContract.mafaVersion(), bytes32(j), 0, 0, 0);
+                    mafagafoType = j;
+                    mafagafoTypes[i] = mafagafoType;
+                    break;
+                }
             }
+
+            _totalOpen.increment();
         }
 
-        emit BoxOpened(id, _msgSender(), mafagafoType, _totalOpen.current());
-
-        _totalOpen.increment();
+        emit BoxOpened(id, _msgSender(), mafagafoTypes);
     }
-
-    // todo: open multiple boxes at the same time
 
     /**
      * @dev requires that probabilities array sum equals 10000
@@ -107,7 +112,7 @@ contract MafaBox is BaseERC1155 {
     }
 
     // EVENTS
-    event BoxOpened(uint256 boxID, address sender, uint256 mafagafoType, uint256 totalOpen);
+    event BoxOpened(uint256 boxID, address sender, uint256[] mafagafoTypes);
     event MafagafoAddressChanged(address indexed addr);
     event ProbabilitiesAddressChanged(uint256[] newProbabilities);
 
