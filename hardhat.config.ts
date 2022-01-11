@@ -60,7 +60,7 @@ const config: HardhatUserConfig = {
     },
     hardhat: {
       forking: {
-        url: `${process.env.QUICKNODE_PROVIDER}`,
+        url: `${process.env.CHAINSTACK_PROVIDER}`,
       },
       accounts: { mnemonic },
     },

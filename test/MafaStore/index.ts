@@ -559,24 +559,22 @@ describe("MafaStore", function () {
       });
     });
 
-    // COMMENTING THIS BECAUSE QUICKNODE IS RECEIVING TOO MUCH REQUESTS
+    describe("upgradable", function () {
+      it("should initiate on version 1.0.0", async function () {
+        expect(await mafastore.version()).to.equal("1.0.0");
+      });
 
-    // describe("upgradable", function () {
-    //   it("should initiate on version 1.0.0", async function () {
-    //     expect(await mafastore.version()).to.equal("1.0.0");
-    //   });
+      it("should be upgradable", async function () {
+        expect(await mafastore.version()).to.equal("1.0.0");
+        const mafastoreFactoryV2: MafaStoreTestV2__factory = <MafaStoreTestV2__factory>(
+          await ethers.getContractFactory("MafaStoreTestV2")
+        );
+        const mafastoreV2 = <MafaStoreTestV2>(
+          await upgrades.upgradeProxy(mafastore, mafastoreFactoryV2, { kind: "uups" })
+        );
 
-    //   it("should be upgradable", async function () {
-    //     expect(await mafastore.version()).to.equal("1.0.0");
-    //     const mafastoreFactoryV2: MafaStoreTestV2__factory = <MafaStoreTestV2__factory>(
-    //       await ethers.getContractFactory("MafaStoreTestV2")
-    //     );
-    //     const mafastoreV2 = <MafaStoreTestV2>(
-    //       await upgrades.upgradeProxy(mafastore, mafastoreFactoryV2, { kind: "uups" })
-    //     );
-
-    //     expect(await mafastoreV2.version()).to.equal("2.0.0");
-    //   });
-    // });
+        expect(await mafastoreV2.version()).to.equal("2.0.0");
+      });
+    });
   });
 });
