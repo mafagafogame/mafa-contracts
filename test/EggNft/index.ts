@@ -99,11 +99,11 @@ describe("Unit tests", function () {
       });
 
       it("user should not be able to hatch an egg that is not owned by him", async function () {
-        await expect(egg.hatchEgg(0)).to.be.revertedWith("Sender must be the owner of the egg");
+        await expect(egg["hatchEgg(uint256)"](0)).to.be.revertedWith("Sender must be the owner of the egg");
       });
 
       it("user should not be able to hatch an egg if hatch date has not passed", async function () {
-        await expect(egg.connect(account1).hatchEgg(0)).to.be.revertedWith("Egg is not in time to hatch");
+        await expect(egg.connect(account1)["hatchEgg(uint256)"](0)).to.be.revertedWith("Egg is not in time to hatch");
       });
 
       it("user should be able to hatch an egg if hatch date has passed", async function () {
@@ -114,12 +114,57 @@ describe("Unit tests", function () {
         const block = await ethers.provider.getBlock(blockNumber);
         const timestamp = block.timestamp;
 
-        await expect(egg.connect(account1).hatchEgg(0))
+        await expect(egg.connect(account1)["hatchEgg(uint256)"](0))
           .to.emit(egg, "EggHatched")
           .withArgs(0, timestamp + 1, 0, ethers.utils.formatBytes32String(""), 0, [0, 0]);
 
         expect(await egg.balanceOf(account1.address)).to.equal(0);
         expect(await mafagafoAvatar.ownerOf(1)).to.equal(account1.address);
+      });
+    });
+
+    describe("hatch multiple eggs", function () {
+      const length = 120;
+
+      beforeEach(async function () {
+        for (let i = 1; i < length; i++) {
+          await egg["mint(address,uint16,bytes32,uint32,uint256,uint256)"](
+            account1.address,
+            0,
+            ethers.utils.formatBytes32String(""),
+            0,
+            0,
+            0,
+          );
+        }
+      });
+
+      it("user should not be able to hatch more than 120 eggs", async function () {
+        await egg["mint(address,uint16,bytes32,uint32,uint256,uint256)"](
+          account1.address,
+          0,
+          ethers.utils.formatBytes32String(""),
+          0,
+          0,
+          0,
+        );
+
+        await expect(egg.connect(account1)["hatchEgg(uint256[])"]([...Array(length + 1).keys()])).to.be.revertedWith(
+          "You can hatch at most 120 eggs at a time",
+        );
+      });
+
+      it("user should be able to hatch multiple eggs if hatch date has passed", async function () {
+        await ethers.provider.send("evm_increaseTime", [daysToUnixDate(210)]);
+        await ethers.provider.send("evm_mine", []);
+
+        await expect(egg.connect(account1)["hatchEgg(uint256[])"]([...Array(length).keys()])).to.emit(
+          egg,
+          "EggHatched",
+        );
+
+        expect(await egg.balanceOf(account1.address)).to.equal(0);
+        expect(await mafagafoAvatar.balanceOf(account1.address)).to.equal(120);
       });
     });
 
@@ -153,12 +198,12 @@ describe("Unit tests", function () {
 
         expect((await egg.egg(0)).hatchDate.toNumber()).to.be.equal(timestamp + 1 + daysToUnixDate(20));
 
-        await expect(egg.connect(account1).hatchEgg(0)).to.be.revertedWith("Egg is not in time to hatch");
+        await expect(egg.connect(account1)["hatchEgg(uint256)"](0)).to.be.revertedWith("Egg is not in time to hatch");
 
         await ethers.provider.send("evm_increaseTime", [daysToUnixDate(20)]);
         await ethers.provider.send("evm_mine", []);
 
-        await expect(egg.connect(account1).hatchEgg(0)).to.emit(egg, "EggHatched");
+        await expect(egg.connect(account1)["hatchEgg(uint256)"](0)).to.emit(egg, "EggHatched");
       });
     });
 
@@ -234,7 +279,7 @@ describe("Unit tests", function () {
             [...Array(length + 1).keys()],
             Array.from({ length: length + 1 }, (_, i) => i % 3),
           ),
-        ).to.be.revertedWith("You can only breed at most 600 eggs at a time");
+        ).to.be.revertedWith("You can breed at most 600 eggs at a time");
       });
 
       it("user should be able to breed multiple eggs", async function () {
