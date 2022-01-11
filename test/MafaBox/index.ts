@@ -69,8 +69,18 @@ describe("Unit tests", function () {
       expect(await mafaBox.probabilities(4)).to.equal(3500);
     });
 
+    it("user should not be able to open 0 boxes", async function () {
+      await expect(mafaBox.connect(account1).openBox(0, 0)).to.be.revertedWith("You must open at least 1 box");
+    });
+
+    it("user should not be able to open more than 150 boxes", async function () {
+      await expect(mafaBox.connect(account1).openBox(0, 200)).to.be.revertedWith(
+        "You can only open at most 150 box at a time",
+      );
+    });
+
     it("user should not be able to open a box if he doesn't have any", async function () {
-      await expect(mafaBox.connect(account1).openBox(0)).to.be.revertedWith("You don't have any box to open");
+      await expect(mafaBox.connect(account1).openBox(0, 1)).to.be.revertedWith("You don't have any box to open");
     });
 
     it("user should be able to open a box and receive a random mafagafo", async function () {
@@ -78,10 +88,21 @@ describe("Unit tests", function () {
 
       expect(await mafaBox.balanceOf(account1.address, 0)).to.equal(3);
 
-      await expect(mafaBox.connect(account1).openBox(0)).to.emit(mafaBox, "BoxOpened");
+      await expect(mafaBox.connect(account1).openBox(0, 1)).to.emit(mafaBox, "BoxOpened");
 
       expect(await mafaBox.balanceOf(account1.address, 0)).to.equal(2);
       expect(await mafagafoAvatar.balanceOf(account1.address)).to.equal(1);
+    });
+
+    it("user should be able to open N boxes and receive N ramdom mafagafos", async function () {
+      await mafaBox.mint(account1.address, 0, 150, ethers.utils.id(""));
+
+      expect(await mafaBox.balanceOf(account1.address, 0)).to.equal(150);
+
+      await expect(mafaBox.connect(account1).openBox(0, 150)).to.emit(mafaBox, "BoxOpened");
+
+      expect(await mafaBox.balanceOf(account1.address, 0)).to.equal(0);
+      expect(await mafagafoAvatar.balanceOf(account1.address)).to.equal(150);
     });
   });
 });
