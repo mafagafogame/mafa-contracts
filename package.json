@@ -29,6 +29,7 @@
     "@types/fs-extra": "^9.0.13",
     "@types/mocha": "^9.0.0",
     "@types/node": "^16.11.17",
+    "@types/readline-sync": "^1.4.4",
     "@typescript-eslint/eslint-plugin": "^5.8.1",
     "@typescript-eslint/parser": "^5.8.1",
     "@uniswap/v2-core": "^1.0.1",
@@ -54,6 +55,7 @@
     "pancakeswap-peripheral": "^1.1.0-beta.0",
     "prettier": "^2.5.1",
     "prettier-plugin-solidity": "^1.0.0-beta.19",
+    "readline-sync": "^1.4.10",
     "shelljs": "^0.8.4",
     "solhint": "^3.3.6",
     "solhint-plugin-prettier": "^0.0.5",
@@ -96,7 +98,8 @@
     "verify": "hardhat verify --network bsc 0xb1871564612243d34532fcd4946737974457661a",
     "slither:log": "python3 -m slither . --ignore-compile --filter-paths \"node_modules\" --disable-color --print human-summary > slither-audit.txt 2>&1",
     "slither:summary": "python3 -m slither . --ignore-compile --filter-paths \"node_modules\" --print human-summary",
-    "slither": "python3 -m slither . --ignore-compile --filter-paths \"node_modules\""
+    "slither": "python3 -m slither . --ignore-compile --filter-paths \"node_modules\"",
+    "generate:wallets": "ts-node scripts/createRandomWallets.ts"
   },
   "dependencies": {
     "axios": "^0.24.0"
