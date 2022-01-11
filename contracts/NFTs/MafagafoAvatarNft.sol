@@ -59,6 +59,8 @@ contract MafagafoAvatarNft is MafagafoAvatarBase {
         super.mint(_to);
     }
 
+    // todo: create away to breed multiple mafagafos at the same time
+
     function mate(uint256 parent1Id, uint256 parent2Id) public virtual onlyOwnerOf(parent1Id, parent2Id) {
         require(parent1Id != parent2Id, "You must use different mafagafos to mate");
 

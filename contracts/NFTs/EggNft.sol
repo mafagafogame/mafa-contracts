@@ -62,6 +62,8 @@ contract EggNft is EggBase {
         super.mint(_to);
     }
 
+    // todo: hatch multiple eggs at the same time
+
     // hatch an egg after enough time has passed
     function hatchEgg(uint256 id) public virtual {
         require(ownerOf(id) == _msgSender(), "Sender must be the owner of the egg");
@@ -81,6 +83,8 @@ contract EggNft is EggBase {
             [_egg.parent1Id, _egg.parent2Id]
         );
     }
+
+    // todo: put multiple eggs on multiple brooders at the same time
 
     function breedEgg(uint256 id, uint256 brooderId) public virtual {
         require(ownerOf(id) == _msgSender(), "Sender must be the owner of the egg");

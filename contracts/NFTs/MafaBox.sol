@@ -81,6 +81,8 @@ contract MafaBox is BaseERC1155 {
         _totalOpen.increment();
     }
 
+    // todo: open multiple boxes at the same time
+
     /**
      * @dev requires that probabilities array sum equals 10000
      * @param _probabilities array of probabilities
