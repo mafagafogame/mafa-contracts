@@ -102,6 +102,14 @@ contract EggNft is EggBase {
         emit EggBreeded(id, brooderId, newTimer);
     }
 
+    function breedEgg(uint256[] memory ids, uint256[] memory brooderIds) public virtual {
+        require(ids.length == brooderIds.length, "ids and brooderIds arrays must be equal");
+
+        for (uint256 i = 0; i < ids.length; i++) {
+            breedEgg(ids[i], brooderIds[i]);
+        }
+    }
+
     // EVENTS
     event EggHatched(
         uint256 id,
