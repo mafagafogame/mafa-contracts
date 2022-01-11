@@ -84,8 +84,6 @@ contract EggNft is EggBase {
         );
     }
 
-    // todo: put multiple eggs on multiple brooders at the same time
-
     function breedEgg(uint256 id, uint256 brooderId) public virtual {
         require(ownerOf(id) == _msgSender(), "Sender must be the owner of the egg");
         require(brooderContract.balanceOf(_msgSender(), brooderId) > 0, "You don't own any of this brooder");
@@ -104,6 +102,7 @@ contract EggNft is EggBase {
 
     function breedEgg(uint256[] memory ids, uint256[] memory brooderIds) public virtual {
         require(ids.length == brooderIds.length, "ids and brooderIds arrays must be equal");
+        require(ids.length <= 600, "You can only breed at most 600 eggs at a time");
 
         for (uint256 i = 0; i < ids.length; i++) {
             breedEgg(ids[i], brooderIds[i]);
