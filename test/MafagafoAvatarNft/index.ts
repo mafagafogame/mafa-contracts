@@ -103,18 +103,19 @@ describe("Unit tests", function () {
           0,
           0,
         );
-        await expect(mafagafoAvatar.connect(account1).mate(0, 3)).to.be.revertedWith(
+        await expect(mafagafoAvatar.connect(account1)["mate(uint256,uint256)"](0, 3)).to.be.revertedWith(
           "Sender must be the owner of 1st parent",
         );
-        await expect(mafagafoAvatar.connect(account1).mate(3, 2)).to.be.revertedWith(
+        await expect(mafagafoAvatar.connect(account1)["mate(uint256,uint256)"](3, 2)).to.be.revertedWith(
           "Sender must be the owner of 1st parent",
         );
-        await expect(mafagafoAvatar.connect(account1).mate(1, 3)).to.be.revertedWith(
+        await expect(mafagafoAvatar.connect(account1)["mate(uint256,uint256)"](1, 3)).to.be.revertedWith(
           "Sender must be the owner of 2nd parent",
         );
       });
+
       it("user should not be able to mate using the same mafagafo", async function () {
-        await expect(mafagafoAvatar.connect(account1).mate(1, 1)).to.be.revertedWith(
+        await expect(mafagafoAvatar.connect(account1)["mate(uint256,uint256)"](1, 1)).to.be.revertedWith(
           "You must use different mafagafos to mate",
         );
       });
@@ -124,7 +125,7 @@ describe("Unit tests", function () {
         expect((await mafagafoAvatar.mafagafo(2)).matings).to.equal(0);
         expect(await egg.totalSupply()).to.equal(0);
 
-        await expect(mafagafoAvatar.connect(account1).mate(1, 2))
+        await expect(mafagafoAvatar.connect(account1)["mate(uint256,uint256)"](1, 2))
           .to.emit(mafagafoAvatar, "Mate")
           .withArgs(account1.address, 1, 2, 0, ethers.utils.formatBytes32String(""), 1);
 
@@ -144,9 +145,11 @@ describe("Unit tests", function () {
           0,
         );
 
-        await mafagafoAvatar.connect(account1).mate(1, 3);
+        await mafagafoAvatar.connect(account1)["mate(uint256,uint256)"](1, 3);
 
-        await expect(mafagafoAvatar.connect(account1).mate(1, 2)).to.be.revertedWith("1st parent has already mated");
+        await expect(mafagafoAvatar.connect(account1)["mate(uint256,uint256)"](1, 2)).to.be.revertedWith(
+          "1st parent has already mated",
+        );
       });
 
       it("user should not be able to mate if 2nd parent has already mated", async function () {
@@ -159,9 +162,94 @@ describe("Unit tests", function () {
           0,
         );
 
-        await mafagafoAvatar.connect(account1).mate(2, 3);
+        await mafagafoAvatar.connect(account1)["mate(uint256,uint256)"](2, 3);
 
-        await expect(mafagafoAvatar.connect(account1).mate(1, 2)).to.be.revertedWith("2nd parent has already mated");
+        await expect(mafagafoAvatar.connect(account1)["mate(uint256,uint256)"](1, 2)).to.be.revertedWith(
+          "2nd parent has already mated",
+        );
+      });
+    });
+
+    describe("mate multiple", function () {
+      it("user should not be able to mate more than 150 mafagafos", async function () {
+        const length = 152;
+        for (let index = 0; index < length; index++) {
+          await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256)"](
+            account1.address,
+            await mafagafoAvatar.mafaVersion(),
+            ethers.utils.formatBytes32String("0"),
+            0,
+            0,
+            0,
+          );
+        }
+
+        await expect(
+          mafagafoAvatar.connect(account1)["mate(uint256[])"](Array.from({ length: length }, (_, i) => i + 1)),
+        ).to.be.revertedWith("You can only mate at most 150 mafagafos at a time");
+      });
+
+      it("user should not be able to mate an odd amount of mafagafos", async function () {
+        await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256)"](
+          account1.address,
+          await mafagafoAvatar.mafaVersion(),
+          ethers.utils.formatBytes32String("0"),
+          0,
+          0,
+          0,
+        );
+
+        await expect(mafagafoAvatar.connect(account1)["mate(uint256[])"]([1, 2, 3])).to.be.revertedWith(
+          "You must mate an even number of mafagafos",
+        );
+      });
+
+      it("user should not be able to mate mafagafos that are not owned by him", async function () {
+        await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256)"](
+          owner.address,
+          await mafagafoAvatar.mafaVersion(),
+          ethers.utils.formatBytes32String("0"),
+          0,
+          0,
+          0,
+        );
+
+        await expect(mafagafoAvatar.connect(account1)["mate(uint256[])"]([0, 3])).to.be.revertedWith(
+          "Sender must be the owner of 1st parent",
+        );
+        await expect(mafagafoAvatar.connect(account1)["mate(uint256[])"]([3, 2])).to.be.revertedWith(
+          "Sender must be the owner of 1st parent",
+        );
+        await expect(mafagafoAvatar.connect(account1)["mate(uint256[])"]([1, 3])).to.be.revertedWith(
+          "Sender must be the owner of 2nd parent",
+        );
+      });
+
+      it("user should be able to mate an even amount of mafagafos", async function () {
+        const length = 150;
+        for (let index = 0; index < length; index++) {
+          await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256)"](
+            account1.address,
+            await mafagafoAvatar.mafaVersion(),
+            ethers.utils.formatBytes32String("0"),
+            0,
+            0,
+            0,
+          );
+        }
+
+        expect(await egg.totalSupply()).to.equal(0);
+
+        await expect(
+          mafagafoAvatar.connect(account1)["mate(uint256[])"](Array.from({ length: length }, (_, i) => i + 1)),
+        )
+          .to.emit(mafagafoAvatar, "Mate")
+          .withArgs(account1.address, 1, 2, 0, ethers.utils.formatBytes32String(""), 1);
+
+        expect(await egg.totalSupply()).to.equal(length / 2);
+        expect(await egg.ownerOf(0)).to.equal(account1.address);
+        expect(await egg.ownerOf(length / 3 - 1)).to.equal(account1.address);
+        expect(await egg.ownerOf(length / 2 - 1)).to.equal(account1.address);
       });
     });
   });
