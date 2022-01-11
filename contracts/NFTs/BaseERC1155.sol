@@ -86,8 +86,9 @@ contract BaseERC1155 is
         uint256[] memory amounts,
         bytes memory data
     ) public onlyRole(MINTER_ROLE) {
+        require(addresses.length == ids.length, "addresses and ids arrays must be equal");
         require(addresses.length == amounts.length, "addresses and amounts arrays must be equal");
-        require(addresses.length <= 200, "Can't mint to more than 200 addresses in one batch");
+        require(addresses.length <= 250, "Can't mint to more than 250 addresses in one batch");
 
         for (uint8 i = 0; i < addresses.length; i++) {
             _mint(addresses[i], ids[i], amounts[i], data);
@@ -101,7 +102,7 @@ contract BaseERC1155 is
         bytes memory data
     ) public onlyRole(MINTER_ROLE) {
         require(addresses.length == amounts.length, "addresses and amounts arrays must be equal");
-        require(addresses.length <= 200, "Can't mint to more than 200 addresses in one batch");
+        require(addresses.length <= 250, "Can't mint to more than 250 addresses in one batch");
 
         for (uint8 i = 0; i < addresses.length; i++) {
             _mint(addresses[i], id, amounts[i], data);
@@ -114,7 +115,8 @@ contract BaseERC1155 is
         uint256 amount,
         bytes memory data
     ) public onlyRole(MINTER_ROLE) {
-        require(addresses.length <= 200, "Can't mint to more than 200 addresses in one batch");
+        require(addresses.length == ids.length, "addresses and ids arrays must be equal");
+        require(addresses.length <= 250, "Can't mint to more than 250 addresses in one batch");
 
         for (uint8 i = 0; i < addresses.length; i++) {
             _mint(addresses[i], ids[i], amount, data);
@@ -128,7 +130,7 @@ contract BaseERC1155 is
         uint256 amount,
         bytes memory data
     ) public onlyRole(MINTER_ROLE) {
-        require(addresses.length <= 200, "Can't mint to more than 200 addresses in one batch");
+        require(addresses.length <= 250, "Can't mint to more than 250 addresses in one batch");
         
         for (uint8 i = 0; i < addresses.length; i++) {
             _mint(addresses[i], id, amount, data);
