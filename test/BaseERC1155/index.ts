@@ -10,6 +10,7 @@ describe("Unit tests", function () {
   let addresses: string[];
   let ids: BigNumberish[];
   let amounts: BigNumberish[];
+  let length: number;
 
   before(async function () {
     await ethers.getSigners();
@@ -22,12 +23,12 @@ describe("Unit tests", function () {
         initializer: "initialize",
         kind: "uups",
       });
+
+      length = 250;
     });
 
     describe("Multi mint", function () {
       it("should mint amounts of tokens with ids to addresses", async function () {
-        const length = 250;
-
         addresses = new Array(length);
         ids = new Array(length);
         amounts = new Array(length);
@@ -45,7 +46,7 @@ describe("Unit tests", function () {
       });
 
       it("should revert if addresses is greater than 250", async function () {
-        const length = 251;
+        length = 251;
 
         addresses = new Array(length);
         ids = new Array(length);
@@ -62,8 +63,6 @@ describe("Unit tests", function () {
       });
 
       it("should revert if addresses and ids doesn't have the same length", async function () {
-        const length = 250;
-
         addresses = new Array(length);
         ids = new Array(length);
         amounts = new Array(length);
@@ -81,8 +80,6 @@ describe("Unit tests", function () {
       });
 
       it("should revert if addresses and amounts doesn't have the same length", async function () {
-        const length = 250;
-
         addresses = new Array(length);
         ids = new Array(length);
         amounts = new Array(length);
@@ -102,8 +99,6 @@ describe("Unit tests", function () {
 
     describe("Multi mint equal ID", function () {
       it("should mint amounts of tokens with the same id to addresses", async function () {
-        const length = 250;
-
         addresses = new Array(length);
         amounts = new Array(length);
         for (let i = 0; i < length; i++) {
@@ -120,7 +115,7 @@ describe("Unit tests", function () {
       });
 
       it("should revert if addresses is greater than 250", async function () {
-        const length = 251;
+        length = 251;
 
         addresses = new Array(length);
         ids = new Array(length);
@@ -137,8 +132,6 @@ describe("Unit tests", function () {
       });
 
       it("should revert if addresses and amounts doesn't have the same length", async function () {
-        const length = 250;
-
         addresses = new Array(length);
         ids = new Array(length);
         amounts = new Array(length);
@@ -158,8 +151,6 @@ describe("Unit tests", function () {
 
     describe("Multi mint equal amount", function () {
       it("should mint an amount of tokens with ids to addresses", async function () {
-        const length = 250;
-
         addresses = new Array(length);
         ids = new Array(length);
         for (let i = 0; i < length; i++) {
@@ -175,7 +166,7 @@ describe("Unit tests", function () {
       });
 
       it("should revert if addresses is greater than 250", async function () {
-        const length = 251;
+        length = 251;
 
         addresses = new Array(length);
         ids = new Array(length);
@@ -192,8 +183,6 @@ describe("Unit tests", function () {
       });
 
       it("should revert if addresses and ids doesn't have the same length", async function () {
-        const length = 250;
-
         addresses = new Array(length);
         ids = new Array(length);
         amounts = new Array(length);
@@ -213,8 +202,6 @@ describe("Unit tests", function () {
 
     describe("Multi mint equal ID and amount", function () {
       it("should mint an amount of tokens with the same id to addresses", async function () {
-        const length = 250;
-
         addresses = new Array(length);
         for (let i = 0; i < length; i++) {
           addresses[i] = Wallet.createRandom().address;
@@ -229,7 +216,7 @@ describe("Unit tests", function () {
       });
 
       it("should revert if addresses is greater than 250", async function () {
-        const length = 251;
+        length = 251;
 
         addresses = new Array(length);
         ids = new Array(length);
