@@ -59,8 +59,6 @@ contract MafagafoAvatarNft is MafagafoAvatarBase {
         super.mint(_to);
     }
 
-    // todo: create away to breed multiple mafagafos at the same time
-
     function mate(uint256 parent1Id, uint256 parent2Id) public virtual onlyOwnerOf(parent1Id, parent2Id) {
         require(parent1Id != parent2Id, "You must use different mafagafos to mate");
 
@@ -79,6 +77,15 @@ contract MafagafoAvatarNft is MafagafoAvatarBase {
         eggContract.mint(_msgSender(), mafaVersion(), childGenes, generation, parent1Id, parent2Id);
 
         emit Mate(_msgSender(), parent1Id, parent2Id, mafaVersion(), childGenes, generation);
+    }
+
+    function mate(uint256[] memory parentIds) public virtual {
+        require(parentIds.length <= 150, "You can only mate at most 150 mafagafos at a time");
+        require(parentIds.length.mod(2) == 0, "You must mate an even number of mafagafos");
+
+        for (uint256 i = 0; i < parentIds.length; i = i.add(2)) {
+            mate(parentIds[i], parentIds[i+1]);
+        }
     }
 
     // TODO: genetic mix logic
