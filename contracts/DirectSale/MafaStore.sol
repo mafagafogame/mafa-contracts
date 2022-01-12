@@ -50,6 +50,8 @@ contract MafaStore is
     // list of items available to sell
     Item[] public items;
 
+    uint256 public avatarPrice;
+
     /**
      * @param _acceptedToken accepted ERC20 token address
      * @param avatarAddress accepted avatar address to sell to the mafastore
@@ -71,6 +73,8 @@ contract MafaStore is
         avatarContract = MafagafoAvatarNft(avatarAddress);
         _mafaBnbPair = IUniswapV2Pair(mafaBnb);
         _bnbBusdPair = IUniswapV2Pair(bnbBusd);
+
+        avatarPrice = 300 * 10**18;
 
         __Pausable_init();
         __Ownable_init();
@@ -119,6 +123,17 @@ contract MafaStore is
         _bnbBusdPair = IUniswapV2Pair(addr);
 
         emit BnbBusdPairChanged(addr);
+    }
+
+    /**
+     * @dev Update the USD price of the avatar
+     * @param price new price
+     */
+    function setAvatarPrice(uint256 price) external virtual onlyOwner {
+        require(price > 0, "New price cannot be 0");
+        avatarPrice = price;
+
+        emit AvatarPriceChanged(price);
     }
 
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -254,7 +269,7 @@ contract MafaStore is
 
         require(avatarContract.isApprovedForAll(sender, address(this)), "Check the approval of your avatars");
 
-        uint256 priceInBUSD = tokenIds.length.mul(300).mul(10**18);
+        uint256 priceInBUSD = tokenIds.length.mul(avatarPrice);
         uint256 mafaBusdPrice = getMAFAtoBUSDprice();
         uint256 sellPriceInMAFA = (priceInBUSD.mul(10**18).div(mafaBusdPrice));
 
@@ -453,6 +468,7 @@ contract MafaStore is
     event AvatarAddressChanged(address indexed addr);
     event MafaBnbPairChanged(address indexed addr);
     event BnbBusdPairChanged(address indexed addr);
+    event AvatarPriceChanged(uint256 price);
 
     uint256[50] private __gap;
 }
