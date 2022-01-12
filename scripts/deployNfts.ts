@@ -34,6 +34,17 @@ async function main() {
   console.log("Deploying contracts with the account:", deployer.address);
 
   const MafaCoinFactory: MafaCoin__factory = await ethers.getContractFactory("MafaCoin");
+  // LOCAL MAFACOIN
+  // let mafacoin = await MafaCoinFactory.deploy();
+  // mafacoin = await mafacoin.deployed();
+
+  // await mafacoin.afterPreSale().wait(1);
+  // await mafacoin.setBurnFee(0).wait(1);
+  // await mafacoin.setTeamBuyFee(0).wait(1);
+  // await mafacoin.setTeamSellFee(0).wait(1);
+  // await mafacoin.setLiquidyFee(0).wait(1);
+  // await mafacoin.setLotteryFee(0).wait(1);
+
   // MAINET MAFACOIN
   // const mafacoin = MafaCoinFactory.attach("0xaf44400a99a9693bf3c2e89b02652babacc5cdb9");
 
@@ -87,7 +98,16 @@ async function main() {
   const mafaBoxFactory = <MafaBox__factory>await ethers.getContractFactory("MafaBox");
   let mafaBox = <MafaBox>await upgrades.deployProxy(
     mafaBoxFactory,
-    [mafagafoAvatar.address, [500, 1500, 2000, 2500, 3500]],
+    [
+      mafagafoAvatar.address,
+      [
+        ethers.utils.parseEther("0.05"),
+        ethers.utils.parseEther("0.15"),
+        ethers.utils.parseEther("0.2"),
+        ethers.utils.parseEther("0.25"),
+        ethers.utils.parseEther("0.35"),
+      ],
+    ],
     {
       initializer: "initialize",
       kind: "uups",
