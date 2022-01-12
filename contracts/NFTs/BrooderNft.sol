@@ -39,7 +39,7 @@ contract BrooderNft is BaseERC1155 {
      * @dev returns the breed time of a brooder
      * @param id ID of the brooder
      */
-    function getBrooder(uint256 id) external virtual returns (uint256) {
+    function getBrooder(uint256 id) external view virtual returns (uint256) {
         return (brooder[id].breedTime);
     }
 

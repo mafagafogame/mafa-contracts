@@ -50,6 +50,7 @@ contract MafaStore is
     // list of items available to sell
     Item[] public items;
 
+    // 10**18 data. The value is in USD and converted to MAFA. The store pays it in return when it receives a mafagafo.
     uint256 public avatarPrice;
 
     /**
@@ -130,7 +131,7 @@ contract MafaStore is
      * @param price new price
      */
     function setAvatarPrice(uint256 price) external virtual onlyOwner {
-        require(price > 0, "New price cannot be 0");
+        require(price != 0, "New price cannot be 0");
         avatarPrice = price;
 
         emit AvatarPriceChanged(price);
@@ -211,7 +212,7 @@ contract MafaStore is
      */
     function updateItemPrice(uint256 id, uint256 newPrice) external virtual onlyOwner {
         require(id < items.length, "Item doesn't exists");
-        require(newPrice > 0, "Item price can't be 0");
+        require(newPrice !=0, "Item price can't be 0");
 
         Item storage item = items[id];
 
@@ -273,10 +274,7 @@ contract MafaStore is
         uint256 mafaBusdPrice = getMAFAtoBUSDprice();
         uint256 sellPriceInMAFA = (priceInBUSD.mul(10**18).div(mafaBusdPrice));
 
-        require(
-            acceptedToken.balanceOf(address(this)) >= sellPriceInMAFA,
-            "Amount exceeds mafastore balance"
-        );
+        require(acceptedToken.balanceOf(address(this)) >= sellPriceInMAFA, "Amount exceeds mafastore balance");
 
         require(acceptedToken.transfer(sender, sellPriceInMAFA), "Fail transferring the amount to the seller");
 

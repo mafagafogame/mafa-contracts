@@ -84,7 +84,7 @@
     "upgrade:contract": "hardhat run scripts/upgradeContract.ts --network",
     "fork": "hardhat node & disown",
     "lint": "yarn run lint:sol && yarn run lint:ts && yarn run prettier:check",
-    "lint:sol": "solhint --fix --config ./.solhint.json --max-warnings 0 \"contracts/**/*.sol\"",
+    "lint:sol": "solhint --fix --config ./.solhint.json \"contracts/**/*.sol\"",
     "lint:ts": "eslint --config ./.eslintrc.yaml --ignore-path ./.eslintignore --ext .js,.ts .",
     "prettier": "prettier --config ./.prettierrc.yaml --write \"**/*.{js,json,md,sol,ts}\"",
     "prettier:check": "prettier --check --config ./.prettierrc \"**/*.{js,json,md,sol,ts}\"",
