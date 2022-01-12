@@ -248,6 +248,8 @@ contract MafaStore is
      * @param tokenIds ERC721 token IDs of the avatars to be sold
      */
     function sellAvatar(uint256[] memory tokenIds) external virtual whenNotPaused nonReentrant {
+        require(tokenIds.length <= 500, "You can sell at most 500 avatars at a time");
+
         address sender = _msgSender();
 
         require(avatarContract.isApprovedForAll(sender, address(this)), "Check the approval of your avatars");

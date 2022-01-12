@@ -433,6 +433,14 @@ describe("MafaStore", function () {
         );
       });
 
+      it("user should not be able to sell more than 500 avatars", async function () {
+        const length = 501;
+
+        await expect(
+          mafastore.connect(account1).sellAvatar(Array.from({ length: length }, (_, i) => i + 1)),
+        ).to.be.revertedWith("You can sell at most 500 avatars at a time");
+      });
+
       describe("after transfering some MAFAs to the mafastore", function () {
         beforeEach(async function () {
           await mafacoin.transfer(mafastore.address, expandTo18Decimals(100000));
@@ -484,7 +492,7 @@ describe("MafaStore", function () {
           });
 
           it("user should be able to sell multiple avatars", async function () {
-            const length = 200;
+            const length = 500;
 
             for (let i = 1; i < length; i++) {
               await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256)"](
@@ -512,12 +520,12 @@ describe("MafaStore", function () {
             ).to.be.emit(mafastore, "AvatarSold");
 
             expect(bigNumberToFloat(await mafacoin.balanceOf(account1.address))).to.be.within(
-              100000 + (300 * length) / mafaPrice - 2000,
-              100000 + (300 * length) / mafaPrice + 2000,
+              100000 + (300 * length) / mafaPrice - 5000,
+              100000 + (300 * length) / mafaPrice + 5000,
             );
             expect(bigNumberToFloat(await mafacoin.balanceOf(mafastore.address))).to.be.within(
-              5100000 - (300 * length) / mafaPrice - 2000,
-              5100000 - (300 * length) / mafaPrice + 2000,
+              5100000 - (300 * length) / mafaPrice - 5000,
+              5100000 - (300 * length) / mafaPrice + 5000,
             );
             expect(await mafagafoAvatar.ownerOf(1)).to.equal(mafastore.address);
             expect(await mafagafoAvatar.ownerOf(length / 2)).to.equal(mafastore.address);
