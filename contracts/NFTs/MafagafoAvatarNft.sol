@@ -84,7 +84,7 @@ contract MafagafoAvatarNft is MafagafoAvatarBase {
         require(parentIds.length.mod(2) == 0, "You must mate an even number of mafagafos");
 
         for (uint256 i = 0; i < parentIds.length; i = i.add(2)) {
-            mate(parentIds[i], parentIds[i+1]);
+            mate(parentIds[i], parentIds[i + 1]);
         }
     }
 

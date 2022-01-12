@@ -245,27 +245,31 @@ contract MafaStore is
 
     /**
      * @dev Sell an avatar to this contract
-     * @param tokenId ERC721 token ID of the avatar to be sold
+     * @param tokenIds ERC721 token IDs of the avatars to be sold
      */
-    function sellAvatar(uint256 tokenId) external virtual whenNotPaused nonReentrant {
+    function sellAvatar(uint256[] memory tokenIds) external virtual whenNotPaused nonReentrant {
+        address sender = _msgSender();
+
+        require(avatarContract.isApprovedForAll(sender, address(this)), "Check the approval of your avatars");
+
+        uint256 priceInBUSD = tokenIds.length.mul(300).mul(10**18);
+        uint256 mafaBusdPrice = getMAFAtoBUSDprice();
+        uint256 sellPriceInMAFA = (priceInBUSD.mul(10**18).div(mafaBusdPrice));
+
         require(
-            acceptedToken.balanceOf(address(this)) >= 300,
-            "The mafastore is unable to receive new avatars for the moment"
+            acceptedToken.balanceOf(address(this)) >= sellPriceInMAFA,
+            "Amount exceeds mafastore balance"
         );
 
-        address sender = _msgSender();
-        require(avatarContract.ownerOf(tokenId) == sender, "You have to own this avatar to be able to sell it");
-        require(avatarContract.getApproved(tokenId) == address(this), "Check the token approval for this token ID");
-
-        uint256 mafaBusdPrice = getMAFAtoBUSDprice();
-        uint256 sellPriceInMAFA = (uint256(300).mul(10**36).div(mafaBusdPrice));
-
-        // Transfer 300 BUSD in mafa to avatar seller
         require(acceptedToken.transfer(sender, sellPriceInMAFA), "Fail transferring the amount to the seller");
 
-        avatarContract.transferFrom(sender, address(this), tokenId);
+        for (uint256 i = 0; i < tokenIds.length; i++) {
+            require(avatarContract.ownerOf(tokenIds[i]) == sender, "You have to own this avatar to be able to sell it");
 
-        emit AvatarSold(sender, tokenId);
+            avatarContract.transferFrom(sender, address(this), tokenIds[i]);
+        }
+
+        emit AvatarSold(sender, tokenIds, sellPriceInMAFA, tokenIds.length);
     }
 
     /**
@@ -442,7 +446,7 @@ contract MafaStore is
         uint256 price,
         uint256 amounts
     );
-    event AvatarSold(address indexed seller, uint256 tokenId);
+    event AvatarSold(address indexed seller, uint256[] tokenId, uint256 price, uint256 amounts);
     event AcceptedTokenChanged(address indexed addr);
     event AvatarAddressChanged(address indexed addr);
     event MafaBnbPairChanged(address indexed addr);
