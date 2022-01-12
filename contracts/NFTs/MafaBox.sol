@@ -50,9 +50,10 @@ contract MafaBox is BaseERC1155 {
      * @param newProbabilities new probabilities array
      */
     function setProbabilities(uint256[] memory newProbabilities) external virtual onlyRole(DEFAULT_ADMIN_ROLE) {
+        _requireProbabilitiesMatch(newProbabilities);
         probabilities = newProbabilities;
 
-        emit ProbabilitiesAddressChanged(newProbabilities);
+        emit ProbabilitiesChanged(newProbabilities);
     }
 
     /**
@@ -89,7 +90,7 @@ contract MafaBox is BaseERC1155 {
     }
 
     /**
-     * @dev requires that probabilities array sum equals 10000
+     * @dev requires that probabilities array sum equals 10**18
      * @param _probabilities array of probabilities
      */
     function _requireProbabilitiesMatch(uint256[] memory _probabilities) internal pure virtual {
@@ -99,7 +100,7 @@ contract MafaBox is BaseERC1155 {
             sum = sum.add(_probabilities[i]);
         }
 
-        require(sum == 10000, "probabilities values sum must equal 10000");
+        require(sum == 10**18, "probabilities values sum must equal 10**18");
     }
 
     /**
@@ -108,13 +109,13 @@ contract MafaBox is BaseERC1155 {
     function _random() internal view virtual returns (uint256 randomNumber) {
         return
             uint256(keccak256(abi.encodePacked(block.difficulty, block.timestamp, _msgSender(), _totalOpen.current())))
-                .mod(10000);
+                .mod(10**18);
     }
 
     // EVENTS
     event BoxOpened(uint256 boxID, address sender, uint256[] mafagafoTypes);
     event MafagafoAddressChanged(address indexed addr);
-    event ProbabilitiesAddressChanged(uint256[] newProbabilities);
+    event ProbabilitiesChanged(uint256[] newProbabilities);
 
     // this should be the latest space to allocate. do not add anything bellow this
     uint256[50] private __gap;
