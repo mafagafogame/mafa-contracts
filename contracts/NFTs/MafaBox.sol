@@ -57,7 +57,7 @@ contract MafaBox is BaseERC1155 {
     }
 
     /**
-     * @dev Open an amount mystery box and mint a random mafagafo (from generation 0) to sender
+     * @dev Open an amount of mystery boxes and mint an `amount` of random mafagafos (from generation 0) to sender
      * @param id box type
      * @param amount Amount of boxes to open
      */
@@ -90,7 +90,7 @@ contract MafaBox is BaseERC1155 {
     }
 
     /**
-     * @dev requires that probabilities array sum equals 10**18
+     * @dev Require that probabilities array sum equals 10**18
      * @param _probabilities array of probabilities
      */
     function _requireProbabilitiesMatch(uint256[] memory _probabilities) internal pure virtual {
@@ -104,7 +104,7 @@ contract MafaBox is BaseERC1155 {
     }
 
     /**
-     * @dev generates a random number between 0 and 10000
+     * @dev Generate a random number between 0 and 10**18
      */
     function _random() internal view virtual returns (uint256 randomNumber) {
         return

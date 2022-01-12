@@ -25,7 +25,7 @@ contract BrooderNft is BaseERC1155 {
     }
 
     /**
-     * @dev creates a new brooder (or updates an existing one)
+     * @dev Create a new brooder (or updates an existing one)
      * @param id ID of the brooder
      * @param breedTime time to breed an egg with this brooder
      */
@@ -36,7 +36,7 @@ contract BrooderNft is BaseERC1155 {
     }
 
     /**
-     * @dev returns the breed time of a brooder
+     * @dev Return the breed time of a brooder
      * @param id ID of the brooder
      */
     function getBrooder(uint256 id) external view virtual returns (uint256) {
@@ -44,7 +44,7 @@ contract BrooderNft is BaseERC1155 {
     }
 
     /**
-     * @dev burns a brooder that have been used
+     * @dev Burn a brooder that have been used
      * @param from User who used the brooder
      * @param id ID of the brooder
      */

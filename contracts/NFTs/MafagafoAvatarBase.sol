@@ -18,6 +18,16 @@ contract MafagafoAvatarBase is BaseNft {
         uint256 matings;
     }
 
+    /**
+     * @dev Create a new mafagafo
+     * @param _to user that will receive the new mafagafo
+     * @param _id NFT id of the new mafagafo
+     * @param _version mafagafo version
+     * @param _genes genes passed from parents
+     * @param _generation generation of the mafagafo
+     * @param _parent1Id NFT id of the 1st parent
+     * @param _parent2Id NFT id of the 2nd parent
+     */
     function _createMafagafo(
         address _to,
         uint256 _id,

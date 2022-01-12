@@ -18,6 +18,16 @@ contract EggBase is BaseNft {
         bytes32 brooderType;
     }
 
+    /**
+     * @dev Create a new egg using parent characteristics
+     * @param _to user that will receive the new egg
+     * @param _id NFT id of the new egg
+     * @param _version mafagafo version
+     * @param _genes genes to pass to the newborn mafagafo
+     * @param _generation generation of the newborn mafagafo
+     * @param _parent1Id NFT id of the 1st parent
+     * @param _parent2Id NFT id of the 2nd parent
+     */
     function _layEgg(
         address _to,
         uint256 _id,

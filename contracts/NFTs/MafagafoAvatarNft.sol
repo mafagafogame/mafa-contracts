@@ -46,6 +46,15 @@ contract MafagafoAvatarNft is MafagafoAvatarBase {
         emit EggAddressChanged(addr);
     }
 
+    /**
+     * @dev Mint a new mafagafo
+     * @param _to user that will receive the new mafagafo
+     * @param _version mafagafo version
+     * @param _genes genes passed from parents
+     * @param _generation generation of the mafagafo
+     * @param _parent1Id NFT id of the 1st parent
+     * @param _parent2Id NFT id of the 2nd parent
+     */
     function mint(
         address _to,
         uint16 _version,
@@ -59,6 +68,12 @@ contract MafagafoAvatarNft is MafagafoAvatarBase {
         super.mint(_to);
     }
 
+    /**
+     * @dev Mate two mafagafos to generate an egg
+     *  caller must be the owner of the two mafagafos
+     * @param parent1Id NFT id of the 1st parent
+     * @param parent2Id NFT id of the 2nd parent
+     */
     function mate(uint256 parent1Id, uint256 parent2Id) public virtual onlyOwnerOf(parent1Id, parent2Id) {
         require(parent1Id != parent2Id, "You must use different mafagafos to mate");
 
@@ -79,6 +94,11 @@ contract MafagafoAvatarNft is MafagafoAvatarBase {
         emit Mate(_msgSender(), parent1Id, parent2Id, mafaVersion(), childGenes, generation);
     }
 
+    /**
+     * @dev Mate N mafagafos to generate N/2 eggs
+     *  caller must be the owner of all mafagafos
+     * @param parentIds Array of all mafagafos to mate. Must be even and mafagafos are mated on ascending order
+     */
     function mate(uint256[] memory parentIds) public virtual {
         require(parentIds.length <= 150, "You can only mate at most 150 mafagafos at a time");
         require(parentIds.length.mod(2) == 0, "You must mate an even number of mafagafos");

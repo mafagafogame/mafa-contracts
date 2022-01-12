@@ -49,6 +49,15 @@ contract EggNft is EggBase {
         emit BrooderAddressChanged(addr);
     }
 
+    /**
+     * @dev Mint a new egg
+     * @param _to user that will receive the new egg
+     * @param _version mafagafo version
+     * @param _genes genes to pass to the newborn mafagafo
+     * @param _generation generation of the newborn mafagafo
+     * @param _parent1Id NFT id of the 1st parent
+     * @param _parent2Id NFT id of the 2nd parent
+     */
     function mint(
         address _to,
         uint16 _version,
@@ -62,9 +71,11 @@ contract EggNft is EggBase {
         super.mint(_to);
     }
 
-    // todo: hatch multiple eggs at the same time
-
-    // hatch an egg after enough time has passed
+    /**
+     * @dev Hatch an egg
+     *  caller must be the owner of the egg
+     * @param id NFT id of the egg
+     */
     function hatchEgg(uint256 id) public virtual {
         require(ownerOf(id) == _msgSender(), "Sender must be the owner of the egg");
 
@@ -84,6 +95,11 @@ contract EggNft is EggBase {
         );
     }
 
+    /**
+     * @dev Hatch multiple eggs
+     *  caller must be the owner of all the eggs
+     * @param ids array of NFT ids of the eggs
+     */
     function hatchEgg(uint256[] memory ids) public virtual {
         require(ids.length <= 120, "You can hatch at most 120 eggs at a time");
 
@@ -92,6 +108,13 @@ contract EggNft is EggBase {
         }
     }
 
+
+    /**
+     * @dev Breed an egg
+     *  caller must be the owner of the egg and the brooder
+     * @param id NFT id of the egg
+     * @param brooderId NFT id of the brooder
+     */
     function breedEgg(uint256 id, uint256 brooderId) public virtual {
         require(ownerOf(id) == _msgSender(), "Sender must be the owner of the egg");
         require(brooderContract.balanceOf(_msgSender(), brooderId) > 0, "You don't own any of this brooder");
@@ -108,6 +131,12 @@ contract EggNft is EggBase {
         emit EggBreeded(id, brooderId, newTimer);
     }
 
+    /**
+     * @dev Breed multiple eggs
+     *  caller must be the owner of the egg and the brooder
+     * @param ids array of NFT ids of the eggs
+     * @param brooderIds array of NFT ids of the brooders
+     */
     function breedEgg(uint256[] memory ids, uint256[] memory brooderIds) public virtual {
         require(ids.length == brooderIds.length, "ids and brooderIds arrays must be equal");
         require(ids.length <= 600, "You can breed at most 600 eggs at a time");

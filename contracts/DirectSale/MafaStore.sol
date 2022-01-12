@@ -178,6 +178,7 @@ contract MafaStore is
 
     /**
      * @dev Remove an item
+     *  When we delete an item, we move the last item to the deleted position
      * @param toDeleteIndex The array ID from items to be removed
      */
     function removeItemFromStore(uint256 toDeleteIndex) external virtual onlyOwner {
@@ -221,7 +222,6 @@ contract MafaStore is
         emit ItemPriceUpdated(id, newPrice);
     }
 
-    // Ex.: when we delete an item, we move the last item to the deleted position
     /**
      * @dev Buy amounts of an item.
      * @param id ID on items array
