@@ -108,7 +108,6 @@ contract EggNft is EggBase {
         }
     }
 
-
     /**
      * @dev Breed an egg
      *  caller must be the owner of the egg and the brooder

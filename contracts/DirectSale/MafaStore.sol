@@ -213,7 +213,7 @@ contract MafaStore is
      */
     function updateItemPrice(uint256 id, uint256 newPrice) external virtual onlyOwner {
         require(id < items.length, "Item doesn't exists");
-        require(newPrice !=0, "Item price can't be 0");
+        require(newPrice != 0, "Item price can't be 0");
 
         Item storage item = items[id];
 
