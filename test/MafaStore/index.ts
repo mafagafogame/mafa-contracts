@@ -16,8 +16,7 @@ import {
   MafaStoreTestV2,
   MafaStoreTestV2__factory,
 } from "../../typechain";
-import { bigNumberToFloat, deployMafaCoin, expandTo18Decimals } from "../shared/utilities";
-import axios from "axios";
+import { bigNumberToFloat, deployMafaCoin, expandTo18Decimals, getMAFAtoBUSDprice } from "../shared/utilities";
 
 describe("MafaStore", function () {
   let mafastore: MafaStore;
@@ -80,11 +79,7 @@ describe("MafaStore", function () {
     });
 
     it("should return the correct MAFABUSD price", async function () {
-      const response = await axios(
-        "https://api.pancakeswap.info/api/v2/tokens/0xaf44400a99a9693bf3c2e89b02652babacc5cdb9",
-      );
-      const data = await response.data;
-      mafaPrice = parseFloat(data.data.price);
+      mafaPrice = await getMAFAtoBUSDprice();
 
       expect(bigNumberToFloat(await mafastore.getMAFAtoBUSDprice())).to.be.within(mafaPrice - 0.01, mafaPrice + 0.01);
     });
@@ -388,6 +383,8 @@ describe("MafaStore", function () {
           "ItemBought",
         );
 
+        mafaPrice = await getMAFAtoBUSDprice();
+
         expect(await brooder.totalSupply(0)).to.equal(1);
         expect(bigNumberToFloat(await mafacoin.balanceOf(account1.address))).to.be.within(
           100000 - 100 / mafaPrice - 100,
@@ -397,6 +394,8 @@ describe("MafaStore", function () {
       });
 
       it("user should be able to buy multiple amounts of an item", async function () {
+        const amount = 5;
+
         await mafastore.addItemToBeSold(
           brooder.address,
           0,
@@ -410,17 +409,18 @@ describe("MafaStore", function () {
         expect(await mafacoin.balanceOf(account1.address)).to.equal(expandTo18Decimals(100000));
         expect(await brooder.balanceOf(account1.address, 0)).to.equal(0);
 
-        await expect(mafastore.connect(account1).buyItem(0, ethers.utils.formatBytes32String("brooder 0"), 5)).to.emit(
-          mafastore,
-          "ItemBought",
-        );
+        await expect(
+          mafastore.connect(account1).buyItem(0, ethers.utils.formatBytes32String("brooder 0"), amount),
+        ).to.emit(mafastore, "ItemBought");
+
+        mafaPrice = await getMAFAtoBUSDprice();
 
         expect(await brooder.totalSupply(0)).to.equal(5);
         expect(bigNumberToFloat(await mafacoin.balanceOf(account1.address))).to.be.within(
-          100000 - (5 * 100) / mafaPrice - 150,
-          100000 - (5 * 100) / mafaPrice + 150,
+          100000 - (amount * 100) / mafaPrice - 100,
+          100000 - (amount * 100) / mafaPrice + 100,
         );
-        expect(await brooder.balanceOf(account1.address, 0)).to.equal(5);
+        expect(await brooder.balanceOf(account1.address, 0)).to.equal(amount);
       });
     });
 
@@ -480,6 +480,8 @@ describe("MafaStore", function () {
 
             await expect(mafastore.connect(account1).sellAvatar([1])).to.be.emit(mafastore, "AvatarSold");
 
+            mafaPrice = await getMAFAtoBUSDprice();
+
             expect(bigNumberToFloat(await mafacoin.balanceOf(account1.address))).to.be.within(
               100000 + 300 / mafaPrice - 100,
               100000 + 300 / mafaPrice + 100,
@@ -518,6 +520,8 @@ describe("MafaStore", function () {
             await expect(
               mafastore.connect(account1).sellAvatar(Array.from({ length: length }, (_, i) => i + 1)),
             ).to.be.emit(mafastore, "AvatarSold");
+
+            mafaPrice = await getMAFAtoBUSDprice();
 
             expect(bigNumberToFloat(await mafacoin.balanceOf(account1.address))).to.be.within(
               100000 + (300 * length) / mafaPrice - 5000,
