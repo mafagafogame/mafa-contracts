@@ -10,6 +10,7 @@ import "@openzeppelin/hardhat-upgrades";
 
 import "./tasks/accounts";
 import "./tasks/clean";
+import "./tasks/upgradeContract";
 
 import { resolve } from "path";
 

@@ -38,12 +38,12 @@ async function main() {
   // let mafacoin = await MafaCoinFactory.deploy();
   // mafacoin = await mafacoin.deployed();
 
-  // await mafacoin.afterPreSale().wait(1);
-  // await mafacoin.setBurnFee(0).wait(1);
-  // await mafacoin.setTeamBuyFee(0).wait(1);
-  // await mafacoin.setTeamSellFee(0).wait(1);
-  // await mafacoin.setLiquidyFee(0).wait(1);
-  // await mafacoin.setLotteryFee(0).wait(1);
+  // await (await mafacoin.afterPreSale()).wait(1);
+  // await (await mafacoin.setBurnFee(0)).wait(1);
+  // await (await mafacoin.setTeamBuyFee(0)).wait(1);
+  // await (await mafacoin.setTeamSellFee(0)).wait(1);
+  // await (await mafacoin.setLiquidyFee(0)).wait(1);
+  // await (await mafacoin.setLotteryFee(0)).wait(1);
 
   // MAINET MAFACOIN
   // const mafacoin = MafaCoinFactory.attach("0xaf44400a99a9693bf3c2e89b02652babacc5cdb9");
