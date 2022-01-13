@@ -20,6 +20,10 @@ contract EggBase is BaseNft {
         bytes32 brooderType;
     }
 
+    /**
+     * @dev Update the hatch time
+     * @param _hatchTime New hatch time (unix timestamp)
+     */
     function setHatchTime(uint256 _hatchTime) public onlyRole(DEFAULT_ADMIN_ROLE) {
         hatchTime = _hatchTime;
 
