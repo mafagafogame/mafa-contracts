@@ -7,6 +7,8 @@ import "./BaseNft.sol";
 contract EggBase is BaseNft {
     mapping(uint256 => Egg) public egg;
 
+    uint256 public hatchTime;
+
     struct Egg {
         uint16 version;
         bytes32 genes;
@@ -16,6 +18,12 @@ contract EggBase is BaseNft {
         uint256 hatchDate;
         bool breeding;
         bytes32 brooderType;
+    }
+
+    function setHatchTime(uint256 _hatchTime) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        hatchTime = _hatchTime;
+
+        emit HatchTimeChanged(_hatchTime);
     }
 
     /**
@@ -43,12 +51,12 @@ contract EggBase is BaseNft {
             generation: _generation,
             parent1Id: _parent1Id,
             parent2Id: _parent2Id,
-            hatchDate: block.timestamp + 30 weeks,
+            hatchDate: block.timestamp + hatchTime,
             breeding: false,
             brooderType: bytes32("none")
         });
 
-        emit Layed(_to, _id, _version, _genes, _generation, [_parent1Id, _parent2Id], block.timestamp + 30 weeks);
+        emit Layed(_to, _id, _version, _genes, _generation, [_parent1Id, _parent2Id], block.timestamp + hatchTime);
     }
 
     // EVENTS
@@ -61,6 +69,7 @@ contract EggBase is BaseNft {
         uint256[2] parentsIDs,
         uint256 hatchDate
     );
+    event HatchTimeChanged(uint256 hatchTime);
 
     // this should be the latest space to allocate. do not add anything bellow this
     uint256[50] private __gap;

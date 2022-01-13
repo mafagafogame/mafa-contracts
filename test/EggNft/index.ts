@@ -68,6 +68,7 @@ describe("Unit tests", function () {
       expect(await egg.brooderContract()).to.equal(brooder.address);
       expect(await egg.mafagafoContract()).to.equal(mafagafoAvatar.address);
       expect(await egg.ownerOf(0)).to.equal(account1.address);
+      expect(await egg.hatchTime()).to.equal(daysToUnixDate(210));
       const newEgg = await egg.egg(0);
       expect(newEgg.version).to.equal(0);
       expect(newEgg.genes).to.equal(ethers.utils.formatBytes32String(""));
@@ -76,6 +77,14 @@ describe("Unit tests", function () {
       expect(newEgg.parent2Id).to.equal(0);
       expect(newEgg.breeding).to.equal(false);
       expect(newEgg.brooderType).to.equal(ethers.utils.formatBytes32String("none"));
+    });
+
+    it("admin should be able to update egg hatch time", async function () {
+      await expect(egg.setHatchTime(daysToUnixDate(10)))
+        .to.emit(egg, "HatchTimeChanged")
+        .withArgs(daysToUnixDate(10));
+
+      expect(await egg.hatchTime()).to.equal(daysToUnixDate(10));
     });
 
     describe("hatch egg", function () {

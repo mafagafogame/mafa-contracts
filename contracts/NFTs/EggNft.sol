@@ -22,6 +22,8 @@ contract EggNft is EggBase {
         require(brooderAddress.isContract(), "Brooder NFT address must be a contract");
         brooderContract = BrooderNft(brooderAddress);
 
+        hatchTime = 30 weeks;
+
         // TODO: add the correct urlbase
         __BaseNft_init("Egg", "EGG", "");
     }
