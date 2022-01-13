@@ -11,6 +11,7 @@ import "@openzeppelin/hardhat-upgrades";
 import "./tasks/accounts";
 import "./tasks/clean";
 import "./tasks/upgradeContract";
+import "./tasks/deployNfts";
 
 import { resolve } from "path";
 
