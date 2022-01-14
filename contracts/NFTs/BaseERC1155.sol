@@ -48,16 +48,16 @@ contract BaseERC1155 is
         return (_uris[tokenId]);
     }
 
-    function setTokenUri(uint256 tokenId, string memory _uri) public onlyRole(URI_SETTER_ROLE) {
+    function setTokenUri(uint256 tokenId, string memory _uri) external onlyRole(URI_SETTER_ROLE) {
         require(bytes(_uris[tokenId]).length == 0, "Cannot set uri twice");
         _uris[tokenId] = _uri;
     }
 
-    function pause() public onlyRole(PAUSER_ROLE) {
+    function pause() external onlyRole(PAUSER_ROLE) {
         _pause();
     }
 
-    function unpause() public onlyRole(PAUSER_ROLE) {
+    function unpause() external onlyRole(PAUSER_ROLE) {
         _unpause();
     }
 
@@ -66,7 +66,7 @@ contract BaseERC1155 is
         uint256 id,
         uint256 amount,
         bytes memory data
-    ) public onlyRole(MINTER_ROLE) {
+    ) external onlyRole(MINTER_ROLE) {
         _mint(account, id, amount, data);
     }
 
@@ -76,7 +76,7 @@ contract BaseERC1155 is
         uint256[] memory ids,
         uint256[] memory amounts,
         bytes memory data
-    ) public onlyRole(MINTER_ROLE) {
+    ) external onlyRole(MINTER_ROLE) {
         _mintBatch(to, ids, amounts, data);
     }
 
@@ -85,12 +85,12 @@ contract BaseERC1155 is
         uint256[] memory ids,
         uint256[] memory amounts,
         bytes memory data
-    ) public onlyRole(MINTER_ROLE) {
+    ) external onlyRole(MINTER_ROLE) {
         require(addresses.length == ids.length, "addresses and ids arrays must be equal");
         require(addresses.length == amounts.length, "addresses and amounts arrays must be equal");
-        require(addresses.length <= 250, "Can't mint to more than 250 addresses in one batch");
+        require(addresses.length <= 500, "Can't mint to more than 500 addresses in one batch");
 
-        for (uint8 i = 0; i < addresses.length; i++) {
+        for (uint16 i = 0; i < addresses.length; i++) {
             _mint(addresses[i], ids[i], amounts[i], data);
         }
     }
@@ -100,11 +100,11 @@ contract BaseERC1155 is
         uint256 id,
         uint256[] memory amounts,
         bytes memory data
-    ) public onlyRole(MINTER_ROLE) {
+    ) external onlyRole(MINTER_ROLE) {
         require(addresses.length == amounts.length, "addresses and amounts arrays must be equal");
-        require(addresses.length <= 250, "Can't mint to more than 250 addresses in one batch");
+        require(addresses.length <= 500, "Can't mint to more than 500 addresses in one batch");
 
-        for (uint8 i = 0; i < addresses.length; i++) {
+        for (uint16 i = 0; i < addresses.length; i++) {
             _mint(addresses[i], id, amounts[i], data);
         }
     }
@@ -114,11 +114,11 @@ contract BaseERC1155 is
         uint256[] memory ids,
         uint256 amount,
         bytes memory data
-    ) public onlyRole(MINTER_ROLE) {
+    ) external onlyRole(MINTER_ROLE) {
         require(addresses.length == ids.length, "addresses and ids arrays must be equal");
-        require(addresses.length <= 250, "Can't mint to more than 250 addresses in one batch");
+        require(addresses.length <= 500, "Can't mint to more than 500 addresses in one batch");
 
-        for (uint8 i = 0; i < addresses.length; i++) {
+        for (uint16 i = 0; i < addresses.length; i++) {
             _mint(addresses[i], ids[i], amount, data);
         }
     }
@@ -128,10 +128,10 @@ contract BaseERC1155 is
         uint256 id,
         uint256 amount,
         bytes memory data
-    ) public onlyRole(MINTER_ROLE) {
-        require(addresses.length <= 250, "Can't mint to more than 250 addresses in one batch");
+    ) external onlyRole(MINTER_ROLE) {
+        require(addresses.length <= 500, "Can't mint to more than 500 addresses in one batch");
 
-        for (uint8 i = 0; i < addresses.length; i++) {
+        for (uint16 i = 0; i < addresses.length; i++) {
             _mint(addresses[i], id, amount, data);
         }
     }
@@ -147,7 +147,7 @@ contract BaseERC1155 is
         super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
     }
 
-    function version() public pure virtual returns (string memory) {
+    function version() external pure virtual returns (string memory) {
         return "1.0.0";
     }
 

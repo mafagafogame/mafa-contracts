@@ -24,7 +24,7 @@ describe("Unit tests", function () {
         kind: "uups",
       });
 
-      length = 250;
+      length = 500;
     });
 
     describe("Multi mint", function () {
@@ -45,8 +45,8 @@ describe("Unit tests", function () {
         expect(await baseERC1155.balanceOf(addresses[length - 1], length - 1)).to.equal(length);
       });
 
-      it("should revert if addresses is greater than 250", async function () {
-        length = 251;
+      it("should revert if addresses is greater than 500", async function () {
+        length = 501;
 
         addresses = new Array(length);
         ids = new Array(length);
@@ -59,7 +59,7 @@ describe("Unit tests", function () {
 
         await expect(
           baseERC1155.multiMint(addresses, ids, amounts, ethers.utils.formatBytes32String("")),
-        ).to.be.revertedWith("Can't mint to more than 250 addresses in one batch");
+        ).to.be.revertedWith("Can't mint to more than 500 addresses in one batch");
       });
 
       it("should revert if addresses and ids doesn't have the same length", async function () {
@@ -72,7 +72,7 @@ describe("Unit tests", function () {
           amounts[i] = i + 1;
         }
 
-        ids = ids.slice(0, 200);
+        ids = ids.slice(0, 450);
 
         await expect(
           baseERC1155.multiMint(addresses, ids, amounts, ethers.utils.formatBytes32String("")),
@@ -89,7 +89,7 @@ describe("Unit tests", function () {
           amounts[i] = i + 1;
         }
 
-        amounts = amounts.slice(0, 200);
+        amounts = amounts.slice(0, 450);
 
         await expect(
           baseERC1155.multiMint(addresses, ids, amounts, ethers.utils.formatBytes32String("")),
@@ -114,8 +114,8 @@ describe("Unit tests", function () {
         expect(await baseERC1155.totalSupply(2)).to.equal(0);
       });
 
-      it("should revert if addresses is greater than 250", async function () {
-        length = 251;
+      it("should revert if addresses is greater than 500", async function () {
+        length = 501;
 
         addresses = new Array(length);
         ids = new Array(length);
@@ -128,7 +128,7 @@ describe("Unit tests", function () {
 
         await expect(
           baseERC1155.multiMintEqualId(addresses, 1, amounts, ethers.utils.formatBytes32String("")),
-        ).to.be.revertedWith("Can't mint to more than 250 addresses in one batch");
+        ).to.be.revertedWith("Can't mint to more than 500 addresses in one batch");
       });
 
       it("should revert if addresses and amounts doesn't have the same length", async function () {
@@ -141,7 +141,7 @@ describe("Unit tests", function () {
           amounts[i] = i + 1;
         }
 
-        amounts = amounts.slice(0, 200);
+        amounts = amounts.slice(0, 450);
 
         await expect(
           baseERC1155.multiMintEqualId(addresses, 1, amounts, ethers.utils.formatBytes32String("")),
@@ -165,8 +165,8 @@ describe("Unit tests", function () {
         expect(await baseERC1155.balanceOf(addresses[length - 1], length - 1)).to.equal(50);
       });
 
-      it("should revert if addresses is greater than 250", async function () {
-        length = 251;
+      it("should revert if addresses is greater than 500", async function () {
+        length = 501;
 
         addresses = new Array(length);
         ids = new Array(length);
@@ -179,7 +179,7 @@ describe("Unit tests", function () {
 
         await expect(
           baseERC1155.multiMintEqualAmount(addresses, ids, 50, ethers.utils.formatBytes32String("")),
-        ).to.be.revertedWith("Can't mint to more than 250 addresses in one batch");
+        ).to.be.revertedWith("Can't mint to more than 500 addresses in one batch");
       });
 
       it("should revert if addresses and ids doesn't have the same length", async function () {
@@ -192,7 +192,7 @@ describe("Unit tests", function () {
           amounts[i] = i + 1;
         }
 
-        ids = ids.slice(0, 200);
+        ids = ids.slice(0, 450);
 
         await expect(
           baseERC1155.multiMintEqualAmount(addresses, ids, 50, ethers.utils.formatBytes32String("")),
@@ -215,8 +215,8 @@ describe("Unit tests", function () {
         expect(await baseERC1155.totalSupply(2)).to.equal(0);
       });
 
-      it("should revert if addresses is greater than 250", async function () {
-        length = 251;
+      it("should revert if addresses is greater than 500", async function () {
+        length = 501;
 
         addresses = new Array(length);
         ids = new Array(length);
@@ -229,7 +229,7 @@ describe("Unit tests", function () {
 
         await expect(
           baseERC1155.multiMintEqualIdAndAmount(addresses, 1, 50, ethers.utils.formatBytes32String("")),
-        ).to.be.revertedWith("Can't mint to more than 250 addresses in one batch");
+        ).to.be.revertedWith("Can't mint to more than 500 addresses in one batch");
       });
     });
   });

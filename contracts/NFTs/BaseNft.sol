@@ -48,9 +48,9 @@ contract BaseNft is
             super.supportsInterface(interfaceId);
     }
 
-    function setBaseURI(string memory baseURI) public virtual onlyRole(DEFAULT_ADMIN_ROLE) {
-        _baseTokenURI = baseURI;
-        emit UriBaseChanged(baseURI);
+    function setBaseURI(string memory _baseURI) external virtual onlyRole(DEFAULT_ADMIN_ROLE) {
+        _baseTokenURI = _baseURI;
+        emit UriBaseChanged(_baseURI);
     }
 
     function baseURI() external view returns (string memory) {
@@ -69,7 +69,7 @@ contract BaseNft is
         uint256 _tokenId,
         address payable _royaltiesReceipientAddress,
         uint96 _percentageBasisPoints
-    ) public onlyRole(MINTER_ROLE) {
+    ) external onlyRole(MINTER_ROLE) {
         LibPart.Part[] memory _royalties = new LibPart.Part[](1);
         _royalties[0].value = _percentageBasisPoints;
         _royalties[0].account = _royaltiesReceipientAddress;
@@ -98,7 +98,7 @@ contract BaseNft is
     // _saveRoyalties(uint256 id, LibPart.Part[] memory _royalties)
     // _updateAccount(uint256 _id, address _from, address _to)
 
-    function version() public pure virtual returns (string memory) {
+    function version() external pure virtual returns (string memory) {
         return "1.0.0";
     }
 
@@ -108,7 +108,7 @@ contract BaseNft is
 }
 
 contract BaseNftTestV2 is BaseNft {
-    function version() public pure virtual override returns (string memory) {
+    function version() external pure virtual override returns (string memory) {
         return "2.0.0";
     }
 }
