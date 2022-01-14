@@ -89,9 +89,9 @@ contract MafagafoAvatarNft is MafagafoAvatarBase {
         bytes32 childGenes = mixGenes(parent1.genes, parent2.genes);
         uint32 generation = uint32(MathUpgradeable.max(parent1.generation, parent2.generation) + 1);
 
-        eggContract.mint(_msgSender(), mafaVersion(), childGenes, generation, parent1Id, parent2Id);
-
         emit Mate(_msgSender(), parent1Id, parent2Id, mafaVersion(), childGenes, generation);
+
+        eggContract.mint(_msgSender(), mafaVersion(), childGenes, generation, parent1Id, parent2Id);
     }
 
     /**
@@ -99,7 +99,7 @@ contract MafagafoAvatarNft is MafagafoAvatarBase {
      *  caller must be the owner of all mafagafos
      * @param parentIds Array of all mafagafos to mate. Must be even and mafagafos are mated on ascending order
      */
-    function mate(uint256[] memory parentIds) public virtual {
+    function mate(uint256[] memory parentIds) external virtual {
         require(parentIds.length <= 150, "You can only mate at most 150 mafagafos at a time");
         require(parentIds.length.mod(2) == 0, "You must mate an even number of mafagafos");
 

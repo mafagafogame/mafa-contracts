@@ -85,7 +85,6 @@ contract EggNft is EggBase {
         require(block.timestamp >= _egg.hatchDate, "Egg is not in time to hatch");
 
         super._burn(id);
-        mafagafoContract.mint(_msgSender(), _egg.version, _egg.genes, _egg.generation, _egg.parent1Id, _egg.parent2Id);
 
         emit EggHatched(
             id,
@@ -95,6 +94,8 @@ contract EggNft is EggBase {
             _egg.generation,
             [_egg.parent1Id, _egg.parent2Id]
         );
+
+        mafagafoContract.mint(_msgSender(), _egg.version, _egg.genes, _egg.generation, _egg.parent1Id, _egg.parent2Id);
     }
 
     /**
@@ -102,7 +103,7 @@ contract EggNft is EggBase {
      *  caller must be the owner of all the eggs
      * @param ids array of NFT ids of the eggs
      */
-    function hatchEgg(uint256[] memory ids) public virtual {
+    function hatchEgg(uint256[] memory ids) external virtual {
         require(ids.length <= 120, "You can hatch at most 120 eggs at a time");
 
         for (uint256 i = 0; i < ids.length; i++) {
@@ -127,9 +128,9 @@ contract EggNft is EggBase {
         _egg.breeding = true;
         _egg.brooderType = bytes32(brooderId);
 
-        brooderContract.onUse(_msgSender(), brooderId);
-
         emit EggBreeded(id, brooderId, newTimer);
+        
+        brooderContract.onUse(_msgSender(), brooderId);
     }
 
     /**
@@ -138,7 +139,7 @@ contract EggNft is EggBase {
      * @param ids array of NFT ids of the eggs
      * @param brooderIds array of NFT ids of the brooders
      */
-    function breedEgg(uint256[] memory ids, uint256[] memory brooderIds) public virtual {
+    function breedEgg(uint256[] memory ids, uint256[] memory brooderIds) external virtual {
         require(ids.length == brooderIds.length, "ids and brooderIds arrays must be equal");
         require(ids.length <= 600, "You can breed at most 600 eggs at a time");
 

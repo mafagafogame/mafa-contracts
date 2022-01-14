@@ -143,14 +143,14 @@ contract MafaStore is
     /**
      * @dev pause the contract
      */
-    function pause() public virtual onlyOwner {
+    function pause() external virtual onlyOwner {
         _pause();
     }
 
     /**
      * @dev unpause the contract
      */
-    function unpause() public virtual onlyOwner {
+    function unpause() external virtual onlyOwner {
         _unpause();
     }
 
@@ -276,8 +276,6 @@ contract MafaStore is
 
         require(acceptedToken.balanceOf(address(this)) >= sellPriceInMAFA, "Amount exceeds mafastore balance");
 
-        require(acceptedToken.transfer(sender, sellPriceInMAFA), "Fail transferring the amount to the seller");
-
         for (uint256 i = 0; i < tokenIds.length; i++) {
             require(avatarContract.ownerOf(tokenIds[i]) == sender, "You have to own this avatar to be able to sell it");
 
@@ -285,6 +283,8 @@ contract MafaStore is
         }
 
         emit AvatarSold(sender, tokenIds, sellPriceInMAFA, tokenIds.length);
+
+        require(acceptedToken.transfer(sender, sellPriceInMAFA), "Fail transferring the amount to the seller");
     }
 
     /**
@@ -293,6 +293,7 @@ contract MafaStore is
      * @param amount amount to withdraw
      */
     function withdraw(address payable to, uint256 amount) external virtual onlyOwner {
+        require(to != address(0), "transfer to the zero address");
         require(amount <= payable(address(this)).balance, "You are trying to withdraw more funds than available");
         to.transfer(amount);
     }
@@ -316,7 +317,7 @@ contract MafaStore is
             "You are trying to withdraw more funds than available"
         );
 
-        tokenContract.transfer(to, amount);
+        require(tokenContract.transfer(to, amount), "Fail on transfer");
     }
 
     /**
@@ -369,24 +370,29 @@ contract MafaStore is
      * @dev gets the price of MAFA per BUSD.
      */
     function getMAFAtoBUSDprice() public view virtual returns (uint256 price) {
+        uint256 reserves0LP0 = 0;
+        uint256 reserves1LP0 = 0;
+        uint256 reserves0LP1 = 0;
+        uint256 reserves1LP1 = 0;
+
         if (_mafaBnbPair.token1() == _bnbBusdPair.token0()) {
-            (uint256 reserves0LP0, uint256 reserves1LP0, ) = _mafaBnbPair.getReserves();
-            (uint256 reserves0LP1, uint256 reserves1LP1, ) = _bnbBusdPair.getReserves();
+            (reserves0LP0, reserves1LP0, ) = _mafaBnbPair.getReserves();
+            (reserves0LP1, reserves1LP1, ) = _bnbBusdPair.getReserves();
 
             return (reserves1LP1.mul(reserves1LP0).mul(10**18)).div(reserves0LP1.mul(reserves0LP0));
         } else if (_mafaBnbPair.token1() == _bnbBusdPair.token1()) {
-            (uint256 reserves0LP0, uint256 reserves1LP0, ) = _mafaBnbPair.getReserves();
-            (uint256 reserves1LP1, uint256 reserves0LP1, ) = _bnbBusdPair.getReserves();
+            (reserves0LP0, reserves1LP0, ) = _mafaBnbPair.getReserves();
+            (reserves1LP1, reserves0LP1, ) = _bnbBusdPair.getReserves();
 
             return (reserves1LP1.mul(reserves1LP0).mul(10**18)).div(reserves0LP1.mul(reserves0LP0));
         } else if (_mafaBnbPair.token0() == _bnbBusdPair.token0()) {
-            (uint256 reserves1LP0, uint256 reserves0LP0, ) = _mafaBnbPair.getReserves();
-            (uint256 reserves0LP1, uint256 reserves1LP1, ) = _bnbBusdPair.getReserves();
+            (reserves1LP0, reserves0LP0, ) = _mafaBnbPair.getReserves();
+            (reserves0LP1, reserves1LP1, ) = _bnbBusdPair.getReserves();
 
             return (reserves1LP1.mul(reserves1LP0).mul(10**18)).div(reserves0LP1.mul(reserves0LP0));
         } else {
-            (uint256 reserves1LP0, uint256 reserves0LP0, ) = _mafaBnbPair.getReserves();
-            (uint256 reserves1LP1, uint256 reserves0LP1, ) = _bnbBusdPair.getReserves();
+            (reserves1LP0, reserves0LP0, ) = _mafaBnbPair.getReserves();
+            (reserves1LP1, reserves0LP1, ) = _bnbBusdPair.getReserves();
 
             return (reserves1LP1.mul(reserves1LP0).mul(10**18)).div(reserves0LP1.mul(reserves0LP0));
         }
@@ -410,7 +416,7 @@ contract MafaStore is
     /**
      * @dev upgradable version
      */
-    function version() public pure virtual returns (string memory) {
+    function version() external pure virtual returns (string memory) {
         return "1.0.0";
     }
 
@@ -472,7 +478,7 @@ contract MafaStore is
 }
 
 contract MafaStoreTestV2 is MafaStore {
-    function version() public pure virtual override returns (string memory) {
+    function version() external pure virtual override returns (string memory) {
         return "2.0.0";
     }
 }

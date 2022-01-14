@@ -24,7 +24,7 @@ contract EggBase is BaseNft {
      * @dev Update the hatch time
      * @param _hatchTime New hatch time (unix timestamp)
      */
-    function setHatchTime(uint256 _hatchTime) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setHatchTime(uint256 _hatchTime) external onlyRole(DEFAULT_ADMIN_ROLE) {
         hatchTime = _hatchTime;
 
         emit HatchTimeChanged(_hatchTime);

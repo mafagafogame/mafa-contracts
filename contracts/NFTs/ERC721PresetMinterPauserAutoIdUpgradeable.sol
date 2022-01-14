@@ -114,7 +114,7 @@ contract ERC721PresetMinterPauserAutoIdUpgradeable is
      *
      * - the caller must have the `PAUSER_ROLE`.
      */
-    function pause() public virtual {
+    function pause() external virtual {
         require(hasRole(PAUSER_ROLE, _msgSender()), "ERC721PresetMinterPauserAutoId: must have pauser role to pause");
         _pause();
     }
@@ -128,7 +128,7 @@ contract ERC721PresetMinterPauserAutoIdUpgradeable is
      *
      * - the caller must have the `PAUSER_ROLE`.
      */
-    function unpause() public virtual {
+    function unpause() external virtual {
         require(hasRole(PAUSER_ROLE, _msgSender()), "ERC721PresetMinterPauserAutoId: must have pauser role to unpause");
         _unpause();
     }
