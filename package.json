@@ -96,7 +96,7 @@
     "codegen": "graph codegen",
     "build": "graph build",
     "verify": "hardhat verify --network bsc 0xb1871564612243d34532fcd4946737974457661a",
-    "slither:log": "python3 -m slither . --ignore-compile --filter-paths \"node_modules\" --disable-color --print human-summary > slither-audit.txt 2>&1",
+    "slither:log": "python3 -m slither . --ignore-compile --filter-paths \"node_modules\" --disable-color > slither-audit.txt 2>&1",
     "slither:summary": "python3 -m slither . --ignore-compile --filter-paths \"node_modules\" --print human-summary",
     "slither": "python3 -m slither . --ignore-compile --filter-paths \"node_modules\"",
     "generate:wallets": "ts-node scripts/createRandomWallets.ts"
