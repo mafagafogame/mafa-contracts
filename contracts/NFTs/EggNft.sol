@@ -129,7 +129,6 @@ contract EggNft is EggBase {
         _egg.brooderType = bytes32(brooderId);
 
         emit EggBreeded(id, brooderId, newTimer);
-        
         brooderContract.onUse(_msgSender(), brooderId);
     }
 
