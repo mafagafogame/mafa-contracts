@@ -116,7 +116,7 @@ contract MafagafoAvatarNft is MafagafoAvatarBase {
     /**
      * @dev mafagafoAvatar version
      */
-    function mafaVersion() public external pure virtual returns (uint16) {
+    function mafaVersion() public pure virtual returns (uint16) {
         return 0;
     }
 
