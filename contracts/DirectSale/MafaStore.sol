@@ -155,7 +155,7 @@ contract MafaStore is
     }
 
     /**
-     * @dev Add a new item
+     * @dev Add a new item.
      *  Can only be called by contract owner
      * @param tokenContract Address of ERC1155 inventory of items
      * @param tokenId of the ERC1155 contract. it is the item category.
@@ -206,7 +206,7 @@ contract MafaStore is
     }
 
     /**
-     * @dev Update the price of an item
+     * @dev Update the price of an item.
      *  Can only be called by contract owner
      * @param id Id of the item
      * @param newPrice New price of the item

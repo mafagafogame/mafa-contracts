@@ -7,6 +7,7 @@ import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "solidity-coverage";
 import "@openzeppelin/hardhat-upgrades";
+import "hardhat-docgen";
 
 import "./tasks/accounts";
 import "./tasks/clean";
@@ -79,6 +80,10 @@ const config: HardhatUserConfig = {
     cache: "./cache",
     sources: "./contracts",
     tests: "./test",
+  },
+  docgen: {
+    path: "./docs",
+    clear: true,
   },
   typechain: {
     outDir: "typechain",

@@ -16,6 +16,7 @@ contract MafagafoAvatarBase is BaseNft {
         uint64 birthTime;
         uint64 cooldown;
         uint256 matings;
+        uint32 flags;
     }
 
     /**
@@ -45,10 +46,20 @@ contract MafagafoAvatarBase is BaseNft {
             parent2Id: _parent2Id,
             birthTime: uint64(block.timestamp),
             cooldown: 0,
-            matings: 0
+            matings: 0,
+            flags: 0x00000000
         });
 
-        emit Birth(_to, _id, _version, _genes, _generation, [_parent1Id, _parent2Id], uint64(block.timestamp));
+        emit Birth(
+            _to,
+            _id,
+            _version,
+            _genes,
+            _generation,
+            [_parent1Id, _parent2Id],
+            uint64(block.timestamp),
+            0x00000000
+        );
     }
 
     // EVENTS
@@ -59,7 +70,8 @@ contract MafagafoAvatarBase is BaseNft {
         bytes32 genes,
         uint32 generation,
         uint256[2] parentsIDs,
-        uint64 birthTime
+        uint64 birthTime,
+        uint32 flags
     );
 
     // this should be the latest space to allocate. do not add anything bellow this
