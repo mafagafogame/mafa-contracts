@@ -18,6 +18,8 @@ contract MafagafoAvatarNft is MafagafoAvatarBase {
 
     EggNft public eggContract;
 
+    uint16 public mafaVersion;
+
     modifier onlyOwnerOf(uint256 parent1Id, uint256 parent2Id) {
         require(ownerOf(parent1Id) == _msgSender(), "Sender must be the owner of 1st parent");
         require(ownerOf(parent2Id) == _msgSender(), "Sender must be the owner of 2nd parent");
@@ -44,6 +46,16 @@ contract MafagafoAvatarNft is MafagafoAvatarBase {
         eggContract = EggNft(addr);
 
         emit EggAddressChanged(addr);
+    }
+
+    /**
+     * @dev Update the version of mafagafos
+     * @param newVersion new version to be set
+     */
+    function setMafaVersion(uint16 newVersion) external virtual onlyRole(DEFAULT_ADMIN_ROLE) {
+        mafaVersion = newVersion;
+
+        emit MafaVersionChanged(newVersion);
     }
 
     /**
@@ -89,9 +101,9 @@ contract MafagafoAvatarNft is MafagafoAvatarBase {
         bytes32 childGenes = mixGenes(parent1.genes, parent2.genes);
         uint32 generation = uint32(MathUpgradeable.max(parent1.generation, parent2.generation) + 1);
 
-        emit Mate(_msgSender(), parent1Id, parent2Id, mafaVersion(), childGenes, generation);
+        emit Mate(_msgSender(), parent1Id, parent2Id, mafaVersion, childGenes, generation);
 
-        eggContract.mint(_msgSender(), mafaVersion(), childGenes, generation, parent1Id, parent2Id);
+        eggContract.mint(_msgSender(), mafaVersion, childGenes, generation, parent1Id, parent2Id);
     }
 
     /**
@@ -113,13 +125,6 @@ contract MafagafoAvatarNft is MafagafoAvatarBase {
         return "";
     }
 
-    /**
-     * @dev mafagafoAvatar version
-     */
-    function mafaVersion() public pure virtual returns (uint16) {
-        return 0;
-    }
-
     // EVENTS
     event Mate(
         address to,
@@ -130,6 +135,7 @@ contract MafagafoAvatarNft is MafagafoAvatarBase {
         uint32 eggGeneration
     );
     event EggAddressChanged(address indexed addr);
+    event MafaVersionChanged(uint16 newVersion);
 
     // this should be the latest space to allocate. do not add anything bellow this
     uint256[50] private __gap;

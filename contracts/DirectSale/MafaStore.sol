@@ -279,8 +279,8 @@ contract MafaStore is
         for (uint256 i = 0; i < tokenIds.length; i++) {
             require(avatarContract.ownerOf(tokenIds[i]) == sender, "You have to own this avatar to be able to sell it");
 
-            (uint16 version, , uint32 generation, , , , , , ) = avatarContract.getMafagafo(tokenIds[i]);
-            require(version == 0, "You can only sell avatars from version 0");
+            (uint16 mafaVersion, , uint32 generation, , , , , , ) = avatarContract.getMafagafo(tokenIds[i]);
+            require(mafaVersion == 0, "You can only sell avatars from version 0");
             require(generation == 1, "You can only sell avatars from generation 1");
 
             avatarContract.transferFrom(sender, address(this), tokenIds[i]);

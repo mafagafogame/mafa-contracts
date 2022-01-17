@@ -23,7 +23,7 @@ describe("Unit tests", function () {
     [owner, account1] = await ethers.getSigners();
   });
 
-  describe("Mafagafo Avatar", function () {
+  describe.only("Mafagafo Avatar", function () {
     beforeEach(async function () {
       const brooderFactory = <BrooderNft__factory>await ethers.getContractFactory("BrooderNft");
       brooder = <BrooderNft>await upgrades.deployProxy(brooderFactory, [], {
@@ -72,6 +72,18 @@ describe("Unit tests", function () {
       expect(await mafagafoAvatar.ownerOf(2)).to.equal(account1.address);
       expect(await mafagafoAvatar.version()).to.equal("1.0.0");
       expect(await mafagafoAvatar.mafaVersion()).to.equal(0);
+    });
+
+    it("user should not be able to change mafa version", async function () {
+      await expect(mafagafoAvatar.connect(account1).setMafaVersion(1)).to.be.reverted;
+    });
+
+    it("admin should be able to change mafa version", async function () {
+      expect(await mafagafoAvatar.mafaVersion()).to.equal(0);
+
+      await expect(mafagafoAvatar.setMafaVersion(1)).to.emit(mafagafoAvatar, "MafaVersionChanged").withArgs(1);
+
+      expect(await mafagafoAvatar.mafaVersion()).to.equal(1);
     });
 
     it("user should not be able to mint avatars", async function () {
