@@ -417,8 +417,8 @@ describe("MafaStore", function () {
 
         expect(await brooder.totalSupply(0)).to.equal(5);
         expect(bigNumberToFloat(await mafacoin.balanceOf(account1.address))).to.be.within(
-          100000 - (amount * 100) / mafaPrice - 100,
-          100000 - (amount * 100) / mafaPrice + 100,
+          100000 - (amount * 100) / mafaPrice - 500,
+          100000 - (amount * 100) / mafaPrice + 500,
         );
         expect(await brooder.balanceOf(account1.address, 0)).to.equal(amount);
       });
@@ -455,7 +455,39 @@ describe("MafaStore", function () {
         });
 
         describe("after user has a nft to sell", function () {
-          beforeEach(async function () {
+          it("user should not be able to sell an avatar if he doesn't approve the transfer before", async function () {
+            await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256)"](
+              account1.address,
+              0,
+              ethers.utils.id("0"),
+              1,
+              0,
+              0,
+            );
+
+            await expect(mafastore.connect(account1).sellAvatar([1])).to.be.revertedWith(
+              "Check the approval of your avatars",
+            );
+          });
+
+          it("user should not be able to sell an avatar from another version than 0", async function () {
+            await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256)"](
+              account1.address,
+              1,
+              ethers.utils.id("0"),
+              0,
+              0,
+              0,
+            );
+
+            await mafagafoAvatar.connect(account1).setApprovalForAll(mafastore.address, true);
+
+            await expect(mafastore.connect(account1).sellAvatar([1])).to.be.revertedWith(
+              "You can only sell avatars from version 0",
+            );
+          });
+
+          it("user should not be able to sell an avatar from another generation than 1", async function () {
             await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256)"](
               account1.address,
               0,
@@ -464,29 +496,38 @@ describe("MafaStore", function () {
               0,
               0,
             );
-          });
 
-          it("user should not be able to sell an avatar if he doesn't approve the transfer before", async function () {
+            await mafagafoAvatar.connect(account1).setApprovalForAll(mafastore.address, true);
+
             await expect(mafastore.connect(account1).sellAvatar([1])).to.be.revertedWith(
-              "Check the approval of your avatars",
+              "You can only sell avatars from generation 1",
             );
           });
 
           it("user should be able to sell an avatar", async function () {
+            await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256)"](
+              account1.address,
+              0,
+              ethers.utils.id("0"),
+              1,
+              0,
+              0,
+            );
+
             expect(await mafagafoAvatar.ownerOf(1)).to.equal(account1.address);
             expect(await mafacoin.balanceOf(mafastore.address)).to.equal(expandTo18Decimals(100000));
 
             await mafagafoAvatar.connect(account1).setApprovalForAll(mafastore.address, true);
 
-            await expect(mafastore.connect(account1).sellAvatar([1])).to.be.emit(mafastore, "AvatarSold");
+            await expect(mafastore.connect(account1).sellAvatar([1])).to.emit(mafastore, "AvatarSold");
 
             mafaPrice = await getMAFAtoBUSDprice();
 
-            expect(bigNumberToFloat(await mafacoin.balanceOf(account1.address))).to.be.within(
+            expect(bigNumberToFloat(await mafacoin.balanceOf(account1.address))).to.within(
               100000 + 300 / mafaPrice - 100,
               100000 + 300 / mafaPrice + 100,
             );
-            expect(bigNumberToFloat(await mafacoin.balanceOf(mafastore.address))).to.be.within(
+            expect(bigNumberToFloat(await mafacoin.balanceOf(mafastore.address))).to.within(
               100000 - 300 / mafaPrice - 100,
               100000 - 300 / mafaPrice + 100,
             );
@@ -494,14 +535,14 @@ describe("MafaStore", function () {
           });
 
           it("user should be able to sell multiple avatars", async function () {
-            const length = 500;
+            const length = 380;
 
-            for (let i = 1; i < length; i++) {
+            for (let i = 1; i <= length; i++) {
               await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256)"](
                 account1.address,
                 0,
                 ethers.utils.id("0"),
-                0,
+                1,
                 0,
                 0,
               );
@@ -519,15 +560,15 @@ describe("MafaStore", function () {
 
             await expect(
               mafastore.connect(account1).sellAvatar(Array.from({ length: length }, (_, i) => i + 1)),
-            ).to.be.emit(mafastore, "AvatarSold");
+            ).to.emit(mafastore, "AvatarSold");
 
             mafaPrice = await getMAFAtoBUSDprice();
 
-            expect(bigNumberToFloat(await mafacoin.balanceOf(account1.address))).to.be.within(
+            expect(bigNumberToFloat(await mafacoin.balanceOf(account1.address))).to.within(
               100000 + (300 * length) / mafaPrice - 5000,
               100000 + (300 * length) / mafaPrice + 5000,
             );
-            expect(bigNumberToFloat(await mafacoin.balanceOf(mafastore.address))).to.be.within(
+            expect(bigNumberToFloat(await mafacoin.balanceOf(mafastore.address))).to.within(
               5100000 - (300 * length) / mafaPrice - 5000,
               5100000 - (300 * length) / mafaPrice + 5000,
             );
