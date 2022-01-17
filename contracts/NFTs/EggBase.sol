@@ -63,6 +63,38 @@ contract EggBase is BaseNft {
         emit Layed(_to, _id, _version, _genes, _generation, [_parent1Id, _parent2Id], block.timestamp + hatchTime);
     }
 
+    /**
+     * @dev Gets an egg by id
+     * @param id unique ID of the egg
+     */
+    function getEgg(uint256 id)
+        public
+        virtual
+        returns (
+            uint16 version,
+            bytes32 genes,
+            uint32 generation,
+            uint256 parent1Id,
+            uint256 parent2Id,
+            uint256 hatchDate,
+            bool breeding,
+            bytes32 brooderType
+        )
+    {
+        Egg memory _egg = egg[id];
+
+        return (
+            _egg.version,
+            _egg.genes,
+            _egg.generation,
+            _egg.parent1Id,
+            _egg.parent2Id,
+            _egg.hatchDate,
+            _egg.breeding,
+            _egg.brooderType
+        );
+    }
+
     // EVENTS
     event Layed(
         address indexed to,

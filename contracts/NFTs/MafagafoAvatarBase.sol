@@ -62,6 +62,40 @@ contract MafagafoAvatarBase is BaseNft {
         );
     }
 
+    /**
+     * @dev Gets a mafagafo by id
+     * @param id unique ID of the mafagafo
+     */
+    function getMafagafo(uint256 id)
+        public
+        virtual
+        returns (
+            uint16 version,
+            bytes32 genes,
+            uint32 generation,
+            uint256 parent1Id,
+            uint256 parent2Id,
+            uint64 birthTime,
+            uint64 cooldown,
+            uint256 matings,
+            uint32 flags
+        )
+    {
+        Mafagafo memory _mafagafo = mafagafo[id];
+
+        return (
+            _mafagafo.version,
+            _mafagafo.genes,
+            _mafagafo.generation,
+            _mafagafo.parent1Id,
+            _mafagafo.parent2Id,
+            _mafagafo.birthTime,
+            _mafagafo.cooldown,
+            _mafagafo.matings,
+            _mafagafo.flags
+        );
+    }
+
     // EVENTS
     event Birth(
         address indexed to,
