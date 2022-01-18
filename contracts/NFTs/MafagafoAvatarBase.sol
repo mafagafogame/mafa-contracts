@@ -68,6 +68,7 @@ contract MafagafoAvatarBase is BaseNft {
      */
     function getMafagafo(uint256 id)
         public
+        view
         virtual
         returns (
             uint16 version,

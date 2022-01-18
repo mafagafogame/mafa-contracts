@@ -69,6 +69,7 @@ contract EggBase is BaseNft {
      */
     function getEgg(uint256 id)
         public
+        view
         virtual
         returns (
             uint16 version,
