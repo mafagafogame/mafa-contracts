@@ -45,22 +45,24 @@ describe("Unit tests", function () {
 
       await egg.setMafagafoAddress(mafagafoAvatar.address);
 
-      await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256)"](
+      await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
         account1.address,
         await mafagafoAvatar.mafaVersion(),
         ethers.utils.formatBytes32String("0"),
         0,
         0,
         0,
+        0x00000000,
       );
 
-      await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256)"](
+      await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
         account1.address,
         await mafagafoAvatar.mafaVersion(),
         ethers.utils.formatBytes32String("0"),
         0,
         0,
         0,
+        0x00000000,
       );
     });
 
@@ -90,13 +92,14 @@ describe("Unit tests", function () {
       await expect(
         mafagafoAvatar
           .connect(account1)
-          ["mint(address,uint16,bytes32,uint32,uint256,uint256)"](
+          ["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
             account1.address,
             await mafagafoAvatar.mafaVersion(),
             ethers.utils.formatBytes32String("0"),
             0,
             0,
             0,
+            0x00000000,
           ),
       ).to.be.reverted;
 
@@ -107,13 +110,14 @@ describe("Unit tests", function () {
 
     describe("mate", function () {
       it("user should not be able to mate mafagafos that are not owned by him", async function () {
-        mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256)"](
+        mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
           owner.address,
           await mafagafoAvatar.mafaVersion(),
           ethers.utils.formatBytes32String("0"),
           0,
           0,
           0,
+          0x00000000,
         );
         await expect(mafagafoAvatar.connect(account1)["mate(uint256,uint256)"](0, 3)).to.be.revertedWith(
           "Sender must be the owner of 1st parent",
@@ -148,13 +152,14 @@ describe("Unit tests", function () {
       });
 
       it("user should not be able to mate if 1st parent has already mated", async function () {
-        mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256)"](
+        mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
           account1.address,
           await mafagafoAvatar.mafaVersion(),
           ethers.utils.formatBytes32String("0"),
           0,
           0,
           0,
+          0x00000000,
         );
 
         await mafagafoAvatar.connect(account1)["mate(uint256,uint256)"](1, 3);
@@ -165,13 +170,14 @@ describe("Unit tests", function () {
       });
 
       it("user should not be able to mate if 2nd parent has already mated", async function () {
-        mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256)"](
+        mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
           account1.address,
           await mafagafoAvatar.mafaVersion(),
           ethers.utils.formatBytes32String("0"),
           0,
           0,
           0,
+          0x00000000,
         );
 
         await mafagafoAvatar.connect(account1)["mate(uint256,uint256)"](2, 3);
@@ -186,13 +192,14 @@ describe("Unit tests", function () {
       it("user should not be able to mate more than 150 mafagafos", async function () {
         const length = 152;
         for (let index = 0; index < length; index++) {
-          await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256)"](
+          await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
             account1.address,
             await mafagafoAvatar.mafaVersion(),
             ethers.utils.formatBytes32String("0"),
             0,
             0,
             0,
+            0x00000000,
           );
         }
 
@@ -202,13 +209,14 @@ describe("Unit tests", function () {
       });
 
       it("user should not be able to mate an odd amount of mafagafos", async function () {
-        await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256)"](
+        await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
           account1.address,
           await mafagafoAvatar.mafaVersion(),
           ethers.utils.formatBytes32String("0"),
           0,
           0,
           0,
+          0x00000000,
         );
 
         await expect(mafagafoAvatar.connect(account1)["mate(uint256[])"]([1, 2, 3])).to.be.revertedWith(
@@ -217,13 +225,14 @@ describe("Unit tests", function () {
       });
 
       it("user should not be able to mate mafagafos that are not owned by him", async function () {
-        await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256)"](
+        await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
           owner.address,
           await mafagafoAvatar.mafaVersion(),
           ethers.utils.formatBytes32String("0"),
           0,
           0,
           0,
+          0x00000000,
         );
 
         await expect(mafagafoAvatar.connect(account1)["mate(uint256[])"]([0, 3])).to.be.revertedWith(
@@ -240,13 +249,14 @@ describe("Unit tests", function () {
       it("user should be able to mate an even amount of mafagafos", async function () {
         const length = 150;
         for (let index = 0; index < length; index++) {
-          await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256)"](
+          await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
             account1.address,
             await mafagafoAvatar.mafaVersion(),
             ethers.utils.formatBytes32String("0"),
             0,
             0,
             0,
+            0x00000000,
           );
         }
 

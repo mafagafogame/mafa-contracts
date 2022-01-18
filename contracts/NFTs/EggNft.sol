@@ -95,7 +95,20 @@ contract EggNft is EggBase {
             [_egg.parent1Id, _egg.parent2Id]
         );
 
-        mafagafoContract.mint(_msgSender(), _egg.version, _egg.genes, _egg.generation, _egg.parent1Id, _egg.parent2Id);
+        uint32 _flags = 0x00000000;
+        if (_egg.generation == 1) {
+            _flags = 0x10000000;
+        }
+
+        mafagafoContract.mint(
+            _msgSender(),
+            _egg.version,
+            _egg.genes,
+            _egg.generation,
+            _egg.parent1Id,
+            _egg.parent2Id,
+            _flags
+        );
     }
 
     /**

@@ -76,7 +76,15 @@ contract MafaBox is BaseERC1155 {
             for (uint256 j = 0; j < probabilities.length; j++) {
                 maxValue = maxValue.add(probabilities[j]);
                 if (randomNumber < maxValue) {
-                    mafagafoContract.mint(_msgSender(), mafagafoContract.mafaVersion(), bytes32(j), 0, 0, 0);
+                    mafagafoContract.mint(
+                        _msgSender(),
+                        mafagafoContract.mafaVersion(),
+                        bytes32(j),
+                        0,
+                        0,
+                        0,
+                        0x00000000
+                    );
                     mafagafoType = j;
                     mafagafoTypes[i] = mafagafoType;
                     break;

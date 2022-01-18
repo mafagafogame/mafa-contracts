@@ -73,9 +73,10 @@ contract MafagafoAvatarNft is MafagafoAvatarBase {
         bytes32 _genes,
         uint32 _generation,
         uint256 _parent1Id,
-        uint256 _parent2Id
+        uint256 _parent2Id,
+        uint32 _flags
     ) public virtual onlyRole(MINTER_ROLE) {
-        _createMafagafo(_to, _tokenIdTracker.current(), _version, _genes, _generation, _parent1Id, _parent2Id);
+        _createMafagafo(_to, _tokenIdTracker.current(), _version, _genes, _generation, _parent1Id, _parent2Id, _flags);
 
         super.mint(_to);
     }
@@ -92,6 +93,8 @@ contract MafagafoAvatarNft is MafagafoAvatarBase {
         Mafagafo storage parent1 = mafagafo[parent1Id];
         Mafagafo storage parent2 = mafagafo[parent2Id];
 
+        require(parent1.generation != 1, "1st parent cannot mate");
+        require(parent1.generation != 1, "2nd parent cannot mate");
         require(parent1.matings < 1, "1st parent has already mated");
         require(parent2.matings < 1, "2nd parent has already mated");
 

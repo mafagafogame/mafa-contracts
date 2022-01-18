@@ -8,15 +8,24 @@ contract MafagafoAvatarBase is BaseNft {
     mapping(uint256 => Mafagafo) public mafagafo;
 
     struct Mafagafo {
+        // version
         uint16 version;
-        bytes32 genes;
+        // number or distance of parents to the g0.
         uint32 generation;
-        uint256 parent1Id;
-        uint256 parent2Id;
-        uint64 birthTime;
-        uint64 cooldown;
-        uint256 matings;
+        // custom flags for external use
         uint32 flags;
+        // When it was born
+        uint64 birthTime;
+        // date time to be available to reproduce again
+        uint64 cooldown;
+        // number of times it reproduced
+        uint256 matings;
+        // reference to the parents
+        uint256 parent1Id;
+        // reference to the parents
+        uint256 parent2Id;
+        // genetic code
+        bytes32 genes;
     }
 
     /**
@@ -28,6 +37,7 @@ contract MafagafoAvatarBase is BaseNft {
      * @param _generation generation of the mafagafo
      * @param _parent1Id NFT id of the 1st parent
      * @param _parent2Id NFT id of the 2nd parent
+     * @param _flags custom flags
      */
     function _createMafagafo(
         address _to,
@@ -36,7 +46,8 @@ contract MafagafoAvatarBase is BaseNft {
         bytes32 _genes,
         uint32 _generation,
         uint256 _parent1Id,
-        uint256 _parent2Id
+        uint256 _parent2Id,
+        uint32 _flags
     ) internal virtual {
         mafagafo[_id] = Mafagafo({
             version: _version,
@@ -47,19 +58,10 @@ contract MafagafoAvatarBase is BaseNft {
             birthTime: uint64(block.timestamp),
             cooldown: 0,
             matings: 0,
-            flags: 0x00000000
+            flags: _flags
         });
 
-        emit Birth(
-            _to,
-            _id,
-            _version,
-            _genes,
-            _generation,
-            [_parent1Id, _parent2Id],
-            uint64(block.timestamp),
-            0x00000000
-        );
+        emit Birth(_to, _id, _version, _genes, _generation, [_parent1Id, _parent2Id], uint64(block.timestamp), _flags);
     }
 
     /**
@@ -97,7 +99,7 @@ contract MafagafoAvatarBase is BaseNft {
         );
     }
 
-    function getNftData(uint256 id) external view returns (Mafagafo memory){
+    function getNftData(uint256 id) external view returns (Mafagafo memory) {
         return mafagafo[id];
     }
 
