@@ -104,6 +104,22 @@ contract BaseNft is
 
     event UriBaseChanged(string to);
 
+    function listMyNftIds() public view virtual returns (uint256[] memory){
+        uint256 balance = balanceOf(_msgSender());
+        uint256[] memory nfts = new uint256[](balance);
+        for(uint256 i = 0; i<balance; i++)
+            nfts[i]=(tokenOfOwnerByIndex(_msgSender(),i));
+        return nfts;
+    }
+
+    function listNftsOwnedBy(address owner) public view virtual returns (uint256[] memory){
+        uint256 balance = balanceOf(owner);
+        uint256[] memory nfts = new uint256[](balance);
+        for(uint256 i = 0; i<balance; i++)
+            nfts[i]=(tokenOfOwnerByIndex(owner,i));
+        return nfts;
+    }
+
     uint256[50] private __gap;
 }
 
