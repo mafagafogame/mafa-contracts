@@ -137,10 +137,6 @@ contract MafagafoAvatarNft is MafagafoAvatarBase {
     event EggAddressChanged(address indexed addr);
     event MafaVersionChanged(uint16 newVersion);
 
-    function getNftData(uint256 id) external view returns (Mafagafo memory){
-        return mafagafo[id];
-    }
-
     // this should be the latest space to allocate. do not add anything bellow this
     uint256[50] private __gap;
 }

@@ -160,10 +160,6 @@ contract EggNft is EggBase {
     event MafagafoAddressChanged(address indexed addr);
     event BrooderAddressChanged(address indexed addr);
 
-    function getNftData(uint256 id) external view returns (Egg memory){
-        return egg[id];
-    }
-
     // this should be the latest space to allocate. do not add anything bellow this
     uint256[50] private __gap;
 }

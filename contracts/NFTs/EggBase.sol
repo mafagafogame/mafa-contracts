@@ -96,6 +96,10 @@ contract EggBase is BaseNft {
         );
     }
 
+    function getNftData(uint256 id) external view returns (Egg memory){
+        return egg[id];
+    }
+
     // EVENTS
     event Layed(
         address indexed to,

@@ -97,6 +97,10 @@ contract MafagafoAvatarBase is BaseNft {
         );
     }
 
+    function getNftData(uint256 id) external view returns (Mafagafo memory){
+        return mafagafo[id];
+    }
+
     // EVENTS
     event Birth(
         address indexed to,
