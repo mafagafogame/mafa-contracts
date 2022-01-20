@@ -13,7 +13,6 @@ import {
   MafagafoAvatarNft,
   MafagafoAvatarNft__factory,
 } from "../../typechain";
-import { expandTo18Decimals } from "../shared/utilities";
 
 describe("Unit tests", function () {
   let brooder: BrooderNft;

@@ -143,7 +143,7 @@ describe("Unit tests", function () {
 
         await expect(mafagafoAvatar.connect(account1)["mate(uint256,uint256)"](1, 2))
           .to.emit(mafagafoAvatar, "Mate")
-          .withArgs(account1.address, 1, 2, 0, ethers.utils.formatBytes32String(""), 1);
+          .withArgs(account1.address, 1, 2, 0, "0x0000000000000000000000000000000000000000000000000000000000000007", 1);
 
         expect((await mafagafoAvatar.mafagafo(1)).matings).to.equal(1);
         expect((await mafagafoAvatar.mafagafo(2)).matings).to.equal(1);
@@ -266,7 +266,7 @@ describe("Unit tests", function () {
           mafagafoAvatar.connect(account1)["mate(uint256[])"](Array.from({ length: length }, (_, i) => i + 1)),
         )
           .to.emit(mafagafoAvatar, "Mate")
-          .withArgs(account1.address, 1, 2, 0, ethers.utils.formatBytes32String(""), 1);
+          .withArgs(account1.address, 1, 2, 0, "0x0000000000000000000000000000000000000000000000000000000000000007", 1);
 
         expect(await egg.totalSupply()).to.equal(length / 2);
         expect(await egg.ownerOf(0)).to.equal(account1.address);
