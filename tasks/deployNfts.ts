@@ -119,11 +119,13 @@ task("deploy:nfts", "Deploy all contracts related to nfts")
       [
         mafagafoAvatar.address,
         [
-          ethers.utils.parseEther("0.05"),
-          ethers.utils.parseEther("0.15"),
-          ethers.utils.parseEther("0.2"),
-          ethers.utils.parseEther("0.25"),
-          ethers.utils.parseEther("0.35"),
+          ethers.utils.parseEther("0.143"),
+          ethers.utils.parseEther("0.143"),
+          ethers.utils.parseEther("0.143"),
+          ethers.utils.parseEther("0.143"),
+          ethers.utils.parseEther("0.143"),
+          ethers.utils.parseEther("0.143"),
+          ethers.utils.parseEther("0.142"),
         ],
       ],
       {
