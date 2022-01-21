@@ -188,6 +188,10 @@ task("deploy:nfts", "Deploy all contracts related to nfts")
     ).wait(1);
 
     console.log("Brooders created at the store");
-
     console.log("NFTs uris setted");
+    console.log("Brooder: " + brooder.address);
+    console.log("Egg: " + egg.address);
+    console.log("Avatar: " + mafagafoAvatar.address);
+    console.log("Store: " + mafastore.address);
+    console.log("Box: " + mafaBox.address);
   });
