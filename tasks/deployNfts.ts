@@ -98,7 +98,7 @@ task("deploy:nfts", "Deploy all contracts related to nfts")
 
     console.log("Deployed mafagafoAvatar at:", mafagafoAvatar.address);
 
-    await egg.setMafagafoAddress(mafagafoAvatar.address);
+    await (await egg.setMafagafoAddress(mafagafoAvatar.address)).wait(1);
 
     const mafastoreFactory: MafaStore__factory = await ethers.getContractFactory("MafaStore");
     let mafastore = <MafaStore>await upgrades.deployProxy(
@@ -145,9 +145,9 @@ task("deploy:nfts", "Deploy all contracts related to nfts")
 
     console.log("Roles granted");
 
-    await (await brooder.createBrooder(0, daysToUnixDate(20))).wait(1);
-    await (await brooder.createBrooder(1, daysToUnixDate(10))).wait(1);
-    await (await brooder.createBrooder(2, daysToUnixDate(5))).wait(1);
+    await (await brooder.createBrooder(0, daysToUnixDate(30))).wait(1);
+    await (await brooder.createBrooder(1, daysToUnixDate(20))).wait(1);
+    await (await brooder.createBrooder(2, daysToUnixDate(10))).wait(1);
 
     console.log("Brooders created");
 
@@ -188,14 +188,6 @@ task("deploy:nfts", "Deploy all contracts related to nfts")
     ).wait(1);
 
     console.log("Brooders created at the store");
-
-    // TODO: UPDATE THOSE URIS!!
-    await (await mafagafoAvatar.setBaseURI("https://jsonkeeper.com/b/B8X8/")).wait(1);
-    await (await egg.setBaseURI("https://jsonkeeper.com/b/Q6WL/")).wait(1);
-    await (await mafaBox.setTokenUri(0, "https://jsonkeeper.com/b/8JCM/")).wait(1);
-    await (await brooder.setTokenUri(0, "https://jsonkeeper.com/b/SEKZ/")).wait(1);
-    await (await brooder.setTokenUri(1, "https://jsonkeeper.com/b/SEKZ/")).wait(1);
-    await (await brooder.setTokenUri(2, "https://jsonkeeper.com/b/SEKZ/")).wait(1);
 
     console.log("NFTs uris setted");
   });
