@@ -82,6 +82,7 @@
     "deploy": "hardhat run scripts/deploy.ts",
     "deploy:network": "hardhat run scripts/deploy.ts --network",
     "deploy:network:localhost": "hardhat run scripts/deploy.ts --network localhost",
+    "airdrop:network:localhost": "hardhat run scripts/airdrop.ts --network hardhat",
     "upgrade:contract": "hardhat compile && hardhat upgrade:contract",
     "deploy:nfts": "hardhat compile && hardhat deploy:nfts",
     "fork": "hardhat node & disown",
