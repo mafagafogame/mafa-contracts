@@ -115,6 +115,28 @@ contract MafagafoAvatarBase is BaseNft {
         uint32 flags
     );
 
+    // I am not proud of this, but solidity dont have appendable arrays yet
+    function getMateableAvatars() external view returns (uint256[] memory) {
+        uint256[] memory mineIds = listMyNftIds();
+        uint256 count = 0;
+        for (uint256 i = 0; i < mineIds.length; i++) {
+            Mafagafo memory mine = mafagafo[mineIds[i]];
+            if(mine.matings == 0 && mine.generation == 0) {
+                count++;
+            }
+        }
+        uint256[] memory ret = new uint[](count);
+        count = 0;
+        for (uint256 i = 0; i < mineIds.length; i++) {
+            Mafagafo memory mine = mafagafo[mineIds[i]];
+            if(mine.matings == 0 && mine.generation == 0) {
+                ret[count] = mineIds[i];
+                count++;
+            }
+        }
+        return ret;
+    }
+
     // this should be the latest space to allocate. do not add anything bellow this
     uint256[50] private __gap;
 }
