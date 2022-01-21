@@ -31,7 +31,7 @@ contract MafagafoAvatarNft is MafagafoAvatarBase {
         eggContract = EggNft(eggAddress);
 
         // TODO: add address
-        __BaseNft_init("Mafagafo Avatar Nft", "MAN", "");
+        __BaseNft_init("Mafagafo Avatar", "GAFO", "");
 
         // mint just one. this one will be the father of all g0 generation
         super.mint(0x000000000000000000000000000000000000dEaD);

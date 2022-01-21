@@ -25,7 +25,7 @@ contract EggNft is EggBase {
         hatchTime = 30 weeks;
 
         // TODO: add the correct urlbase
-        __BaseNft_init("Egg", "EGG", "");
+        __BaseNft_init("Mafa Egg", "MEGG", "");
     }
 
     /**

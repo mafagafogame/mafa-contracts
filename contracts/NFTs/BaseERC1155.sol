@@ -49,7 +49,6 @@ contract BaseERC1155 is
     }
 
     function setTokenUri(uint256 tokenId, string memory _uri) external onlyRole(URI_SETTER_ROLE) {
-        require(bytes(_uris[tokenId]).length == 0, "Cannot set uri twice");
         _uris[tokenId] = _uri;
     }
 
