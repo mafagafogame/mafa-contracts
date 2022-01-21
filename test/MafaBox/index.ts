@@ -123,9 +123,9 @@ describe("Unit tests", function () {
         await expect(mafaBox.connect(account1).openBox(0, 0)).to.be.revertedWith("You must open at least 1 box");
       });
 
-      it("user should not be able to open more than 150 boxes", async function () {
-        await expect(mafaBox.connect(account1).openBox(0, 200)).to.be.revertedWith(
-          "You can only open at most 150 box at a time",
+      it("user should not be able to open more than 100 boxes", async function () {
+        await expect(mafaBox.connect(account1).openBox(0, 150)).to.be.revertedWith(
+          "You can only open at most 100 box at a time",
         );
       });
 

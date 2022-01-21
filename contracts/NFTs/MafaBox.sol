@@ -63,7 +63,7 @@ contract MafaBox is BaseERC1155 {
      */
     function openBox(uint256 id, uint256 amount) external virtual {
         require(amount > 0, "You must open at least 1 box");
-        require(amount <= 150, "You can only open at most 150 box at a time");
+        require(amount <= 100, "You can only open at most 100 box at a time");
         require(balanceOf(_msgSender(), id) > 0, "You don't have any box to open");
         super._burn(_msgSender(), id, amount);
 
@@ -71,25 +71,15 @@ contract MafaBox is BaseERC1155 {
         for (uint256 i = 0; i < amount; i++) {
             uint256 randomNumber = _random();
 
-            uint256 mafagafoType = 0;
-            uint256 maxValue = 0;
-            for (uint256 j = 0; j < probabilities.length; j++) {
-                maxValue = maxValue.add(probabilities[j]);
-                if (randomNumber < maxValue) {
-                    mafagafoContract.mint(
-                        _msgSender(),
-                        mafagafoContract.mafaVersion(),
-                        bytes32(j),
-                        0,
-                        0,
-                        0,
-                        0x00000000
-                    );
-                    mafagafoType = j;
-                    mafagafoTypes[i] = mafagafoType;
-                    break;
-                }
-            }
+            mafagafoContract.mint(
+                _msgSender(),
+                mafagafoContract.mafaVersion(),
+                bytes32(randomNumber),
+                0,
+                0,
+                0,
+                0x00000000
+            );
 
             _totalOpen.increment();
         }
@@ -117,7 +107,7 @@ contract MafaBox is BaseERC1155 {
     function _random() internal view virtual returns (uint256 randomNumber) {
         return
             uint256(keccak256(abi.encodePacked(block.difficulty, block.timestamp, _msgSender(), _totalOpen.current())))
-                .mod(10**18);
+                .mod(probabilities.length);
     }
 
     // EVENTS

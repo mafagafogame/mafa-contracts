@@ -121,15 +121,15 @@ contract MafagafoAvatarBase is BaseNft {
         uint256 count = 0;
         for (uint256 i = 0; i < mineIds.length; i++) {
             Mafagafo memory mine = mafagafo[mineIds[i]];
-            if(mine.matings == 0 && mine.generation == 0) {
+            if (mine.matings == 0 && mine.generation == 0) {
                 count++;
             }
         }
-        uint256[] memory ret = new uint[](count);
+        uint256[] memory ret = new uint256[](count);
         count = 0;
         for (uint256 i = 0; i < mineIds.length; i++) {
             Mafagafo memory mine = mafagafo[mineIds[i]];
-            if(mine.matings == 0 && mine.generation == 0) {
+            if (mine.matings == 0 && mine.generation == 0) {
                 ret[count] = mineIds[i];
                 count++;
             }
