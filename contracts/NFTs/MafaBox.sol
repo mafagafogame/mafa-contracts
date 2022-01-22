@@ -67,19 +67,14 @@ contract MafaBox is BaseERC1155 {
         require(balanceOf(_msgSender(), id) > 0, "You don't have any box to open");
         super._burn(_msgSender(), id, amount);
 
+        mafagafoContract.createMultipleMafagafos(amount);
+
         uint256[] memory mafagafoTypes = new uint256[](amount);
         for (uint256 i = 0; i < amount; i++) {
             uint256 randomNumber = _random();
 
-            mafagafoContract.mint(
-                _msgSender(),
-                mafagafoContract.mafaVersion(),
-                bytes32(randomNumber),
-                0,
-                0,
-                0,
-                0x00000000
-            );
+            mafagafoContract.mint(_msgSender());
+            mafagafoTypes[i] = randomNumber;
 
             _totalOpen.increment();
         }
