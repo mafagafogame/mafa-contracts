@@ -67,21 +67,24 @@ contract MafaBox is BaseERC1155 {
         require(balanceOf(_msgSender(), id) > 0, "You don't have any box to open");
         super._burn(_msgSender(), id, amount);
 
-        mafagafoContract.createMultipleMafagafos(amount);
-
         uint256[] memory mafagafoTypes = new uint256[](amount);
         for (uint256 i = 0; i < amount; i++) {
-            uint256 randomNumber = _random();
-
-            mafagafoContract.mint(_msgSender());
-            mafagafoTypes[i] = randomNumber;
+            mafagafoTypes[i] = _random();
+            mafagafoContract.mint(
+                _msgSender(),
+                mafagafoContract.mafaVersion(),
+                bytes32(mafagafoTypes[i]),
+                0,
+                0,
+                0,
+                0x00000000
+            );
 
             _totalOpen.increment();
         }
 
         emit BoxOpened(id, _msgSender(), mafagafoTypes);
     }
-
     /**
      * @dev Require that probabilities array sum equals 10**18
      * @param _probabilities array of probabilities
@@ -101,7 +104,7 @@ contract MafaBox is BaseERC1155 {
      */
     function _random() internal view virtual returns (uint256 randomNumber) {
         return
-            uint256(keccak256(abi.encodePacked(block.difficulty, block.timestamp, _msgSender(), _totalOpen.current())))
+            uint256(keccak256(abi.encodePacked(block.difficulty, _msgSender(), _totalOpen.current())))
                 .mod(probabilities.length);
     }
 

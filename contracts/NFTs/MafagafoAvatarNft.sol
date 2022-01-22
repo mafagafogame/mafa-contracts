@@ -81,25 +81,6 @@ contract MafagafoAvatarNft is MafagafoAvatarBase {
         super.mint(_to);
     }
 
-    function createMultipleMafagafos(uint256 amount) external virtual {
-        uint256 counter = _tokenIdTracker.current();
-        for (uint256 i = 0; i < amount; i++) {
-            mafagafo[counter] = Mafagafo({
-                version: 0,
-                genes: bytes32(0),
-                generation: 0,
-                parent1Id: 0,
-                parent2Id: 0,
-                birthTime: uint64(block.timestamp),
-                cooldown: 0,
-                matings: 0,
-                flags: 0x00000000
-            });
-
-            counter++;
-        }
-    }
-
     /**
      * @dev Mate two mafagafos to generate an egg
      *  caller must be the owner of the two mafagafos
