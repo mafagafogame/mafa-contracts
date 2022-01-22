@@ -189,6 +189,12 @@ describe("Unit tests", function () {
     });
 
     describe("mate multiple", function () {
+      it.only("user should not be able to mate 0 mafagafos", async function () {
+        await expect(mafagafoAvatar.connect(account1)["mate(uint256[])"]([])).to.be.revertedWith(
+          "No mafagafos to mate",
+        );
+      });
+
       it("user should not be able to mate more than 150 mafagafos", async function () {
         const length = 152;
         for (let index = 0; index < length; index++) {
