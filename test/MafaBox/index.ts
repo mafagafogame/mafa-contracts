@@ -154,6 +154,22 @@ describe("Unit tests", function () {
         expect(await mafaBox.balanceOf(account1.address, 0)).to.equal(0);
         expect(await mafagafoAvatar.balanceOf(account1.address)).to.equal(150);
       });
+
+      it.only(
+        "user should be able to open N boxes multiple times and receive N ramdom mafagafos multiple times",
+        async function () {
+          await mafaBox.mint(account1.address, 0, 2000, ethers.utils.id(""));
+
+          expect(await mafaBox.balanceOf(account1.address, 0)).to.equal(2000);
+
+          for (let index = 0; index < 100; index++) {
+            await expect(mafaBox.connect(account1).openBox(0, 20)).to.emit(mafaBox, "BoxOpened");
+          }
+
+          expect(await mafaBox.balanceOf(account1.address, 0)).to.equal(0);
+          expect(await mafagafoAvatar.balanceOf(account1.address)).to.equal(2000);
+        },
+      ).timeout(200000000);
     });
   });
 });
