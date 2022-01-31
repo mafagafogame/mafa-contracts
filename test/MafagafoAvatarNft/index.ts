@@ -23,7 +23,7 @@ describe("Unit tests", function () {
     [owner, account1] = await ethers.getSigners();
   });
 
-  describe.only("Mafagafo Avatar", function () {
+  describe("Mafagafo Avatar", function () {
     beforeEach(async function () {
       const brooderFactory = <BrooderNft__factory>await ethers.getContractFactory("BrooderNft");
       brooder = <BrooderNft>await upgrades.deployProxy(brooderFactory, [], {
@@ -189,7 +189,7 @@ describe("Unit tests", function () {
     });
 
     describe("mate multiple", function () {
-      it.only("user should not be able to mate 0 mafagafos", async function () {
+      it("user should not be able to mate 0 mafagafos", async function () {
         await expect(mafagafoAvatar.connect(account1)["mate(uint256[])"]([])).to.be.revertedWith(
           "No mafagafos to mate",
         );
@@ -279,6 +279,38 @@ describe("Unit tests", function () {
         expect(await egg.ownerOf(length / 3 - 1)).to.equal(account1.address);
         expect(await egg.ownerOf(length / 2 - 1)).to.equal(account1.address);
       });
+
+      it("user should be able to open N boxes multiple times and receive N ramdom mafagafos multiple times", async function () {
+        const length = 1000;
+        for (let index = 0; index < length; index++) {
+          await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
+            account1.address,
+            await mafagafoAvatar.mafaVersion(),
+            ethers.utils.formatBytes32String("0"),
+            0,
+            0,
+            0,
+            0x00000000,
+          );
+        }
+
+        for (let index = 0; index < 10; index++) {
+          await expect(
+            mafagafoAvatar
+              .connect(account1)
+              ["mate(uint256[])"](Array.from({ length: length - 100 * index }, (_, i) => i + 1)),
+          )
+            .to.emit(mafagafoAvatar, "Mate")
+            .withArgs(
+              account1.address,
+              1,
+              2,
+              0,
+              "0x0000000000000000000000000000000000000000000000000000000000000007",
+              1,
+            );
+        }
+      }).timeout(200000000);
     });
   });
 });

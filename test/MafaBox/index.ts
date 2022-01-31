@@ -145,14 +145,14 @@ describe("Unit tests", function () {
       });
 
       it("user should be able to open N boxes and receive N ramdom mafagafos", async function () {
-        await mafaBox.mint(account1.address, 0, 150, ethers.utils.id(""));
+        await mafaBox.mint(account1.address, 0, 100, ethers.utils.id(""));
 
-        expect(await mafaBox.balanceOf(account1.address, 0)).to.equal(150);
+        expect(await mafaBox.balanceOf(account1.address, 0)).to.equal(100);
 
-        await expect(mafaBox.connect(account1).openBox(0, 150)).to.emit(mafaBox, "BoxOpened");
+        await expect(mafaBox.connect(account1).openBox(0, 100)).to.emit(mafaBox, "BoxOpened");
 
         expect(await mafaBox.balanceOf(account1.address, 0)).to.equal(0);
-        expect(await mafagafoAvatar.balanceOf(account1.address)).to.equal(150);
+        expect(await mafagafoAvatar.balanceOf(account1.address)).to.equal(100);
       });
 
       it("user should be able to open N boxes multiple times and receive N ramdom mafagafos multiple times", async function () {
@@ -160,12 +160,12 @@ describe("Unit tests", function () {
 
         expect(await mafaBox.balanceOf(account1.address, 0)).to.equal(2000);
 
-        for (let index = 0; index < 100; index++) {
+        for (let index = 0; index < 50; index++) {
           await expect(mafaBox.connect(account1).openBox(0, 20)).to.emit(mafaBox, "BoxOpened");
         }
 
-        expect(await mafaBox.balanceOf(account1.address, 0)).to.equal(0);
-        expect(await mafagafoAvatar.balanceOf(account1.address)).to.equal(2000);
+        expect(await mafaBox.balanceOf(account1.address, 0)).to.equal(1000);
+        expect(await mafagafoAvatar.balanceOf(account1.address)).to.equal(1000);
       }).timeout(200000000);
     });
   });

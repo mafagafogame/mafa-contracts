@@ -85,6 +85,7 @@ contract MafaBox is BaseERC1155 {
 
         emit BoxOpened(id, _msgSender(), mafagafoTypes);
     }
+
     /**
      * @dev Require that probabilities array sum equals 10**18
      * @param _probabilities array of probabilities
@@ -104,8 +105,9 @@ contract MafaBox is BaseERC1155 {
      */
     function _random() internal view virtual returns (uint256 randomNumber) {
         return
-            uint256(keccak256(abi.encodePacked(block.difficulty, _msgSender(), _totalOpen.current())))
-                .mod(probabilities.length);
+            uint256(keccak256(abi.encodePacked(block.difficulty, _msgSender(), _totalOpen.current()))).mod(
+                probabilities.length
+            );
     }
 
     // EVENTS
