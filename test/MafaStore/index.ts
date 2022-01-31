@@ -138,7 +138,7 @@ describe("MafaStore", function () {
 
       it("non owner user should not be able to withdraw ERC721", async function () {
         await expect(
-          mafastore.connect(account1).withdrawERC721(mafagafoAvatar.address, account1.address, 1),
+          mafastore.connect(account1).withdrawERC721(mafagafoAvatar.address, account1.address, [1]),
         ).to.be.revertedWith("Ownable: caller is not the owner");
       });
 
@@ -456,13 +456,14 @@ describe("MafaStore", function () {
 
         describe("after user has a nft to sell", function () {
           it("user should not be able to sell an avatar if he doesn't approve the transfer before", async function () {
-            await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256)"](
+            await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
               account1.address,
               0,
               ethers.utils.id("0"),
               1,
               0,
               0,
+              "0x10000000",
             );
 
             await expect(mafastore.connect(account1).sellAvatar([1])).to.be.revertedWith(
@@ -471,13 +472,14 @@ describe("MafaStore", function () {
           });
 
           it("user should not be able to sell an avatar from another version than 0", async function () {
-            await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256)"](
+            await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
               account1.address,
               1,
               ethers.utils.id("0"),
               0,
               0,
               0,
+              "0x10000000",
             );
 
             await mafagafoAvatar.connect(account1).setApprovalForAll(mafastore.address, true);
@@ -488,13 +490,14 @@ describe("MafaStore", function () {
           });
 
           it("user should not be able to sell an avatar from another generation than 1", async function () {
-            await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256)"](
+            await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
               account1.address,
               0,
               ethers.utils.id("0"),
               0,
               0,
               0,
+              "0x10000000",
             );
 
             await mafagafoAvatar.connect(account1).setApprovalForAll(mafastore.address, true);
@@ -505,13 +508,14 @@ describe("MafaStore", function () {
           });
 
           it("user should be able to sell an avatar", async function () {
-            await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256)"](
+            await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
               account1.address,
               0,
               ethers.utils.id("0"),
               1,
               0,
               0,
+              "0x10000000",
             );
 
             expect(await mafagafoAvatar.ownerOf(1)).to.equal(account1.address);
@@ -538,13 +542,14 @@ describe("MafaStore", function () {
             const length = 380;
 
             for (let i = 1; i <= length; i++) {
-              await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256)"](
+              await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
                 account1.address,
                 0,
                 ethers.utils.id("0"),
                 1,
                 0,
                 0,
+                "0x10000000",
               );
             }
 
@@ -611,23 +616,34 @@ describe("MafaStore", function () {
       });
 
       it("owner should be able to withdraw ER721 token from the contract", async function () {
-        await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256)"](
+        const length = 550;
+
+        for (let index = 1; index <= length; index++) {
+          await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
+            mafastore.address,
+            0,
+            ethers.utils.id("0"),
+            0,
+            0,
+            0,
+            "0x10000000",
+          );
+        }
+
+        expect(await mafagafoAvatar.ownerOf(1)).to.equal(mafastore.address);
+        expect(await mafagafoAvatar.ownerOf(length / 2)).to.equal(mafastore.address);
+        expect(await mafagafoAvatar.ownerOf(length - 1)).to.equal(mafastore.address);
+
+        await mafastore.withdrawERC721(
+          mafagafoAvatar.address,
           owner.address,
-          0,
-          ethers.utils.id("0"),
-          0,
-          0,
-          0,
+          Array.from({ length: length }, (_, i) => i + 1),
         );
 
-        const previousOwner = await mafagafoAvatar.ownerOf(1);
-
-        await mafagafoAvatar.transferFrom(owner.address, mafastore.address, 1);
-        expect(await mafagafoAvatar.ownerOf(1)).to.equal(mafastore.address);
-
-        await mafastore.withdrawERC721(mafagafoAvatar.address, owner.address, 1);
-        expect(await mafagafoAvatar.ownerOf(1)).to.equal(previousOwner);
-      });
+        expect(await mafagafoAvatar.ownerOf(1)).to.equal(owner.address);
+        expect(await mafagafoAvatar.ownerOf(length / 2)).to.equal(owner.address);
+        expect(await mafagafoAvatar.ownerOf(length)).to.equal(owner.address);
+      }).timeout(200000000);
 
       it("owner should be able to withdraw ERC1155 token from the contract", async function () {
         await brooder.mint(owner.address, 0, 3, ethers.utils.id(""));

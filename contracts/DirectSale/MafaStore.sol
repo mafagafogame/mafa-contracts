@@ -328,22 +328,25 @@ contract MafaStore is
      * @dev Withdraw any ERC721 token from this contract
      * @param tokenAddress ERC721 token to withdraw
      * @param to receiver address
-     * @param tokenId ID of the NFT to withdraw
+     * @param tokenIds IDs of the NFTs to withdraw
      */
     function withdrawERC721(
         address tokenAddress,
         address to,
-        uint256 tokenId
+        uint256[] memory tokenIds
     ) external virtual onlyOwner {
+        require(tokenIds.length <= 550, "You can withdraw at most 550 avatars at a time");
         require(tokenAddress.isContract(), "ERC721 token address must be a contract");
 
         IERC721 tokenContract = IERC721(tokenAddress);
-        require(
-            tokenContract.ownerOf(tokenId) == address(this),
-            "Mafastore doesn't own the NFT you are trying to withdraw"
-        );
+        for (uint256 i = 0; i < tokenIds.length; i++) {
+            require(
+                tokenContract.ownerOf(tokenIds[i]) == address(this),
+                "Mafastore doesn't own the NFT you are trying to withdraw"
+            );
 
-        tokenContract.safeTransferFrom(address(this), to, tokenId);
+            tokenContract.safeTransferFrom(address(this), to, tokenIds[i]);
+        }
     }
 
     /**
