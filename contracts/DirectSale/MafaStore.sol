@@ -16,6 +16,7 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
 
+import "../NFTs/BaseNft.sol";
 import "../NFTs/BaseERC1155.sol";
 import "../NFTs/MafagafoAvatarNft.sol";
 
@@ -340,6 +341,33 @@ contract MafaStore is
 
         IERC721 tokenContract = IERC721(tokenAddress);
         for (uint256 i = 0; i < tokenIds.length; i++) {
+            require(
+                tokenContract.ownerOf(tokenIds[i]) == address(this),
+                "Mafastore doesn't own the NFT you are trying to withdraw"
+            );
+
+            tokenContract.safeTransferFrom(address(this), to, tokenIds[i]);
+        }
+    }
+
+    /**
+     * @dev Withdraw any ERC721 token from this contract
+     * @param tokenAddress ERC721 token to withdraw
+     * @param to receiver address
+     * @param amount amount to withdraw
+     */
+    function withdrawNFTs(
+        address tokenAddress,
+        address to,
+        uint256 amount
+    ) external virtual onlyOwner {
+        require(amount <= 500, "You can withdraw at most 500 avatars at a time");
+        require(tokenAddress.isContract(), "ERC721 token address must be a contract");
+
+        BaseNft tokenContract = BaseNft(tokenAddress);
+        uint256[] memory tokenIds = tokenContract.listMyNftIds();
+        require(tokenIds.length >= amount, "Mafastore doesn't own the amount of NFTs");
+        for (uint256 i = 0; i < amount; i++) {
             require(
                 tokenContract.ownerOf(tokenIds[i]) == address(this),
                 "Mafastore doesn't own the NFT you are trying to withdraw"
