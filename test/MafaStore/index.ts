@@ -645,6 +645,32 @@ describe("MafaStore", function () {
         expect(await mafagafoAvatar.ownerOf(length)).to.equal(owner.address);
       }).timeout(200000000);
 
+      it.only("owner should be able to withdraw NFTs from the contract", async function () {
+        const length = 500;
+
+        for (let index = 1; index <= length; index++) {
+          await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
+            mafastore.address,
+            0,
+            ethers.utils.id("0"),
+            0,
+            0,
+            0,
+            "0x10000000",
+          );
+        }
+
+        expect(await mafagafoAvatar.ownerOf(1)).to.equal(mafastore.address);
+        expect(await mafagafoAvatar.ownerOf(length / 2)).to.equal(mafastore.address);
+        expect(await mafagafoAvatar.ownerOf(length - 1)).to.equal(mafastore.address);
+
+        await mafastore.withdrawNFTs(mafagafoAvatar.address, owner.address, length);
+
+        expect(await mafagafoAvatar.ownerOf(1)).to.equal(owner.address);
+        expect(await mafagafoAvatar.ownerOf(length / 2)).to.equal(owner.address);
+        expect(await mafagafoAvatar.ownerOf(length)).to.equal(owner.address);
+      }).timeout(200000000);
+
       it("owner should be able to withdraw ERC1155 token from the contract", async function () {
         await brooder.mint(owner.address, 0, 3, ethers.utils.id(""));
 
