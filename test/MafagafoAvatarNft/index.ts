@@ -11,6 +11,7 @@ import {
   MafagafoAvatarNft,
   MafagafoAvatarNft__factory,
 } from "../../typechain";
+import { range } from "../shared/utilities";
 
 describe("Unit tests", function () {
   let brooder: BrooderNft;
@@ -18,9 +19,10 @@ describe("Unit tests", function () {
   let mafagafoAvatar: MafagafoAvatarNft;
   let owner: SignerWithAddress;
   let account1: SignerWithAddress;
+  let account2: SignerWithAddress;
 
   before(async function () {
-    [owner, account1] = await ethers.getSigners();
+    [owner, account1, account2] = await ethers.getSigners();
   });
 
   describe("Mafagafo Avatar", function () {
@@ -103,9 +105,79 @@ describe("Unit tests", function () {
           ),
       ).to.be.reverted;
 
+      await expect(
+        mafagafoAvatar
+          .connect(account1)
+          ["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
+            account1.address,
+            await mafagafoAvatar.mafaVersion(),
+            ethers.utils.formatBytes32String("0"),
+            0,
+            0,
+            0,
+            0x00000000,
+          ),
+      ).to.be.reverted;
+
       await expect(mafagafoAvatar.connect(account1)["mint(address)"](account1.address)).to.be.revertedWith(
         "ERC721PresetMinterPauserAutoId: must have minter role to mint",
       );
+    });
+
+    describe("mint", function () {
+      it("minter should be able to mint a new mafagafo", async function () {
+        expect(await mafagafoAvatar.balanceOf(account2.address)).to.equal(0);
+
+        await expect(
+          mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
+            account2.address,
+            await mafagafoAvatar.mafaVersion(),
+            ethers.utils.formatBytes32String("0"),
+            0,
+            0,
+            0,
+            0x00000000,
+          ),
+        ).to.emit(mafagafoAvatar, "Birth");
+
+        expect(await mafagafoAvatar.balanceOf(account2.address)).to.equal(1);
+      });
+
+      it("minter should be able to mint multiple mafagafos", async function () {
+        const amount = 150;
+
+        expect(await mafagafoAvatar.balanceOf(account2.address)).to.equal(0);
+
+        await expect(
+          mafagafoAvatar.multiMint(
+            account2.address,
+            await mafagafoAvatar.mafaVersion(),
+            ethers.utils.formatBytes32String("0"),
+            0,
+            0,
+            0,
+            0x00000000,
+            amount,
+          ),
+        ).to.emit(mafagafoAvatar, "Birth");
+
+        expect(await mafagafoAvatar.balanceOf(account2.address)).to.equal(amount);
+      });
+
+      it("should revert if minter tries to mint more than 150 mafagafos at a time", async function () {
+        await expect(
+          mafagafoAvatar.multiMint(
+            account2.address,
+            await mafagafoAvatar.mafaVersion(),
+            ethers.utils.formatBytes32String("0"),
+            0,
+            0,
+            0,
+            0x00000000,
+            151,
+          ),
+        ).to.revertedWith("You can mint at most 150 mafagafos at a time");
+      });
     });
 
     describe("mate", function () {
@@ -280,7 +352,7 @@ describe("Unit tests", function () {
         expect(await egg.ownerOf(length / 2 - 1)).to.equal(account1.address);
       });
 
-      it("user should be able to open N boxes multiple times and receive N ramdom mafagafos multiple times", async function () {
+      it("user should be able to mate multiple mafagafos multiple times", async function () {
         const length = 1000;
         for (let index = 0; index < length; index++) {
           await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
@@ -294,21 +366,11 @@ describe("Unit tests", function () {
           );
         }
 
-        for (let index = 0; index < 10; index++) {
-          await expect(
-            mafagafoAvatar
-              .connect(account1)
-              ["mate(uint256[])"](Array.from({ length: length - 100 * index }, (_, i) => i + 1)),
-          )
-            .to.emit(mafagafoAvatar, "Mate")
-            .withArgs(
-              account1.address,
-              1,
-              2,
-              0,
-              "0x0000000000000000000000000000000000000000000000000000000000000007",
-              1,
-            );
+        for (let i = 0; i < 10; i++) {
+          await expect(mafagafoAvatar.connect(account1)["mate(uint256[])"](range(100 * i + 1, 100 * (i + 1)))).to.emit(
+            mafagafoAvatar,
+            "Mate",
+          );
         }
       }).timeout(200000000);
     });
