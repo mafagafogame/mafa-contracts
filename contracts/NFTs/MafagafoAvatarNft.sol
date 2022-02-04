@@ -66,6 +66,7 @@ contract MafagafoAvatarNft is MafagafoAvatarBase {
      * @param _generation generation of the mafagafo
      * @param _parent1Id NFT id of the 1st parent
      * @param _parent2Id NFT id of the 2nd parent
+     * @param _flags custom flags
      */
     function mint(
         address _to,
@@ -79,6 +80,34 @@ contract MafagafoAvatarNft is MafagafoAvatarBase {
         _createMafagafo(_to, _tokenIdTracker.current(), _version, _genes, _generation, _parent1Id, _parent2Id, _flags);
 
         super.mint(_to);
+    }
+
+    /**
+     * @dev Mint multiple mafagafos
+     * @param _to user that will receive the new mafagafo
+     * @param _version mafagafo version
+     * @param _genes genes passed from parents
+     * @param _generation generation of the mafagafo
+     * @param _parent1Id NFT id of the 1st parent
+     * @param _parent2Id NFT id of the 2nd parent
+     * @param _flags custom flags
+     * @param amount amount of mafagafos to be minted
+     */
+    function multiMint(
+        address _to,
+        uint16 _version,
+        bytes32 _genes,
+        uint32 _generation,
+        uint256 _parent1Id,
+        uint256 _parent2Id,
+        uint32 _flags,
+        uint256 amount
+    ) public virtual onlyRole(MINTER_ROLE) {
+        require(amount <= 150, "You can mint at most 150 mafagafos at a time");
+
+        for (uint256 i = 0; i < amount; i++) {
+            mint(_to, _version, _genes, _generation, _parent1Id, _parent2Id, _flags);
+        }
     }
 
     /**
