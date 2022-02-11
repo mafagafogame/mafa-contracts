@@ -645,7 +645,7 @@ describe("MafaStore", function () {
         expect(await mafagafoAvatar.ownerOf(length)).to.equal(owner.address);
       }).timeout(200000000);
 
-      it.only("owner should be able to withdraw NFTs from the contract", async function () {
+      it("owner should be able to withdraw NFTs from the contract", async function () {
         const length = 500;
 
         for (let index = 1; index <= length; index++) {
