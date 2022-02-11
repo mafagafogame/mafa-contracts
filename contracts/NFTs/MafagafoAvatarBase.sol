@@ -137,6 +137,27 @@ contract MafagafoAvatarBase is BaseNft {
         return ret;
     }
 
+    function getMateableAvatarsPaginated(uint256 offset, uint256 limit) external view returns (uint256[] memory) {
+        uint256[] memory mineIds = listMyNftIdsPaginated(offset, limit);
+        uint256 count = 0;
+        for (uint256 i = 0; i < mineIds.length; i++) {
+            Mafagafo memory mine = mafagafo[mineIds[i]];
+            if (mine.matings == 0 && mine.generation == 0) {
+                count++;
+            }
+        }
+        uint256[] memory ret = new uint256[](count);
+        count = 0;
+        for (uint256 i = 0; i < mineIds.length; i++) {
+            Mafagafo memory mine = mafagafo[mineIds[i]];
+            if (mine.matings == 0 && mine.generation == 0) {
+                ret[count] = mineIds[i];
+                count++;
+            }
+        }
+        return ret;
+    }
+
     // this should be the latest space to allocate. do not add anything bellow this
     uint256[50] private __gap;
 }
