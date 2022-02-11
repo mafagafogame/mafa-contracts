@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 
 import "./ERC721PresetMinterPauserAutoIdUpgradeable.sol";
 import "./rarible/RoyaltiesV2Upgradeable.sol";
@@ -18,6 +19,8 @@ contract BaseNft is
     ReentrancyGuardUpgradeable,
     UUPSUpgradeable
 {
+    using SafeMathUpgradeable for uint256;
+
     function __BaseNft_init(
         string memory name,
         string memory symbol,
@@ -111,11 +114,54 @@ contract BaseNft is
         return nfts;
     }
 
+    function listMyNftIdsPaginated(uint256 offset, uint256 limit) public view virtual returns (uint256[] memory) {
+        uint256 balance = balanceOf(_msgSender());
+        uint256 initialIndex = limit.mul(offset);
+        if (initialIndex > balance) {
+            return new uint256[](0);
+        }
+
+        if (initialIndex.add(limit) > balance) {
+            uint256 partialLimit = balance.sub(initialIndex);
+            uint256[] memory nfts = new uint256[](partialLimit);
+            for (uint256 i = 0; i < partialLimit; i++)
+                nfts[i] = (tokenOfOwnerByIndex(_msgSender(), initialIndex.add(i)));
+            return nfts;
+        } else {
+            uint256[] memory nfts = new uint256[](limit);
+            for (uint256 i = 0; i < limit; i++) nfts[i] = (tokenOfOwnerByIndex(_msgSender(), initialIndex.add(i)));
+            return nfts;
+        }
+    }
+
     function listNftsOwnedBy(address owner) public view virtual returns (uint256[] memory) {
         uint256 balance = balanceOf(owner);
         uint256[] memory nfts = new uint256[](balance);
         for (uint256 i = 0; i < balance; i++) nfts[i] = (tokenOfOwnerByIndex(owner, i));
         return nfts;
+    }
+
+    function listNftsOwnedByPaginated(
+        address owner,
+        uint256 offset,
+        uint256 limit
+    ) public view virtual returns (uint256[] memory) {
+        uint256 balance = balanceOf(owner);
+        uint256 initialIndex = limit.mul(offset);
+        if (initialIndex > balance) {
+            return new uint256[](0);
+        }
+
+        if (initialIndex.add(limit) > balance) {
+            uint256 partialLimit = balance.sub(initialIndex);
+            uint256[] memory nfts = new uint256[](partialLimit);
+            for (uint256 i = 0; i < partialLimit; i++) nfts[i] = (tokenOfOwnerByIndex(owner, initialIndex.add(i)));
+            return nfts;
+        } else {
+            uint256[] memory nfts = new uint256[](limit);
+            for (uint256 i = 0; i < limit; i++) nfts[i] = (tokenOfOwnerByIndex(owner, initialIndex.add(i)));
+            return nfts;
+        }
     }
 
     uint256[50] private __gap;
