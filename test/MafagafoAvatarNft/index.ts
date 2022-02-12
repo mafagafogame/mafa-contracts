@@ -374,5 +374,107 @@ describe("Unit tests", function () {
         }
       }).timeout(200000000);
     });
+
+    describe("list nfts", function () {
+      beforeEach(async function () {
+        for (let i = 0; i < 100; i++) {
+          await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
+            account2.address,
+            await mafagafoAvatar.mafaVersion(),
+            ethers.utils.formatBytes32String("0"),
+            0,
+            0,
+            0,
+            0x00000000,
+          );
+        }
+      });
+
+      it("should list all of user mafagafos", async function () {
+        const mafagafos = (await mafagafoAvatar.connect(account2).listMyNftIds()).map(id =>
+          ethers.BigNumber.from(id).toNumber(),
+        );
+
+        expect(mafagafos).to.eql(range(3, 102));
+      });
+
+      it("should return an empty array if user tries to list its mafagafos with pagination with intial index greater than balance", async function () {
+        const mafagafos = (await mafagafoAvatar.connect(account2).listMyNftIdsPaginated(20, 5)).map(id =>
+          ethers.BigNumber.from(id).toNumber(),
+        );
+
+        expect(mafagafos).to.eql([]);
+      });
+
+      it("should list some of the user mafagafos with pagination", async function () {
+        const mafagafos = (await mafagafoAvatar.connect(account2).listMyNftIdsPaginated(2, 5)).map(id =>
+          ethers.BigNumber.from(id).toNumber(),
+        );
+
+        expect(mafagafos).to.eql(range(13, 17));
+      });
+
+      it("should list partial limit of user mafagafos with pagination if last index is greater than balance", async function () {
+        const mafagafos = (await mafagafoAvatar.connect(account2).listMyNftIdsPaginated(3, 30)).map(id =>
+          ethers.BigNumber.from(id).toNumber(),
+        );
+
+        expect(mafagafos).to.eql(range(93, 102));
+      });
+
+      it("should list all mafagafos owned by user", async function () {
+        const mafagafos = (await mafagafoAvatar.listNftsOwnedBy(account2.address)).map(id =>
+          ethers.BigNumber.from(id).toNumber(),
+        );
+
+        expect(mafagafos).to.eql(range(3, 102));
+      });
+
+      it("should return an empty array when listing all mafagafos owned by a user with intial index greater than balance", async function () {
+        const mafagafos = (await mafagafoAvatar.listNftsOwnedByPaginated(account2.address, 20, 5)).map(id =>
+          ethers.BigNumber.from(id).toNumber(),
+        );
+
+        expect(mafagafos).to.eql([]);
+      });
+
+      it("should list some of the mafagafos owned by a user with pagination", async function () {
+        const mafagafos = (await mafagafoAvatar.listNftsOwnedByPaginated(account2.address, 2, 5)).map(id =>
+          ethers.BigNumber.from(id).toNumber(),
+        );
+
+        expect(mafagafos).to.eql(range(13, 17));
+      });
+
+      it("should list partial limit of mafagafos owned by a user with pagination if last index is greater than balance", async function () {
+        const mafagafos = (await mafagafoAvatar.listNftsOwnedByPaginated(account2.address, 3, 30)).map(id =>
+          ethers.BigNumber.from(id).toNumber(),
+        );
+
+        expect(mafagafos).to.eql(range(93, 102));
+      });
+
+      describe("get mateable avatars", function () {
+        beforeEach(async function () {
+          await mafagafoAvatar.connect(account2)["mate(uint256[])"](range(3, 52));
+        });
+
+        it("should list all mateable avatars", async function () {
+          const avatars = (await mafagafoAvatar.connect(account2).getMateableAvatars()).map(id =>
+            ethers.BigNumber.from(id).toNumber(),
+          );
+
+          expect(avatars).to.eql(range(53, 102));
+        });
+
+        it("should list some mateable avatars paginated", async function () {
+          const avatars = (await mafagafoAvatar.connect(account2).getMateableAvatarsPaginated(10, 5)).map(id =>
+            ethers.BigNumber.from(id).toNumber(),
+          );
+
+          expect(avatars).to.eql(range(53, 57));
+        });
+      });
+    });
   });
 });

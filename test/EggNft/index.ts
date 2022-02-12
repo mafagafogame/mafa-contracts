@@ -12,7 +12,7 @@ import {
   MafagafoAvatarNft,
   MafagafoAvatarNft__factory,
 } from "../../typechain";
-import { daysToUnixDate, deployMafaCoin, expandTo18Decimals } from "../shared/utilities";
+import { daysToUnixDate, deployMafaCoin, expandTo18Decimals, range } from "../shared/utilities";
 
 describe("Unit tests", function () {
   let mafacoin: MafaCoin;
@@ -21,10 +21,11 @@ describe("Unit tests", function () {
   let mafagafoAvatar: MafagafoAvatarNft;
   let owner: SignerWithAddress;
   let account1: SignerWithAddress;
+  let account2: SignerWithAddress;
   let length: number;
 
   before(async function () {
-    [owner, account1] = await ethers.getSigners();
+    [owner, account1, account2] = await ethers.getSigners();
   });
 
   describe("Egg", function () {
@@ -298,6 +299,81 @@ describe("Unit tests", function () {
             Array.from({ length: length }, (_, i) => i % 3),
           ),
         ).to.emit(egg, "EggBreeded");
+      });
+    });
+
+    describe("list nfts", function () {
+      beforeEach(async function () {
+        for (let i = 0; i < 100; i++) {
+          await egg["mint(address,uint16,bytes32,uint32,uint256,uint256)"](
+            account2.address,
+            0,
+            ethers.utils.formatBytes32String(""),
+            0,
+            0,
+            0,
+          );
+        }
+      });
+
+      it("should list all of user eggs", async function () {
+        const eggs = (await egg.connect(account2).listMyNftIds()).map(id => ethers.BigNumber.from(id).toNumber());
+
+        expect(eggs).to.eql(range(1, 100));
+      });
+
+      it("should return an empty array if user tries to list its eggs with pagination with intial index greater than balance", async function () {
+        const eggs = (await egg.connect(account2).listMyNftIdsPaginated(20, 5)).map(id =>
+          ethers.BigNumber.from(id).toNumber(),
+        );
+
+        expect(eggs).to.eql([]);
+      });
+
+      it("should list all of user eggs with pagination", async function () {
+        const eggs = (await egg.connect(account2).listMyNftIdsPaginated(2, 5)).map(id =>
+          ethers.BigNumber.from(id).toNumber(),
+        );
+
+        expect(eggs).to.eql(range(11, 15));
+      });
+
+      it("should list partial limit of user eggs with pagination if last index is greater than balance", async function () {
+        const eggs = (await egg.connect(account2).listMyNftIdsPaginated(3, 30)).map(id =>
+          ethers.BigNumber.from(id).toNumber(),
+        );
+
+        expect(eggs).to.eql(range(91, 100));
+      });
+
+      it("should list all eggs owned by user", async function () {
+        const eggs = (await egg.listNftsOwnedBy(account2.address)).map(id => ethers.BigNumber.from(id).toNumber());
+
+        expect(eggs).to.eql(range(1, 100));
+      });
+
+      it("should return an empty array when listing all eggs owned by a user with intial index greater than balance", async function () {
+        const eggs = (await egg.listNftsOwnedByPaginated(account2.address, 20, 5)).map(id =>
+          ethers.BigNumber.from(id).toNumber(),
+        );
+
+        expect(eggs).to.eql([]);
+      });
+
+      it("should list all eggs owned by a user with pagination", async function () {
+        const eggs = (await egg.listNftsOwnedByPaginated(account2.address, 2, 5)).map(id =>
+          ethers.BigNumber.from(id).toNumber(),
+        );
+
+        expect(eggs).to.eql(range(11, 15));
+      });
+
+      it("should list partial limit of eggs owned by a user with pagination if last index is greater than balance", async function () {
+        const eggs = (await egg.listNftsOwnedByPaginated(account2.address, 3, 30)).map(id =>
+          ethers.BigNumber.from(id).toNumber(),
+        );
+
+        expect(eggs).to.eql(range(91, 100));
       });
     });
   });
