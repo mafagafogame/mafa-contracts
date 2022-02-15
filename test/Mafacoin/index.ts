@@ -5,8 +5,7 @@ import { Contract, utils } from "ethers";
 import { MafaCoin, MafaCoin__factory } from "../../typechain";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import routerABI from "../../abis/routerABI.json";
-import { AlchemyProvider } from "@ethersproject/providers";
-import { expandTo18Decimals } from "../shared/utilities";
+import { bigNumberToFloat, expandTo18Decimals } from "../shared/utilities";
 
 describe("MafaCoin", function () {
   const DEAD_ADDRESS = "0x000000000000000000000000000000000000dEaD";
@@ -75,28 +74,23 @@ describe("MafaCoin", function () {
     await contract.transfer(address3.address, utils.parseEther("1000").toString());
     await contract.connect(address3).transfer(address4.address, utils.parseEther("1000").toString());
 
-    const zeroBalance = await contract.balanceOf(address3.address);
-    const balanceTaxed = await contract.balanceOf(address4.address);
-    const teamBalance = await contract.balanceOf(address1.address);
-    const burnBalance = await contract.balanceOf(DEAD_ADDRESS);
+    const zeroBalance = bigNumberToFloat(await contract.balanceOf(address3.address));
+    const balanceTaxed = bigNumberToFloat(await contract.balanceOf(address4.address));
+    const teamBalance = bigNumberToFloat(await contract.balanceOf(address1.address));
+    const burnBalance = bigNumberToFloat(await contract.balanceOf(DEAD_ADDRESS));
 
     expect(zeroBalance).to.equal(0);
-    expect(balanceTaxed).to.equal(utils.parseEther("980").toString());
-    expect(teamBalance).to.equal(utils.parseEther("10").toString());
-    expect(burnBalance).to.equal(utils.parseEther("10").toString());
+    expect(balanceTaxed).to.equal(980);
+    expect(teamBalance).to.equal(10);
+    expect(burnBalance).to.equal(10);
   });
 
   describe("DEX", function () {
-    const ROUTER_ADDRESS = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D";
+    const ROUTER_ADDRESS = "0x10ED43C718714eb63d5aA57B78B54704E256024E";
     let router: Contract;
-    let WETH: any;
-    let provider: AlchemyProvider;
 
     before(async function () {
-      provider = new AlchemyProvider();
-
-      router = new ethers.Contract(ROUTER_ADDRESS, routerABI, provider);
-      WETH = await router.WETH();
+      router = new ethers.Contract(ROUTER_ADDRESS, routerABI);
     });
 
     it("should have the correct liquidity fee", async function () {
@@ -145,21 +139,21 @@ describe("MafaCoin", function () {
       const transactAmount2 = expandTo18Decimals(95);
       await contract.connect(address4).transfer(address5.address, transactAmount2);
 
-      const pairBalance = utils.formatEther(await contract.balanceOf(await contract.dexPair()));
-      const deadBalance = utils.formatEther(await contract.balanceOf(DEAD_ADDRESS));
-      const teamBalance = utils.formatEther(await contract.balanceOf(address1.address));
-      const lotteryBalance = utils.formatEther(await contract.balanceOf(address2.address));
-      const address3Balance = utils.formatEther(await contract.balanceOf(address3.address));
-      const address4Balance = utils.formatEther(await contract.balanceOf(address4.address));
-      const address5Balance = utils.formatEther(await contract.balanceOf(address5.address));
+      const pairBalance = bigNumberToFloat(await contract.balanceOf(await contract.dexPair()));
+      const deadBalance = bigNumberToFloat(await contract.balanceOf(DEAD_ADDRESS));
+      const teamBalance = bigNumberToFloat(await contract.balanceOf(address1.address));
+      const lotteryBalance = bigNumberToFloat(await contract.balanceOf(address2.address));
+      const address3Balance = bigNumberToFloat(await contract.balanceOf(address3.address));
+      const address4Balance = bigNumberToFloat(await contract.balanceOf(address4.address));
+      const address5Balance = bigNumberToFloat(await contract.balanceOf(address5.address));
 
-      expect(pairBalance).to.equal("1005.845486732233509186");
-      expect(deadBalance).to.equal("1.95");
-      expect(teamBalance).to.equal("1.95");
-      expect(lotteryBalance).to.equal("0.0");
-      expect(address3Balance).to.equal("900.0");
-      expect(address4Balance).to.equal("0.0");
-      expect(address5Balance).to.equal("90.25");
+      expect(pairBalance).to.be.within(1005.8, 1006);
+      expect(deadBalance).to.equal(1.95);
+      expect(teamBalance).to.equal(1.95);
+      expect(lotteryBalance).to.equal(0);
+      expect(address3Balance).to.equal(900);
+      expect(address4Balance).to.equal(0);
+      expect(address5Balance).to.equal(90.25);
     });
 
     it("should revert transaction if pool doesn't have enough liquidity", async function () {
@@ -172,7 +166,7 @@ describe("MafaCoin", function () {
       const transactAmount = expandTo18Decimals(100);
 
       await expect(contract.connect(address3).transfer(address4.address, transactAmount)).to.be.revertedWith(
-        "UniswapV2Library: INSUFFICIENT_LIQUIDITY",
+        "PancakeLibrary: INSUFFICIENT_LIQUIDITY",
       );
     });
 
@@ -204,17 +198,17 @@ describe("MafaCoin", function () {
       const transactAmount = expandTo18Decimals(100);
       await contract.connect(address3).transfer(dexPair, transactAmount);
 
-      const deadBalance = utils.formatEther(await contract.balanceOf(DEAD_ADDRESS));
-      const teamBalance = utils.formatEther(await contract.balanceOf(address1.address));
-      const lotteryBalance = utils.formatEther(await contract.balanceOf(address2.address));
-      const address3Balance = utils.formatEther(await contract.balanceOf(address3.address));
-      const pairBalance = utils.formatEther(await contract.balanceOf(dexPair));
+      const deadBalance = bigNumberToFloat(await contract.balanceOf(DEAD_ADDRESS));
+      const teamBalance = bigNumberToFloat(await contract.balanceOf(address1.address));
+      const lotteryBalance = bigNumberToFloat(await contract.balanceOf(address2.address));
+      const address3Balance = bigNumberToFloat(await contract.balanceOf(address3.address));
+      const pairBalance = bigNumberToFloat(await contract.balanceOf(dexPair));
 
-      expect(deadBalance).to.equal("1.0");
-      expect(teamBalance).to.equal("5.0");
-      expect(lotteryBalance).to.equal("1.0");
-      expect(address3Balance).to.equal("900.0");
-      expect(pairBalance).to.equal("1092.997743249999999998");
+      expect(deadBalance).to.equal(1);
+      expect(teamBalance).to.equal(5);
+      expect(lotteryBalance).to.equal(1);
+      expect(address3Balance).to.equal(900);
+      expect(pairBalance).to.be.within(1092.9, 1093);
     });
   });
 });
