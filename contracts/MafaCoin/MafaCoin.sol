@@ -17,7 +17,9 @@ contract MafaCoin is ERC20, Ownable {
     IUniswapV2Router02 public dexRouter;
     address public dexPair;
 
-    address deadAddress = 0x000000000000000000000000000000000000dEaD;
+    address public lpRecipient;
+
+    address public constant DEAD_ADDRESS = 0x000000000000000000000000000000000000dEaD;
 
     address public teamWallet;
     address public lotteryWallet;
@@ -31,17 +33,17 @@ contract MafaCoin is ERC20, Ownable {
     uint256 public totalBuyFee = 0;
     uint256 public totalSellFee = 0;
 
-    uint256 public tSupply = 1000000000 * (10**18);
+    uint256 public constant TOTAL_SUPPLY = 1000000000 * (10**18);
 
     mapping(address => bool) public isExcludedFromFees;
     mapping(address => bool) public automatedMarketMakerPairs;
-    mapping(address => bool) isBlacklisted;
+    mapping(address => bool) public isBlacklisted;
 
     constructor() ERC20("MafaCoin", "MAFA") {
         excludeFromFees(address(this), true);
         excludeFromFees(owner(), true);
 
-        _mint(owner(), tSupply);
+        _mint(owner(), TOTAL_SUPPLY);
     }
 
     function afterPreSale() external onlyOwner {
@@ -50,11 +52,12 @@ contract MafaCoin is ERC20, Ownable {
         setTeamBuyFee(1);
         setTeamSellFee(5);
         setLotteryFee(1);
+        setLpRecipient(owner());
 
         tradingIsEnabled = true;
     }
 
-    function setAutomatedMarketMakerPair(address pair, bool value) public onlyOwner {
+    function setAutomatedMarketMakerPair(address pair, bool value) external onlyOwner {
         require(pair != dexPair, "cannot be removed");
 
         _setAutomatedMarketMakerPair(pair, value);
@@ -75,41 +78,69 @@ contract MafaCoin is ERC20, Ownable {
         emit ExcludeFromFees(account, excluded);
     }
 
+    function blacklistAccount(address account, bool blacklisted) external onlyOwner {
+        require(isBlacklisted[account] != blacklisted, "Already blacklisted");
+        isBlacklisted[account] = blacklisted;
+
+        emit AccountBlacklisted(account, blacklisted);
+    }
+
+    function setLpRecipient(address recipient) public onlyOwner {
+        require(lpRecipient != recipient, "LP recipient already setted");
+        lpRecipient = recipient;
+
+        emit LpRecipientUpdated(recipient);
+    }
+
     function setTeamWallet(address _newWallet) external onlyOwner {
         excludeFromFees(_newWallet, true);
         teamWallet = _newWallet;
+
+        emit TeamWalletUpdated(_newWallet);
     }
 
     function setLotteryWallet(address _newWallet) external onlyOwner {
         excludeFromFees(_newWallet, true);
         lotteryWallet = _newWallet;
+
+        emit LotteryWalletUpdated(_newWallet);
     }
 
     function setLiquidyFee(uint256 newFee) public onlyOwner {
         liquidityFee = newFee;
         _updateTotalBuyFee();
         _updateTotalSellFee();
+
+        emit LiquidityFeeUpdated(newFee);
     }
 
     function setBurnFee(uint256 newFee) public onlyOwner {
         burnFee = newFee;
         _updateTotalBuyFee();
         _updateTotalSellFee();
+
+        emit BurnFeeUpdated(newFee);
     }
 
     function setTeamBuyFee(uint256 newFee) public onlyOwner {
         teamBuyFee = newFee;
         _updateTotalBuyFee();
+
+        emit TeamBuyFeeUpdated(newFee);
     }
 
     function setTeamSellFee(uint256 newFee) public onlyOwner {
         teamSellFee = newFee;
         _updateTotalSellFee();
+
+        emit TeamSellFeeUpdated(newFee);
     }
 
     function setLotteryFee(uint256 newFee) public onlyOwner {
         lotteryFee = newFee;
         _updateTotalSellFee();
+
+        emit LotteryFeeUpdated(newFee);
     }
 
     function _updateTotalBuyFee() internal {
@@ -129,6 +160,8 @@ contract MafaCoin is ERC20, Ownable {
         dexPair = _dexPair;
 
         _setAutomatedMarketMakerPair(_dexPair, true);
+
+        emit LiquidityStarted(router, _dexPair);
     }
 
     function _swapAndLiquify(uint256 amount) private {
@@ -170,7 +203,7 @@ contract MafaCoin is ERC20, Ownable {
             tokenAmount,
             0,
             0,
-            address(this),
+            lpRecipient,
             block.timestamp.add(300)
         );
     }
@@ -192,8 +225,8 @@ contract MafaCoin is ERC20, Ownable {
             swapping = true;
 
             if (excludedAccount) {
-                uint256 burnedTokens = balanceOf(deadAddress);
-                if (burnedTokens >= tSupply.div(2)) {
+                uint256 burnedTokens = balanceOf(DEAD_ADDRESS);
+                if (burnedTokens >= TOTAL_SUPPLY.div(2)) {
                     setBurnFee(0);
                     emit BurnFeeStopped(burnedTokens, burnFee);
                 }
@@ -201,13 +234,13 @@ contract MafaCoin is ERC20, Ownable {
                 super._transfer(from, to, amount);
             } else {
                 if (burnFee > 0) {
-                    uint256 burnedTokens = balanceOf(deadAddress);
-                    if (burnedTokens >= tSupply.div(2)) {
+                    uint256 burnedTokens = balanceOf(DEAD_ADDRESS);
+                    if (burnedTokens >= TOTAL_SUPPLY.div(2)) {
                         setBurnFee(0);
                         emit BurnFeeStopped(burnedTokens, burnFee);
                     }
                     uint256 tokensToBurn = amount.mul(burnFee).div(100);
-                    super._transfer(from, deadAddress, tokensToBurn);
+                    super._transfer(from, DEAD_ADDRESS, tokensToBurn);
                 }
 
                 if (automatedMarketMakerPairs[to]) {
@@ -247,7 +280,17 @@ contract MafaCoin is ERC20, Ownable {
     }
 
     event ExcludeFromFees(address indexed account, bool isExcluded);
+    event AccountBlacklisted(address indexed account, bool isBlacklisted);
+    event LpRecipientUpdated(address indexed lpRecipient);
     event SetAutomatedMarketMakerPair(address indexed pair, bool indexed value);
     event SwapAndLiquify(uint256 tokensSwapped, uint256 bnbReceived, uint256 tokensIntoLiqudity);
     event BurnFeeStopped(uint256 burnedTokens, uint256 burnFee);
+    event TeamWalletUpdated(address indexed newWallet);
+    event LotteryWalletUpdated(address indexed newWallet);
+    event LiquidityFeeUpdated(uint256 indexed newFee);
+    event BurnFeeUpdated(uint256 indexed newFee);
+    event TeamBuyFeeUpdated(uint256 indexed newFee);
+    event TeamSellFeeUpdated(uint256 indexed newFee);
+    event LotteryFeeUpdated(uint256 indexed newFee);
+    event LiquidityStarted(address indexed routerAddress, address indexed pairAddress);
 }
