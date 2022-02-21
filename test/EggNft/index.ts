@@ -195,6 +195,16 @@ describe("Unit tests", function () {
         );
       });
 
+      it("user should not be able to breed an egg that is already breeding", async function () {
+        await egg.connect(account1)["breedEgg(uint256,uint256)"](0, 0);
+
+        await brooder.mint(account1.address, 0, 1, ethers.utils.formatBytes32String(""));
+
+        await expect(egg.connect(account1)["breedEgg(uint256,uint256)"](0, 0)).to.be.revertedWith(
+          "Egg is already breeding",
+        );
+      });
+
       it("user should be able to breed an egg", async function () {
         const blockNumber = await ethers.provider.getBlockNumber();
         const block = await ethers.provider.getBlock(blockNumber);
