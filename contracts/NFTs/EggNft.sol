@@ -136,6 +136,8 @@ contract EggNft is EggBase {
 
         Egg storage _egg = egg[id];
 
+        require(_egg.breeding == false, "Egg is already breeding");
+
         uint256 newTimer = block.timestamp + brooderContract.getBrooder(brooderId);
         _egg.hatchDate = newTimer;
         _egg.breeding = true;
