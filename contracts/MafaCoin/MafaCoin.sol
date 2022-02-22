@@ -11,7 +11,6 @@ import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
 contract MafaCoin is ERC20, Ownable {
     using SafeMath for uint256;
 
-    bool private swapping;
     bool public tradingIsEnabled = false;
 
     IUniswapV2Router02 public dexRouter;
@@ -93,6 +92,8 @@ contract MafaCoin is ERC20, Ownable {
     }
 
     function setTeamWallet(address _newWallet) external onlyOwner {
+        require(_newWallet != address(0), "zero address is not allowed");
+
         excludeFromFees(_newWallet, true);
         teamWallet = _newWallet;
 
@@ -100,6 +101,7 @@ contract MafaCoin is ERC20, Ownable {
     }
 
     function setLotteryWallet(address _newWallet) external onlyOwner {
+        require(_newWallet != address(0), "zero address is not allowed");
         excludeFromFees(_newWallet, true);
         lotteryWallet = _newWallet;
 
@@ -152,6 +154,8 @@ contract MafaCoin is ERC20, Ownable {
     }
 
     function startLiquidity(address router) external onlyOwner {
+        require(router != address(0), "zero address is not allowed");
+        
         IUniswapV2Router02 _dexRouter = IUniswapV2Router02(router);
 
         address _dexPair = IUniswapV2Factory(_dexRouter.factory()).createPair(address(this), _dexRouter.WETH());
@@ -213,69 +217,63 @@ contract MafaCoin is ERC20, Ownable {
         address to,
         uint256 amount
     ) internal override {
-        require(from != address(0), "zero address");
-        require(to != address(0), "zero address");
+        require(from != address(0), "ERC20: transfer from the zero address");
+        require(to != address(0), "ERC20: transfer to the zero address");
         require(amount > 0, "Transfer amount must be greater than zero");
         require(!isBlacklisted[from], "Address is blacklisted");
         require(tradingIsEnabled || (isExcludedFromFees[from] || isExcludedFromFees[to]), "Trading not started");
 
         bool excludedAccount = isExcludedFromFees[from] || isExcludedFromFees[to];
 
-        if (!swapping || !automatedMarketMakerPairs[to] || !automatedMarketMakerPairs[from]) {
-            swapping = true;
+        if (excludedAccount) {
+            uint256 burnedTokens = balanceOf(DEAD_ADDRESS);
+            if (burnedTokens >= TOTAL_SUPPLY.div(2)) {
+                setBurnFee(0);
+                emit BurnFeeStopped(burnedTokens, burnFee);
+            }
 
-            if (excludedAccount) {
+            super._transfer(from, to, amount);
+        } else {
+            if (burnFee > 0) {
                 uint256 burnedTokens = balanceOf(DEAD_ADDRESS);
                 if (burnedTokens >= TOTAL_SUPPLY.div(2)) {
                     setBurnFee(0);
                     emit BurnFeeStopped(burnedTokens, burnFee);
                 }
-
-                super._transfer(from, to, amount);
-            } else {
-                if (burnFee > 0) {
-                    uint256 burnedTokens = balanceOf(DEAD_ADDRESS);
-                    if (burnedTokens >= TOTAL_SUPPLY.div(2)) {
-                        setBurnFee(0);
-                        emit BurnFeeStopped(burnedTokens, burnFee);
-                    }
-                    uint256 tokensToBurn = amount.mul(burnFee).div(100);
-                    super._transfer(from, DEAD_ADDRESS, tokensToBurn);
-                }
-
-                if (automatedMarketMakerPairs[to]) {
-                    if (teamSellFee > 0) {
-                        uint256 tokensToTeam = amount.mul(teamSellFee).div(100);
-                        super._transfer(from, teamWallet, tokensToTeam);
-                    }
-
-                    if (lotteryFee > 0) {
-                        uint256 tokensToLottery = amount.mul(lotteryFee).div(100);
-                        super._transfer(from, lotteryWallet, tokensToLottery);
-                    }
-                } else {
-                    if (teamBuyFee > 0) {
-                        uint256 tokensToTeam = amount.mul(teamBuyFee).div(100);
-                        super._transfer(from, teamWallet, tokensToTeam);
-                    }
-                }
-
-                if (liquidityFee > 0) {
-                    uint256 tokensToLiquidity = amount.mul(liquidityFee).div(100);
-                    super._transfer(from, address(this), tokensToLiquidity);
-                    _swapAndLiquify(tokensToLiquidity);
-                }
-
-                uint256 taxedAmount;
-                if (automatedMarketMakerPairs[to]) {
-                    taxedAmount = amount.sub(amount.mul(totalSellFee).div(100));
-                } else {
-                    taxedAmount = amount.sub(amount.mul(totalBuyFee).div(100));
-                }
-                super._transfer(from, to, taxedAmount);
+                uint256 tokensToBurn = amount.mul(burnFee).div(100);
+                super._transfer(from, DEAD_ADDRESS, tokensToBurn);
             }
 
-            swapping = false;
+            if (automatedMarketMakerPairs[to]) {
+                if (teamSellFee > 0) {
+                    uint256 tokensToTeam = amount.mul(teamSellFee).div(100);
+                    super._transfer(from, teamWallet, tokensToTeam);
+                }
+
+                if (lotteryFee > 0) {
+                    uint256 tokensToLottery = amount.mul(lotteryFee).div(100);
+                    super._transfer(from, lotteryWallet, tokensToLottery);
+                }
+            } else {
+                if (teamBuyFee > 0) {
+                    uint256 tokensToTeam = amount.mul(teamBuyFee).div(100);
+                    super._transfer(from, teamWallet, tokensToTeam);
+                }
+            }
+
+            if (liquidityFee > 0) {
+                uint256 tokensToLiquidity = amount.mul(liquidityFee).div(100);
+                super._transfer(from, address(this), tokensToLiquidity);
+                _swapAndLiquify(tokensToLiquidity);
+            }
+
+            uint256 taxedAmount;
+            if (automatedMarketMakerPairs[to]) {
+                taxedAmount = amount.sub(amount.mul(totalSellFee).div(100));
+            } else {
+                taxedAmount = amount.sub(amount.mul(totalBuyFee).div(100));
+            }
+            super._transfer(from, to, taxedAmount);
         }
     }
 
