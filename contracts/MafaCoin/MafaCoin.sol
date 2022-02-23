@@ -155,7 +155,7 @@ contract MafaCoin is ERC20, Ownable {
         emit FeeUpdated(newFee, "teamSellFee");
     }
 
-    function setLotteryBuyFee(uint256 newFee) public onlyOwner {
+    function setLotteryBuyFee(uint256 newFee) external onlyOwner {
         lotteryBuyFee = newFee;
         _updateTotalBuyFee();
 
