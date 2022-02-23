@@ -39,7 +39,8 @@ describe("MafaCoin", function () {
   });
 
   it("should stop burn fee after 50% of the total supply is burned", async function () {
-    const initialBurnFee = await contract.burnFee();
+    const initialBurnBuyFee = await contract.burnBuyFee();
+    const initialBurnSellFee = await contract.burnSellFee();
 
     await contract.transfer(DEAD_ADDRESS, utils.parseEther("500000000").toString());
     await contract.transfer(address3.address, 100);
@@ -48,28 +49,36 @@ describe("MafaCoin", function () {
 
     const totalBurned = await contract.balanceOf(DEAD_ADDRESS);
 
-    const burnFee = await contract.burnFee();
+    const burnBuyFee = await contract.burnBuyFee();
+    const burnSellFee = await contract.burnSellFee();
 
     expect(totalSupply).to.equal(utils.parseEther("1000000000").toString());
     expect(totalBurned).to.equal(utils.parseEther("500000000").toString());
-    expect(initialBurnFee).to.equal(1);
-    expect(burnFee).to.equal(0);
+    expect(initialBurnBuyFee).to.equal(1);
+    expect(initialBurnSellFee).to.equal(1);
+    expect(burnBuyFee).to.equal(0);
+    expect(burnSellFee).to.equal(0);
   });
 
   it("should maintain burn fee if 49% of the total supply is burned", async function () {
-    const initialBurnFee = await contract.burnFee();
+    const initialBurnBuyFee = await contract.burnBuyFee();
+    const initialBurnSellFee = await contract.burnSellFee();
 
     await contract.transfer(DEAD_ADDRESS, utils.parseEther("490000000").toString());
     await contract.transfer(address3.address, 100);
 
-    const burnFee = await contract.burnFee();
+    const burnBuyFee = await contract.burnBuyFee();
+    const burnSellFee = await contract.burnSellFee();
 
-    expect(initialBurnFee).to.equal(1);
-    expect(burnFee).to.equal(1);
+    expect(initialBurnBuyFee).to.equal(1);
+    expect(initialBurnSellFee).to.equal(1);
+    expect(burnBuyFee).to.equal(1);
+    expect(burnSellFee).to.equal(1);
   });
 
   it("should charge buy fees", async function () {
-    await contract.setLiquidyFee(0);
+    await contract.setLiquidyBuyFee(0);
+    await contract.setLiquidySellFee(0);
 
     await contract.transfer(address3.address, utils.parseEther("1000").toString());
     await contract.connect(address3).transfer(address4.address, utils.parseEther("1000").toString());
@@ -94,9 +103,11 @@ describe("MafaCoin", function () {
     });
 
     it("should have the correct liquidity fee", async function () {
-      const liquidityFee = await contract.liquidityFee();
+      const liquidityBuyFee = await contract.liquidityBuyFee();
+      const liquiditySellFee = await contract.liquiditySellFee();
 
-      expect(liquidityFee).to.equal(3);
+      expect(liquidityBuyFee).to.equal(3);
+      expect(liquiditySellFee).to.equal(3);
     });
 
     it("should have the correct router address", async function () {
