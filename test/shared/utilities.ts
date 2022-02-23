@@ -22,11 +22,13 @@ export async function deployMafaCoin(owner: SignerWithAddress) {
   const mafacoin = <MafaCoin>await waffle.deployContract(owner, mafacoinArtifact);
 
   await mafacoin.afterPreSale();
-  await mafacoin.setBurnFee(0);
+  await mafacoin.setBurnBuyFee(0);
+  await mafacoin.setBurnSellFee(0);
+  await mafacoin.setLiquidyBuyFee(0);
+  await mafacoin.setLiquidySellFee(0);
   await mafacoin.setTeamBuyFee(0);
   await mafacoin.setTeamSellFee(0);
-  await mafacoin.setLiquidyFee(0);
-  await mafacoin.setLotteryFee(0);
+  await mafacoin.setLotterySellFee(0);
   return mafacoin;
 }
 

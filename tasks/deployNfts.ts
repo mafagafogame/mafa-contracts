@@ -59,11 +59,13 @@ task("deploy:nfts", "Deploy all contracts related to nfts")
         mafacoin = await mafacoin.deployed();
 
         await (await mafacoin.afterPreSale()).wait(1);
-        await (await mafacoin.setBurnFee(0)).wait(1);
+        await (await mafacoin.setBurnBuyFee(0)).wait(1);
+        await (await mafacoin.setBurnSellFee(0)).wait(1);
+        await (await mafacoin.setLiquidyBuyFee(0)).wait(1);
+        await (await mafacoin.setLiquidySellFee(0)).wait(1);
         await (await mafacoin.setTeamBuyFee(0)).wait(1);
         await (await mafacoin.setTeamSellFee(0)).wait(1);
-        await (await mafacoin.setLiquidyFee(0)).wait(1);
-        await (await mafacoin.setLotteryFee(0)).wait(1);
+        await (await mafacoin.setLotterySellFee(0)).wait(1);
         break;
       default:
         throw Error("unknown chain");

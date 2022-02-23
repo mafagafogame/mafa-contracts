@@ -24,27 +24,35 @@ async function main() {
   console.log("Pair: " + (await mafa.dexPair()));
 
   transaction = await mafa.afterPreSale();
-  console.log("Set afterPreSale tx: " + transaction.hash);
+  console.log("afterPreSale tx: " + transaction.hash);
   await transaction.wait(10);
 
-  transaction = await mafa.setLotteryFee(0);
-  console.log("Set setLotteryFee tx: " + transaction.hash);
+  transaction = await mafa.setLiquidyBuyFee(0);
+  console.log("setLiquidyBuyFee tx: " + transaction.hash);
   await transaction.wait(10);
 
-  transaction = await mafa.setLiquidyFee(0);
-  console.log("Set setLiquidyFee tx: " + transaction.hash);
+  transaction = await mafa.setLiquidySellFee(0);
+  console.log("setLiquidySellFee tx: " + transaction.hash);
   await transaction.wait(10);
 
-  transaction = await mafa.setBurnFee(0);
-  console.log("Set burn tx: " + transaction.hash);
+  transaction = await mafa.setBurnBuyFee(0);
+  console.log("setBurnBuyFee tx: " + transaction.hash);
   await transaction.wait(10);
 
-  transaction = await mafa.setTeamSellFee(0);
-  console.log("Set setTeamSellFee tx: " + transaction.hash);
+  transaction = await mafa.setBurnSellFee(0);
+  console.log("setBurnSellFee tx: " + transaction.hash);
   await transaction.wait(10);
 
   transaction = await mafa.setTeamBuyFee(0);
-  console.log("Set setTeamBuyFee tx: " + transaction.hash);
+  console.log("setTeamBuyFee tx: " + transaction.hash);
+  await transaction.wait(10);
+
+  transaction = await mafa.setTeamSellFee(0);
+  console.log("setTeamSellFee tx: " + transaction.hash);
+  await transaction.wait(10);
+
+  transaction = await mafa.setLotterySellFee(0);
+  console.log("setLotterySellFee tx: " + transaction.hash);
   await transaction.wait(10);
 }
 
