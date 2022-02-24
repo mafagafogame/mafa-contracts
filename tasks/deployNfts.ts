@@ -8,8 +8,8 @@ import {
   EggNft__factory,
   MafaBox,
   MafaBox__factory,
-  MafaCoin,
-  MafaCoin__factory,
+  MafaCoinV2,
+  MafaCoinV2__factory,
   MafagafoAvatarNft,
   MafagafoAvatarNft__factory,
   MafaStore,
@@ -44,8 +44,8 @@ task("deploy:nfts", "Deploy all contracts related to nfts")
 
     console.log("Deploying contracts with the account:", deployer.address);
 
-    const MafaCoinFactory: MafaCoin__factory = await ethers.getContractFactory("MafaCoin");
-    let mafacoin: MafaCoin;
+    const MafaCoinFactory: MafaCoinV2__factory = await ethers.getContractFactory("MafaCoinV2");
+    let mafacoin: MafaCoinV2;
 
     switch (chain) {
       case "mainnet":

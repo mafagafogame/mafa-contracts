@@ -11,63 +11,62 @@ import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
 contract MafaCoin is ERC20, Ownable {
     using SafeMath for uint256;
 
+    bool private swapping;
     bool public tradingIsEnabled = false;
 
     IUniswapV2Router02 public dexRouter;
     address public dexPair;
 
-    address public lpRecipient;
-
-    address public constant DEAD_ADDRESS = 0x000000000000000000000000000000000000dEaD;
+    address deadAddress = 0x000000000000000000000000000000000000dEaD;
 
     address public teamWallet;
     address public lotteryWallet;
 
-    uint256 public liquidityBuyFee = 0;
-    uint256 public liquiditySellFee = 0;
-    uint256 public burnBuyFee = 0;
-    uint256 public burnSellFee = 0;
+    uint256 public liquidityFee = 0;
+    uint256 public burnFee = 0;
     uint256 public teamBuyFee = 0;
     uint256 public teamSellFee = 0;
-    uint256 public lotteryBuyFee = 0;
-    uint256 public lotterySellFee = 0;
+    uint256 public lotteryFee = 0;
 
     uint256 public totalBuyFee = 0;
     uint256 public totalSellFee = 0;
 
-    uint256 public constant TOTAL_SUPPLY = 1000000000 * (10**18);
+    uint256 public tSupply = 1000000000 * (10**18);
 
     mapping(address => bool) public isExcludedFromFees;
     mapping(address => bool) public automatedMarketMakerPairs;
-    mapping(address => bool) public isBlacklisted;
+    mapping(address => bool) isBlacklisted;
 
     constructor() ERC20("MafaCoin", "MAFA") {
         excludeFromFees(address(this), true);
         excludeFromFees(owner(), true);
 
-        _mint(owner(), TOTAL_SUPPLY);
+        _mint(owner(), tSupply);
     }
 
     function afterPreSale() external onlyOwner {
-        setLiquidyBuyFee(3);
-        setLiquidySellFee(3);
-        setBurnBuyFee(1);
-        setBurnSellFee(1);
+        setLiquidyFee(3);
+        setBurnFee(1);
         setTeamBuyFee(1);
         setTeamSellFee(5);
-        setLotterySellFee(1);
-        setLpRecipient(owner());
+        setLotteryFee(1);
 
         tradingIsEnabled = true;
     }
 
-    function setAutomatedMarketMakerPair(address pair, bool value) external onlyOwner {
+    function setAutomatedMarketMakerPair(address pair, bool value)
+    public
+    onlyOwner
+    {
         require(pair != dexPair, "cannot be removed");
 
         _setAutomatedMarketMakerPair(pair, value);
     }
 
-    function _setAutomatedMarketMakerPair(address pair, bool value) private onlyOwner {
+    function _setAutomatedMarketMakerPair(address pair, bool value)
+    private
+    onlyOwner
+    {
         automatedMarketMakerPairs[pair] = value;
 
         emit SetAutomatedMarketMakerPair(pair, value);
@@ -82,114 +81,65 @@ contract MafaCoin is ERC20, Ownable {
         emit ExcludeFromFees(account, excluded);
     }
 
-    function blacklistAccount(address account, bool blacklisted) external onlyOwner {
-        require(isBlacklisted[account] != blacklisted, "Already blacklisted");
-        isBlacklisted[account] = blacklisted;
-
-        emit AccountBlacklisted(account, blacklisted);
-    }
-
-    function setLpRecipient(address recipient) public onlyOwner {
-        require(lpRecipient != recipient, "LP recipient already setted");
-        lpRecipient = recipient;
-
-        emit LpRecipientUpdated(recipient);
-    }
-
     function setTeamWallet(address _newWallet) external onlyOwner {
-        require(_newWallet != address(0), "zero address is not allowed");
-
         excludeFromFees(_newWallet, true);
         teamWallet = _newWallet;
-
-        emit TeamWalletUpdated(_newWallet);
     }
 
     function setLotteryWallet(address _newWallet) external onlyOwner {
-        require(_newWallet != address(0), "zero address is not allowed");
         excludeFromFees(_newWallet, true);
         lotteryWallet = _newWallet;
-
-        emit LotteryWalletUpdated(_newWallet);
     }
 
-    function setLiquidyBuyFee(uint256 newFee) public onlyOwner {
-        liquidityBuyFee = newFee;
+    function setLiquidyFee(uint256 newFee) public onlyOwner {
+        liquidityFee = newFee;
         _updateTotalBuyFee();
-
-        emit FeeUpdated(newFee, "liquidityBuyFee");
-    }
-
-    function setLiquidySellFee(uint256 newFee) public onlyOwner {
-        liquiditySellFee = newFee;
         _updateTotalSellFee();
-
-        emit FeeUpdated(newFee, "liquiditySellFee");
     }
 
-    function setBurnBuyFee(uint256 newFee) public onlyOwner {
-        burnBuyFee = newFee;
+    function setBurnFee(uint256 newFee) public onlyOwner {
+        burnFee = newFee;
         _updateTotalBuyFee();
-
-        emit FeeUpdated(newFee, "burnBuyFee");
-    }
-
-    function setBurnSellFee(uint256 newFee) public onlyOwner {
-        burnSellFee = newFee;
         _updateTotalSellFee();
-
-        emit FeeUpdated(newFee, "burnSellFee");
     }
 
     function setTeamBuyFee(uint256 newFee) public onlyOwner {
         teamBuyFee = newFee;
         _updateTotalBuyFee();
-
-        emit FeeUpdated(newFee, "teamBuyFee");
     }
 
     function setTeamSellFee(uint256 newFee) public onlyOwner {
         teamSellFee = newFee;
         _updateTotalSellFee();
-
-        emit FeeUpdated(newFee, "teamSellFee");
     }
 
-    function setLotteryBuyFee(uint256 newFee) external onlyOwner {
-        lotteryBuyFee = newFee;
-        _updateTotalBuyFee();
-
-        emit FeeUpdated(newFee, "lotteryBuyFee");
-    }
-
-    function setLotterySellFee(uint256 newFee) public onlyOwner {
-        lotterySellFee = newFee;
+    function setLotteryFee(uint256 newFee) public onlyOwner {
+        lotteryFee = newFee;
         _updateTotalSellFee();
-
-        emit FeeUpdated(newFee, "lotterySellFee");
     }
 
     function _updateTotalBuyFee() internal {
-        totalBuyFee = liquidityBuyFee.add(burnBuyFee).add(teamBuyFee).add(lotteryBuyFee);
+        totalBuyFee = liquidityFee.add(burnFee).add(teamBuyFee);
     }
 
     function _updateTotalSellFee() internal {
-        totalSellFee = liquiditySellFee.add(burnSellFee).add(teamSellFee).add(lotterySellFee);
+        totalSellFee = liquidityFee.add(burnFee).add(teamSellFee).add(
+            lotteryFee
+        );
     }
 
     function startLiquidity(address router) external onlyOwner {
-        require(router != address(0), "zero address is not allowed");
-
         IUniswapV2Router02 _dexRouter = IUniswapV2Router02(router);
 
-        address _dexPair = IUniswapV2Factory(_dexRouter.factory()).createPair(address(this), _dexRouter.WETH());
+        address _dexPair = IUniswapV2Factory(_dexRouter.factory()).createPair(
+            address(this),
+            _dexRouter.WETH()
+        );
 
         dexRouter = _dexRouter;
         dexPair = _dexPair;
 
         _setAutomatedMarketMakerPair(_dexPair, true);
-
-        emit LiquidityStarted(router, _dexPair);
     }
 
     function _swapAndLiquify(uint256 amount) private {
@@ -226,12 +176,12 @@ contract MafaCoin is ERC20, Ownable {
     function _addLiquidity(uint256 tokenAmount, uint256 bnbAmount) private {
         _approve(address(this), address(dexRouter), tokenAmount);
 
-        dexRouter.addLiquidityETH{ value: bnbAmount }(
+        dexRouter.addLiquidityETH{value: bnbAmount}(
             address(this),
             tokenAmount,
             0,
             0,
-            lpRecipient,
+            address(this),
             block.timestamp.add(300)
         );
     }
@@ -241,102 +191,83 @@ contract MafaCoin is ERC20, Ownable {
         address to,
         uint256 amount
     ) internal override {
-        require(from != address(0), "ERC20: transfer from the zero address");
-        require(to != address(0), "ERC20: transfer to the zero address");
+        require(from != address(0), "zero address");
+        require(to != address(0), "zero address");
         require(amount > 0, "Transfer amount must be greater than zero");
         require(!isBlacklisted[from], "Address is blacklisted");
-        require(tradingIsEnabled || (isExcludedFromFees[from] || isExcludedFromFees[to]), "Trading not started");
+        require(
+            tradingIsEnabled ||
+            (isExcludedFromFees[from] || isExcludedFromFees[to]),
+            "Trading not started"
+        );
 
-        bool excludedAccount = isExcludedFromFees[from] || isExcludedFromFees[to];
+        bool excludedAccount = isExcludedFromFees[from] ||
+        isExcludedFromFees[to];
 
-        if (excludedAccount) {
-            uint256 burnedTokens = balanceOf(DEAD_ADDRESS);
-            if (burnedTokens >= TOTAL_SUPPLY.div(2)) {
-                setBurnBuyFee(0);
-                setBurnSellFee(0);
-                emit BurnFeeStopped(burnedTokens, burnBuyFee, burnSellFee);
-            }
+        if (!swapping || !automatedMarketMakerPairs[to] || !automatedMarketMakerPairs[from]) {
+            swapping = true;
 
-            super._transfer(from, to, amount);
-        } else {
-            if (automatedMarketMakerPairs[to]) {
-                if (liquiditySellFee > 0) {
-                    uint256 tokensToLiquidity = amount.mul(liquiditySellFee).div(100);
+            if (excludedAccount) {
+                uint256 burnedTokens = balanceOf(deadAddress);
+                if (burnedTokens >= tSupply.div(2)) {
+                    setBurnFee(0);
+                    emit BurnFeeStopped(burnedTokens, burnFee);
+                }
+
+                super._transfer(from, to, amount);
+            } else {
+                if (burnFee > 0) {
+                    uint256 burnedTokens = balanceOf(deadAddress);
+                    if (burnedTokens >= tSupply.div(2)) {
+                        setBurnFee(0);
+                        emit BurnFeeStopped(burnedTokens, burnFee);
+                    }
+                    uint256 tokensToBurn = amount.mul(burnFee).div(100);
+                    super._transfer(from, deadAddress, tokensToBurn);
+                }
+
+                if (automatedMarketMakerPairs[to]) {
+                    if (teamSellFee > 0) {
+                        uint256 tokensToTeam = amount.mul(teamSellFee).div(100);
+                        super._transfer(from, teamWallet, tokensToTeam);
+                    }
+
+                    if (lotteryFee > 0) {
+                        uint256 tokensToLottery = amount.mul(lotteryFee).div(100);
+                        super._transfer(from, lotteryWallet, tokensToLottery);
+                    }
+                } else {
+                    if (teamBuyFee > 0) {
+                        uint256 tokensToTeam = amount.mul(teamBuyFee).div(100);
+                        super._transfer(from, teamWallet, tokensToTeam);
+                    }
+                }
+
+                if (liquidityFee > 0) {
+                    uint256 tokensToLiquidity = amount.mul(liquidityFee).div(100);
                     super._transfer(from, address(this), tokensToLiquidity);
                     _swapAndLiquify(tokensToLiquidity);
                 }
 
-                if (burnSellFee > 0) {
-                    uint256 burnedTokens = balanceOf(DEAD_ADDRESS);
-                    if (burnedTokens >= TOTAL_SUPPLY.div(2)) {
-                        setBurnBuyFee(0);
-                        setBurnSellFee(0);
-                        emit BurnFeeStopped(burnedTokens, burnBuyFee, burnSellFee);
-                    }
-                    uint256 tokensToBurn = amount.mul(burnSellFee).div(100);
-                    super._transfer(from, DEAD_ADDRESS, tokensToBurn);
+                uint256 taxedAmount;
+                if (automatedMarketMakerPairs[to]) {
+                    taxedAmount = amount.sub(amount.mul(totalSellFee).div(100));
+                } else {
+                    taxedAmount = amount.sub(amount.mul(totalBuyFee).div(100));
                 }
-
-                if (lotterySellFee > 0) {
-                    uint256 tokensToReward = amount.mul(lotterySellFee).div(100);
-                    super._transfer(from, lotteryWallet, tokensToReward);
-                }
-
-                if (teamSellFee > 0) {
-                    uint256 tokensToTeam = amount.mul(teamSellFee).div(100);
-                    super._transfer(from, teamWallet, tokensToTeam);
-                }
-            } else {
-                if (liquidityBuyFee > 0) {
-                    uint256 tokensToLiquidity = amount.mul(liquidityBuyFee).div(100);
-                    super._transfer(from, address(this), tokensToLiquidity);
-                    _swapAndLiquify(tokensToLiquidity);
-                }
-
-                if (burnBuyFee > 0) {
-                    uint256 burnedTokens = balanceOf(DEAD_ADDRESS);
-                    if (burnedTokens >= TOTAL_SUPPLY.div(2)) {
-                        setBurnBuyFee(0);
-                        setBurnSellFee(0);
-                        emit BurnFeeStopped(burnedTokens, burnBuyFee, burnSellFee);
-                    }
-                    uint256 tokensToBurn = amount.mul(burnBuyFee).div(100);
-                    super._transfer(from, DEAD_ADDRESS, tokensToBurn);
-                }
-
-                if (lotteryBuyFee > 0) {
-                    uint256 tokensToReward = amount.mul(lotteryBuyFee).div(100);
-                    super._transfer(from, lotteryWallet, tokensToReward);
-                }
-
-                if (teamBuyFee > 0) {
-                    uint256 tokensToTeam = amount.mul(teamBuyFee).div(100);
-                    super._transfer(from, teamWallet, tokensToTeam);
-                }
+                super._transfer(from, to, taxedAmount);
             }
 
-            uint256 amountMinusFees;
-            if (automatedMarketMakerPairs[to]) {
-                amountMinusFees = amount.sub(amount.mul(totalSellFee).div(100));
-            } else {
-                amountMinusFees = amount.sub(amount.mul(totalBuyFee).div(100));
-            }
-            super._transfer(from, to, amountMinusFees);
+            swapping = false;
         }
     }
 
     event ExcludeFromFees(address indexed account, bool isExcluded);
-    event AccountBlacklisted(address indexed account, bool isBlacklisted);
-    event LpRecipientUpdated(address indexed lpRecipient);
     event SetAutomatedMarketMakerPair(address indexed pair, bool indexed value);
     event SwapAndLiquify(
-        uint256 indexed tokensSwapped,
-        uint256 indexed bnbReceived,
-        uint256 indexed tokensIntoLiqudity
+        uint256 tokensSwapped,
+        uint256 bnbReceived,
+        uint256 tokensIntoLiqudity
     );
-    event BurnFeeStopped(uint256 indexed burnedTokens, uint256 indexed burnBuyFee, uint256 indexed burnSellFee);
-    event TeamWalletUpdated(address indexed newWallet);
-    event LotteryWalletUpdated(address indexed newWallet);
-    event FeeUpdated(uint256 indexed fee, bytes32 indexed feeType);
-    event LiquidityStarted(address indexed routerAddress, address indexed pairAddress);
+    event BurnFeeStopped(uint256 burnedTokens, uint256 burnFee);
 }

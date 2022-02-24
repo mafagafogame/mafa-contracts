@@ -2,14 +2,14 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { Contract, utils } from "ethers";
-import { MafaCoin, MafaCoin__factory } from "../../typechain";
+import { MafaCoinV2, MafaCoinV2__factory } from "../../typechain";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import routerABI from "../../abis/routerABI.json";
 import { bigNumberToFloat, expandTo18Decimals } from "../shared/utilities";
 
 describe("MafaCoin", function () {
   const DEAD_ADDRESS = "0x000000000000000000000000000000000000dEaD";
-  let contract: MafaCoin;
+  let contract: MafaCoinV2;
   let owner: SignerWithAddress;
   let address1: SignerWithAddress;
   let address2: SignerWithAddress;
@@ -22,7 +22,7 @@ describe("MafaCoin", function () {
   });
 
   beforeEach(async function () {
-    const MafaCoinFactory: MafaCoin__factory = await ethers.getContractFactory("MafaCoin");
+    const MafaCoinFactory: MafaCoinV2__factory = await ethers.getContractFactory("MafaCoinV2");
     contract = await MafaCoinFactory.deploy();
     contract = await contract.deployed();
     await contract.afterPreSale();
