@@ -8,14 +8,14 @@ import {
   BrooderNft__factory,
   EggNft,
   EggNft__factory,
-  MafaCoin,
+  MafaCoinV2,
   MafagafoAvatarNft,
   MafagafoAvatarNft__factory,
 } from "../../typechain";
 import { daysToUnixDate, deployMafaCoin, expandTo18Decimals, range } from "../shared/utilities";
 
 describe("Unit tests", function () {
-  let mafacoin: MafaCoin;
+  let mafacoin: MafaCoinV2;
   let brooder: BrooderNft;
   let egg: EggNft;
   let mafagafoAvatar: MafagafoAvatarNft;

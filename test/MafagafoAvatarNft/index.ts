@@ -50,7 +50,7 @@ describe("Unit tests", function () {
       await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
         account1.address,
         await mafagafoAvatar.mafaVersion(),
-        ethers.utils.formatBytes32String("0"),
+        "0x0000000000000000000000000000000000000000000000000000000000000000",
         0,
         0,
         0,
@@ -60,7 +60,7 @@ describe("Unit tests", function () {
       await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
         account1.address,
         await mafagafoAvatar.mafaVersion(),
-        ethers.utils.formatBytes32String("0"),
+        "0x0000000000000000000000000000000000000000000000000000000000000002",
         0,
         0,
         0,
@@ -97,7 +97,7 @@ describe("Unit tests", function () {
           ["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
             account1.address,
             await mafagafoAvatar.mafaVersion(),
-            ethers.utils.formatBytes32String("0"),
+            "0x0000000000000000000000000000000000000000000000000000000000000000",
             0,
             0,
             0,
@@ -111,7 +111,7 @@ describe("Unit tests", function () {
           ["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
             account1.address,
             await mafagafoAvatar.mafaVersion(),
-            ethers.utils.formatBytes32String("0"),
+            "0x0000000000000000000000000000000000000000000000000000000000000000",
             0,
             0,
             0,
@@ -132,7 +132,7 @@ describe("Unit tests", function () {
           mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
             account2.address,
             await mafagafoAvatar.mafaVersion(),
-            ethers.utils.formatBytes32String("0"),
+            "0x0000000000000000000000000000000000000000000000000000000000000000",
             0,
             0,
             0,
@@ -152,7 +152,7 @@ describe("Unit tests", function () {
           mafagafoAvatar.multiMint(
             account2.address,
             await mafagafoAvatar.mafaVersion(),
-            ethers.utils.formatBytes32String("0"),
+            "0x0000000000000000000000000000000000000000000000000000000000000000",
             0,
             0,
             0,
@@ -169,7 +169,7 @@ describe("Unit tests", function () {
           mafagafoAvatar.multiMint(
             account2.address,
             await mafagafoAvatar.mafaVersion(),
-            ethers.utils.formatBytes32String("0"),
+            "0x0000000000000000000000000000000000000000000000000000000000000000",
             0,
             0,
             0,
@@ -185,7 +185,7 @@ describe("Unit tests", function () {
         mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
           owner.address,
           await mafagafoAvatar.mafaVersion(),
-          ethers.utils.formatBytes32String("0"),
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
           0,
           0,
           0,
@@ -213,9 +213,7 @@ describe("Unit tests", function () {
         expect((await mafagafoAvatar.mafagafo(2)).matings).to.equal(0);
         expect(await egg.totalSupply()).to.equal(0);
 
-        await expect(mafagafoAvatar.connect(account1)["mate(uint256,uint256)"](1, 2))
-          .to.emit(mafagafoAvatar, "Mate")
-          .withArgs(account1.address, 1, 2, 0, "0x0000000000000000000000000000000000000000000000000000000000000007", 1);
+        await expect(mafagafoAvatar.connect(account1)["mate(uint256,uint256)"](1, 2)).to.emit(mafagafoAvatar, "Mate");
 
         expect((await mafagafoAvatar.mafagafo(1)).matings).to.equal(1);
         expect((await mafagafoAvatar.mafagafo(2)).matings).to.equal(1);
@@ -227,7 +225,7 @@ describe("Unit tests", function () {
         mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
           account1.address,
           await mafagafoAvatar.mafaVersion(),
-          ethers.utils.formatBytes32String("0"),
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
           0,
           0,
           0,
@@ -245,7 +243,7 @@ describe("Unit tests", function () {
         mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
           account1.address,
           await mafagafoAvatar.mafaVersion(),
-          ethers.utils.formatBytes32String("0"),
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
           0,
           0,
           0,
@@ -273,7 +271,7 @@ describe("Unit tests", function () {
           await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
             account1.address,
             await mafagafoAvatar.mafaVersion(),
-            ethers.utils.formatBytes32String("0"),
+            "0x0000000000000000000000000000000000000000000000000000000000000000",
             0,
             0,
             0,
@@ -290,7 +288,7 @@ describe("Unit tests", function () {
         await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
           account1.address,
           await mafagafoAvatar.mafaVersion(),
-          ethers.utils.formatBytes32String("0"),
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
           0,
           0,
           0,
@@ -306,7 +304,7 @@ describe("Unit tests", function () {
         await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
           owner.address,
           await mafagafoAvatar.mafaVersion(),
-          ethers.utils.formatBytes32String("0"),
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
           0,
           0,
           0,
@@ -330,7 +328,7 @@ describe("Unit tests", function () {
           await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
             account1.address,
             await mafagafoAvatar.mafaVersion(),
-            ethers.utils.formatBytes32String("0"),
+            `0x000000000000000000000000000000000000000000000000000000000000000${Math.floor(Math.random() * 7)}`,
             0,
             0,
             0,
@@ -342,9 +340,7 @@ describe("Unit tests", function () {
 
         await expect(
           mafagafoAvatar.connect(account1)["mate(uint256[])"](Array.from({ length: length }, (_, i) => i + 1)),
-        )
-          .to.emit(mafagafoAvatar, "Mate")
-          .withArgs(account1.address, 1, 2, 0, "0x0000000000000000000000000000000000000000000000000000000000000007", 1);
+        ).to.emit(mafagafoAvatar, "Mate");
 
         expect(await egg.totalSupply()).to.equal(length / 2);
         expect(await egg.ownerOf(0)).to.equal(account1.address);
@@ -358,7 +354,7 @@ describe("Unit tests", function () {
           await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
             account1.address,
             await mafagafoAvatar.mafaVersion(),
-            ethers.utils.formatBytes32String("0"),
+            "0x0000000000000000000000000000000000000000000000000000000000000000",
             0,
             0,
             0,
@@ -381,7 +377,7 @@ describe("Unit tests", function () {
           await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
             account2.address,
             await mafagafoAvatar.mafaVersion(),
-            ethers.utils.formatBytes32String("0"),
+            "0x0000000000000000000000000000000000000000000000000000000000000000",
             0,
             0,
             0,

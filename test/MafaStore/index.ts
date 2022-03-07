@@ -8,19 +8,19 @@ import {
   BrooderNft__factory,
   EggNft,
   EggNft__factory,
-  MafaCoin,
   MafagafoAvatarNft,
   MafagafoAvatarNft__factory,
   MafaStore,
   MafaStore__factory,
   MafaStoreTestV2,
   MafaStoreTestV2__factory,
+  MafaCoinV2,
 } from "../../typechain";
 import { bigNumberToFloat, deployMafaCoin, expandTo18Decimals, getMAFAtoBUSDprice } from "../shared/utilities";
 
 describe("MafaStore", function () {
   let mafastore: MafaStore;
-  let mafacoin: MafaCoin;
+  let mafacoin: MafaCoinV2;
   let brooder: BrooderNft;
   let egg: EggNft;
   let mafagafoAvatar: MafagafoAvatarNft;
