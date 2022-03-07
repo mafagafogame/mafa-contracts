@@ -155,7 +155,25 @@ contract MafagafoAvatarNft is MafagafoAvatarBase {
 
     // TODO: genetic mix logic
     function mixGenes(bytes32 _genes1, bytes32 _genes2) internal virtual returns (bytes32) {
-        return bytes32(uint256(7));
+        uint256 randomNumber = _random();
+
+        if (randomNumber == 0) {
+            return _genes1;
+        } else if (randomNumber == 1) {
+            return _genes2;
+        } else {
+            return _genes1;
+        } 
+    }
+
+    /**
+     * @dev Draw a random number
+     */
+    function _random() internal view virtual returns (uint256 randomNumber) {
+        return
+            uint256(keccak256(abi.encodePacked(block.difficulty, _msgSender(), _tokenIdTracker.current()))).mod(
+                1
+            );
     }
 
     // EVENTS
