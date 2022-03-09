@@ -163,17 +163,14 @@ contract MafagafoAvatarNft is MafagafoAvatarBase {
             return _genes2;
         } else {
             return _genes1;
-        } 
+        }
     }
 
     /**
      * @dev Draw a random number
      */
     function _random() internal view virtual returns (uint256 randomNumber) {
-        return
-            uint256(keccak256(abi.encodePacked(block.difficulty, _msgSender(), _tokenIdTracker.current()))).mod(
-                1
-            );
+        return uint256(keccak256(abi.encodePacked(block.difficulty, _msgSender(), _tokenIdTracker.current()))).mod(1);
     }
 
     // EVENTS
