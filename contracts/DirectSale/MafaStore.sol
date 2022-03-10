@@ -282,7 +282,12 @@ contract MafaStore is
 
         uint256 storeBalance = acceptedToken.balanceOf(address(this));
         require(storeBalance >= sellPriceInMAFA, "Amount exceeds mafastore balance");
-        require(sellPriceInMAFA <= storeBalance.div(100), "You already exceeded your maximum sell amount for the day");
+        if (tokenIds.length > 1) {
+            require(
+                sellPriceInMAFA <= storeBalance.div(100),
+                "Price exceedes your maximum sell amount for the day"
+            );
+        }
 
         SellVolume[] storage sellVolumes = dailyVolumes[sender];
 
@@ -323,7 +328,8 @@ contract MafaStore is
             array[i] = array[i + 1];
         }
 
-        delete array[array.length - 1];
+        array.pop();
+        
         return true;
     }
 
