@@ -283,26 +283,24 @@ contract MafaStore is
         uint256 storeBalance = acceptedToken.balanceOf(address(this));
         require(storeBalance >= sellPriceInMAFA, "Amount exceeds mafastore balance");
         if (tokenIds.length > 1) {
-            require(
-                sellPriceInMAFA <= storeBalance.div(100),
-                "Price exceedes your maximum sell amount for the day"
-            );
+            require(sellPriceInMAFA <= storeBalance.div(100), "Price exceedes your maximum sell amount for the day");
         }
 
         SellVolume[] storage sellVolumes = dailyVolumes[sender];
 
+        uint256 accumulator = 0;
         for (uint256 i = 0; i < sellVolumes.length; i++) {
             if (sellVolumes[i].date + 1 days >= block.timestamp) {
-                sellVolumes[i].amount = sellVolumes[i].amount + sellPriceInMAFA;
-
-                require(
-                    sellVolumes[i].amount <= storeBalance.div(100),
-                    "You already exceeded your maximum sell amount for the day"
-                );
+                accumulator += sellVolumes[i].amount;
             } else {
                 remove(sellVolumes, i);
             }
         }
+
+        require(
+            accumulator + sellPriceInMAFA <= storeBalance.div(100),
+            "You already exceeded your maximum sell amount for the day"
+        );
 
         sellVolumes.push(SellVolume({ date: block.timestamp, amount: sellPriceInMAFA }));
 
@@ -324,12 +322,9 @@ contract MafaStore is
     function remove(SellVolume[] storage array, uint256 index) internal returns (bool success) {
         if (index >= array.length) return false;
 
-        for (uint256 i = index; i < array.length - 1; i++) {
-            array[i] = array[i + 1];
-        }
-
+        array[index] = array[array.length - 1];
         array.pop();
-        
+
         return true;
     }
 

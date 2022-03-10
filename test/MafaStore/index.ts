@@ -590,7 +590,7 @@ describe("MafaStore", function () {
           });
         });
 
-        describe.only("daily limit", function () {
+        describe("daily limit", function () {
           beforeEach(async function () {
             await mafacoin.transfer(mafastore.address, expandTo18Decimals(200000));
           });
