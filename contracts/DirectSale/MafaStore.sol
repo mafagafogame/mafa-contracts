@@ -42,6 +42,11 @@ contract MafaStore is
         uint256 price;
     }
 
+    struct SellVolume {
+        uint256 date;
+        uint256 amount;
+    }
+
     IERC20 public acceptedToken;
     MafagafoAvatarNft public avatarContract;
 
@@ -275,7 +280,29 @@ contract MafaStore is
         uint256 mafaBusdPrice = getMAFAtoBUSDprice();
         uint256 sellPriceInMAFA = (priceInBUSD.mul(10**18).div(mafaBusdPrice));
 
-        require(acceptedToken.balanceOf(address(this)) >= sellPriceInMAFA, "Amount exceeds mafastore balance");
+        uint256 storeBalance = acceptedToken.balanceOf(address(this));
+        require(storeBalance >= sellPriceInMAFA, "Amount exceeds mafastore balance");
+        if (tokenIds.length > 1) {
+            require(sellPriceInMAFA <= storeBalance.div(100), "Price exceedes your maximum sell amount for the day");
+        }
+
+        SellVolume[] storage sellVolumes = dailyVolumes[sender];
+
+        uint256 accumulator = 0;
+        for (uint256 i = 0; i < sellVolumes.length; i++) {
+            if (sellVolumes[i].date + 1 days >= block.timestamp) {
+                accumulator += sellVolumes[i].amount;
+            } else {
+                remove(sellVolumes, i);
+            }
+        }
+
+        require(
+            accumulator + sellPriceInMAFA <= storeBalance.div(100),
+            "You already exceeded your maximum sell amount for the day"
+        );
+
+        sellVolumes.push(SellVolume({ date: block.timestamp, amount: sellPriceInMAFA }));
 
         for (uint256 i = 0; i < tokenIds.length; i++) {
             require(avatarContract.ownerOf(tokenIds[i]) == sender, "You have to own this avatar to be able to sell it");
@@ -290,6 +317,15 @@ contract MafaStore is
         emit AvatarSold(sender, tokenIds, sellPriceInMAFA, tokenIds.length);
 
         require(acceptedToken.transfer(sender, sellPriceInMAFA), "Fail transferring the amount to the seller");
+    }
+
+    function remove(SellVolume[] storage array, uint256 index) internal returns (bool success) {
+        if (index >= array.length) return false;
+
+        array[index] = array[array.length - 1];
+        array.pop();
+
+        return true;
     }
 
     /**
@@ -510,6 +546,8 @@ contract MafaStore is
     event AvatarPriceChanged(uint256 price);
 
     uint256[50] private __gap;
+
+    mapping(address => SellVolume[]) public dailyVolumes;
 }
 
 contract MafaStoreTestV2 is MafaStore {

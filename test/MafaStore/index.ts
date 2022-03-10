@@ -8,19 +8,25 @@ import {
   BrooderNft__factory,
   EggNft,
   EggNft__factory,
-  MafaCoin,
   MafagafoAvatarNft,
   MafagafoAvatarNft__factory,
   MafaStore,
   MafaStore__factory,
   MafaStoreTestV2,
   MafaStoreTestV2__factory,
+  MafaCoinV2,
 } from "../../typechain";
-import { bigNumberToFloat, deployMafaCoin, expandTo18Decimals, getMAFAtoBUSDprice } from "../shared/utilities";
+import {
+  bigNumberToFloat,
+  daysToUnixDate,
+  deployMafaCoin,
+  expandTo18Decimals,
+  getMAFAtoBUSDprice,
+} from "../shared/utilities";
 
 describe("MafaStore", function () {
   let mafastore: MafaStore;
-  let mafacoin: MafaCoin;
+  let mafacoin: MafaCoinV2;
   let brooder: BrooderNft;
   let egg: EggNft;
   let mafagafoAvatar: MafagafoAvatarNft;
@@ -511,7 +517,7 @@ describe("MafaStore", function () {
             await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
               account1.address,
               0,
-              ethers.utils.id("0"),
+              "0x0000000000000000000000000000000000000000000000000000000000000007",
               1,
               0,
               0,
@@ -545,7 +551,7 @@ describe("MafaStore", function () {
               await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
                 account1.address,
                 0,
-                ethers.utils.id("0"),
+                "0x0000000000000000000000000000000000000000000000000000000000000007",
                 1,
                 0,
                 0,
@@ -557,9 +563,9 @@ describe("MafaStore", function () {
             expect(await mafagafoAvatar.ownerOf(length / 2)).to.equal(account1.address);
             expect(await mafagafoAvatar.ownerOf(length)).to.equal(account1.address);
 
-            await mafacoin.transfer(mafastore.address, expandTo18Decimals(5000000));
+            await mafacoin.transfer(mafastore.address, expandTo18Decimals(40000000));
 
-            expect(await mafacoin.balanceOf(mafastore.address)).to.equal(expandTo18Decimals(5100000));
+            expect(await mafacoin.balanceOf(mafastore.address)).to.equal(expandTo18Decimals(40100000));
 
             await mafagafoAvatar.connect(account1).setApprovalForAll(mafastore.address, true);
 
@@ -574,13 +580,98 @@ describe("MafaStore", function () {
               100000 + (300 * length) / mafaPrice + 5000,
             );
             expect(bigNumberToFloat(await mafacoin.balanceOf(mafastore.address))).to.within(
-              5100000 - (300 * length) / mafaPrice - 5000,
-              5100000 - (300 * length) / mafaPrice + 5000,
+              40100000 - (300 * length) / mafaPrice - 5000,
+              40100000 - (300 * length) / mafaPrice + 5000,
             );
             expect(await mafagafoAvatar.ownerOf(1)).to.equal(mafastore.address);
             expect(await mafagafoAvatar.ownerOf(length / 2)).to.equal(mafastore.address);
             expect(await mafagafoAvatar.ownerOf(length)).to.equal(mafastore.address);
             expect(await mafagafoAvatar.totalSupply()).to.equal(length + 1);
+          });
+        });
+
+        describe("daily limit", function () {
+          beforeEach(async function () {
+            await mafacoin.transfer(mafastore.address, expandTo18Decimals(200000));
+          });
+
+          it("user should be able to sell at least 1 avatar daily even if price is more than 1% of store supply", async function () {
+            await mafastore.withdrawERC20(mafacoin.address, owner.address, expandTo18Decimals(200000));
+
+            const length = 2;
+
+            for (let i = 1; i <= length; i++) {
+              await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
+                account1.address,
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000007",
+                1,
+                0,
+                0,
+                "0x10000000",
+              );
+            }
+
+            await mafagafoAvatar.connect(account1).setApprovalForAll(mafastore.address, true);
+
+            await expect(mafastore.connect(account1).sellAvatar([1])).to.emit(mafastore, "AvatarSold");
+
+            await expect(mafastore.connect(account1).sellAvatar([2])).to.be.revertedWith(
+              "You already exceeded your maximum sell amount for the day",
+            );
+          });
+
+          it("user should not be able to sell more than 1% of total supply on an one day period", async function () {
+            const length = Math.ceil((3000 * (await getMAFAtoBUSDprice())) / 300);
+
+            for (let i = 1; i <= length; i++) {
+              await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
+                account1.address,
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000007",
+                1,
+                0,
+                0,
+                "0x10000000",
+              );
+            }
+
+            await mafagafoAvatar.connect(account1).setApprovalForAll(mafastore.address, true);
+
+            await expect(
+              mafastore.connect(account1).sellAvatar(Array.from({ length: length - 1 }, (_, i) => i + 1)),
+            ).to.emit(mafastore, "AvatarSold");
+
+            await expect(mafastore.connect(account1).sellAvatar([length])).to.be.revertedWith(
+              "You already exceeded your maximum sell amount for the day",
+            );
+          });
+
+          it("user should be able to sell more than 1% of total supply if he sells split on more than one day period", async function () {
+            const length = Math.ceil((3000 * (await getMAFAtoBUSDprice())) / 300);
+
+            for (let i = 1; i <= length; i++) {
+              await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
+                account1.address,
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000007",
+                1,
+                0,
+                0,
+                "0x10000000",
+              );
+            }
+
+            await mafagafoAvatar.connect(account1).setApprovalForAll(mafastore.address, true);
+
+            await expect(
+              mafastore.connect(account1).sellAvatar(Array.from({ length: length - 1 }, (_, i) => i + 1)),
+            ).to.emit(mafastore, "AvatarSold");
+
+            await ethers.provider.send("evm_increaseTime", [daysToUnixDate(1)]);
+            await ethers.provider.send("evm_mine", []);
+
+            await expect(mafastore.connect(account1).sellAvatar([length])).to.emit(mafastore, "AvatarSold");
           });
         });
       });
