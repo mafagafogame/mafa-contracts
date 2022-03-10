@@ -590,13 +590,39 @@ describe("MafaStore", function () {
           });
         });
 
-        describe("daily limit", function () {
+        describe.only("daily limit", function () {
           beforeEach(async function () {
             await mafacoin.transfer(mafastore.address, expandTo18Decimals(200000));
           });
 
+          it("user should be able to sell at least 1 avatar daily even if price is more than 1% of store supply", async function () {
+            await mafastore.withdrawERC20(mafacoin.address, owner.address, expandTo18Decimals(200000));
+
+            const length = 2;
+
+            for (let i = 1; i <= length; i++) {
+              await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
+                account1.address,
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000007",
+                1,
+                0,
+                0,
+                "0x10000000",
+              );
+            }
+
+            await mafagafoAvatar.connect(account1).setApprovalForAll(mafastore.address, true);
+
+            await expect(mafastore.connect(account1).sellAvatar([1])).to.emit(mafastore, "AvatarSold");
+
+            await expect(mafastore.connect(account1).sellAvatar([2])).to.be.revertedWith(
+              "You already exceeded your maximum sell amount for the day",
+            );
+          });
+
           it("user should not be able to sell more than 1% of total supply on an one day period", async function () {
-            const length = 4;
+            const length = Math.ceil((3000 * (await getMAFAtoBUSDprice())) / 300);
 
             for (let i = 1; i <= length; i++) {
               await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
@@ -622,7 +648,7 @@ describe("MafaStore", function () {
           });
 
           it("user should be able to sell more than 1% of total supply if he sells split on more than one day period", async function () {
-            const length = 4;
+            const length = Math.ceil((3000 * (await getMAFAtoBUSDprice())) / 300);
 
             for (let i = 1; i <= length; i++) {
               await mafagafoAvatar["mint(address,uint16,bytes32,uint32,uint256,uint256,uint32)"](
