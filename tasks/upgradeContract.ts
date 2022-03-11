@@ -29,4 +29,8 @@ task("upgrade:contract", "Upgrade a contract from an address")
     await upgrades.upgradeProxy(contract, ContractFactory, { kind: "uups" });
 
     console.log("Contract Upgraded!");
+
+    await contract.setDailySellPercentage(ethers.utils.parseEther("1"));
+
+    console.log("Daily Sell Percentage Set to 1%!");
   });
