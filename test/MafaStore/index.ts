@@ -593,6 +593,7 @@ describe("MafaStore", function () {
         describe.only("daily limit", function () {
           beforeEach(async function () {
             await mafacoin.transfer(mafastore.address, expandTo18Decimals(200000));
+            await mafastore.setDailySellPercentage(ethers.utils.parseEther("1"));
           });
 
           it("user should be able to sell at least 1 avatar daily even if price is more than 1% of store supply", async function () {
@@ -664,9 +665,9 @@ describe("MafaStore", function () {
 
             await mafagafoAvatar.connect(account1).setApprovalForAll(mafastore.address, true);
 
-            await expect(
-              mafastore.connect(account1).sellAvatar(Array.from({ length: length - 1 }, (_, i) => i + 1)),
-            ).to.emit(mafastore, "AvatarSold");
+            for (let i = 1; i < length; i++) {
+              await expect(mafastore.connect(account1).sellAvatar([i])).to.emit(mafastore, "AvatarSold");
+            }
 
             await expect(mafastore.connect(account1).sellAvatar([length])).to.be.revertedWith(
               "You already exceeded your maximum sell amount for the day",
@@ -687,7 +688,7 @@ describe("MafaStore", function () {
               await mafastore.setDailySellPercentage(ethers.utils.parseEther("0.5"));
             });
 
-            it("daily percentage change should impace sell amount", async function () {
+            it("daily percentage change should impact sell amount", async function () {
               const length = Math.ceil((1500 * (await getMAFAtoBUSDprice())) / 300);
 
               for (let i = 1; i <= length; i++) {

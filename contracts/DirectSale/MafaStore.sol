@@ -280,9 +280,7 @@ contract MafaStore is
         require(tokenIds.length > 0, "You must sell at least one avatar");
         require(tokenIds.length <= 500, "You can sell at most 500 avatars at a time");
 
-        address sender = _msgSender();
-
-        require(avatarContract.isApprovedForAll(sender, address(this)), "Check the approval of your avatars");
+        require(avatarContract.isApprovedForAll(_msgSender(), address(this)), "Check the approval of your avatars");
 
         uint256 priceInBUSD = tokenIds.length.mul(avatarPrice);
         uint256 mafaBusdPrice = getMAFAtoBUSDprice();
@@ -295,15 +293,19 @@ contract MafaStore is
             require(sellPriceInMAFA <= storeBalancePercentage, "Price exceedes your maximum sell amount for the day");
         }
 
-        SellVolume[] storage sellVolumes = dailyVolumes[sender];
+        SellVolume[] storage sellVolumes = dailyVolumes[_msgSender()];
 
         uint256 accumulator = 0;
-        for (uint256 i = 0; i < sellVolumes.length; i++) {
-            if (sellVolumes[i].date + 1 days >= block.timestamp) {
-                accumulator += sellVolumes[i].amount;
-            } else {
-                remove(sellVolumes, i);
-            }
+        uint256 i = 0;
+        while (true) {
+            if (i < sellVolumes.length) {
+                if (sellVolumes[i].date + 1 days >= block.timestamp) {
+                    accumulator += sellVolumes[i].amount;
+                    i++;
+                } else {
+                    remove(sellVolumes, i);
+                }
+            } else break;
         }
 
         if (accumulator > 0) {
@@ -315,19 +317,22 @@ contract MafaStore is
 
         sellVolumes.push(SellVolume({ date: block.timestamp, amount: sellPriceInMAFA }));
 
-        for (uint256 i = 0; i < tokenIds.length; i++) {
-            require(avatarContract.ownerOf(tokenIds[i]) == sender, "You have to own this avatar to be able to sell it");
+        for (uint256 j = 0; j < tokenIds.length; j++) {
+            require(
+                avatarContract.ownerOf(tokenIds[j]) == _msgSender(),
+                "You have to own this avatar to be able to sell it"
+            );
 
-            (uint16 mafaVersion, , uint32 generation, , , , , , ) = avatarContract.getMafagafo(tokenIds[i]);
+            (uint16 mafaVersion, , uint32 generation, , , , , , ) = avatarContract.getMafagafo(tokenIds[j]);
             require(mafaVersion == 0, "You can only sell avatars from version 0");
             require(generation == 1, "You can only sell avatars from generation 1");
 
-            avatarContract.transferFrom(sender, address(this), tokenIds[i]);
+            avatarContract.transferFrom(_msgSender(), address(this), tokenIds[j]);
         }
 
-        emit AvatarSold(sender, tokenIds, sellPriceInMAFA, tokenIds.length);
+        emit AvatarSold(_msgSender(), tokenIds, sellPriceInMAFA, tokenIds.length);
 
-        require(acceptedToken.transfer(sender, sellPriceInMAFA), "Fail transferring the amount to the seller");
+        require(acceptedToken.transfer(_msgSender(), sellPriceInMAFA), "Fail transferring the amount to the seller");
     }
 
     function remove(SellVolume[] storage array, uint256 index) internal returns (bool success) {
