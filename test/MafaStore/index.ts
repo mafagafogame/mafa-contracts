@@ -596,7 +596,7 @@ describe("MafaStore", function () {
           });
 
           it("user should be able to sell at least 1 avatar daily even if price is more than 1% of store supply", async function () {
-            await mafastore.withdrawERC20(mafacoin.address, owner.address, expandTo18Decimals(200000));
+            await mafastore.withdrawERC20(mafacoin.address, owner.address, expandTo18Decimals(250000));
 
             const length = 2;
 
@@ -667,6 +667,10 @@ describe("MafaStore", function () {
             await expect(
               mafastore.connect(account1).sellAvatar(Array.from({ length: length - 1 }, (_, i) => i + 1)),
             ).to.emit(mafastore, "AvatarSold");
+
+            await expect(mafastore.connect(account1).sellAvatar([length])).to.be.revertedWith(
+              "You already exceeded your maximum sell amount for the day",
+            );
 
             await ethers.provider.send("evm_increaseTime", [daysToUnixDate(1)]);
             await ethers.provider.send("evm_mine", []);

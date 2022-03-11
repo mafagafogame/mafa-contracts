@@ -270,6 +270,7 @@ contract MafaStore is
      * @param tokenIds ERC721 token IDs of the avatars to be sold
      */
     function sellAvatar(uint256[] memory tokenIds) external virtual whenNotPaused nonReentrant {
+        require(tokenIds.length > 0, "You must sell at least one avatar");
         require(tokenIds.length <= 500, "You can sell at most 500 avatars at a time");
 
         address sender = _msgSender();
@@ -297,10 +298,12 @@ contract MafaStore is
             }
         }
 
-        require(
-            accumulator + sellPriceInMAFA <= storeBalance.div(100),
-            "You already exceeded your maximum sell amount for the day"
-        );
+        if (accumulator > 0) {
+            require(
+                accumulator + sellPriceInMAFA <= storeBalance.div(100),
+                "You already exceeded your maximum sell amount for the day"
+            );
+        }
 
         sellVolumes.push(SellVolume({ date: block.timestamp, amount: sellPriceInMAFA }));
 
