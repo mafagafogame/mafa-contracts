@@ -545,6 +545,8 @@ describe("MafaStore", function () {
           });
 
           it("user should be able to sell multiple avatars", async function () {
+            await mafastore.setDailySellPercentage(ethers.utils.parseEther("100"));
+
             const length = 380;
 
             for (let i = 1; i <= length; i++) {
