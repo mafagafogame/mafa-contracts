@@ -143,6 +143,13 @@ contract MafaStore is
         emit AvatarPriceChanged(price);
     }
 
+    function setDailySellPercentage(uint256 percentage) external virtual onlyOwner {
+        require(percentage != 0, "New percentage cannot be 0");
+        dailySellPercentage = percentage;
+
+        emit DailySellPercentageChanged(percentage);
+    }
+
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
@@ -283,8 +290,9 @@ contract MafaStore is
 
         uint256 storeBalance = acceptedToken.balanceOf(address(this));
         require(storeBalance >= sellPriceInMAFA, "Amount exceeds mafastore balance");
+        uint256 storeBalancePercentage = storeBalance.mul(dailySellPercentage).div(100 * 10**18);
         if (tokenIds.length > 1) {
-            require(sellPriceInMAFA <= storeBalance.div(100), "Price exceedes your maximum sell amount for the day");
+            require(sellPriceInMAFA <= storeBalancePercentage, "Price exceedes your maximum sell amount for the day");
         }
 
         SellVolume[] storage sellVolumes = dailyVolumes[sender];
@@ -300,7 +308,7 @@ contract MafaStore is
 
         if (accumulator > 0) {
             require(
-                accumulator + sellPriceInMAFA <= storeBalance.div(100),
+                accumulator + sellPriceInMAFA <= storeBalancePercentage,
                 "You already exceeded your maximum sell amount for the day"
             );
         }
@@ -541,16 +549,19 @@ contract MafaStore is
         uint256 price,
         uint256 amounts
     );
-    event AvatarSold(address indexed seller, uint256[] tokenId, uint256 price, uint256 amounts);
+    event AvatarSold(address indexed seller, uint256[] indexed tokenId, uint256 indexed price, uint256 amounts);
     event AcceptedTokenChanged(address indexed addr);
     event AvatarAddressChanged(address indexed addr);
     event MafaBnbPairChanged(address indexed addr);
     event BnbBusdPairChanged(address indexed addr);
-    event AvatarPriceChanged(uint256 price);
+    event AvatarPriceChanged(uint256 indexed price);
+    event DailySellPercentageChanged(uint256 indexed percentage);
 
     uint256[50] private __gap;
 
     mapping(address => SellVolume[]) public dailyVolumes;
+
+    uint256 public dailySellPercentage;
 }
 
 contract MafaStoreTestV2 is MafaStore {
