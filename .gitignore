@@ -10,7 +10,6 @@ cache
 artifacts
 
 .idea/
-.openzeppelin/
 
 package-lock.json
 
