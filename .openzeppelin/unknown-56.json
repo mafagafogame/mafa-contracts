@@ -1489,6 +1489,218 @@
           }
         }
       }
+    },
+    "7cca767f8ebb1eb9dcba4846416ac10d1ab7f59a156f381437e216246b989f79": {
+      "address": "0x542bFfAE215B1b5493e7A48C0746B0E9CA35fc00",
+      "txHash": "0x32c6097179ad8f0db67b377053cd2a7cc2767d238b3ac2bc8b90da65b207bf07",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:39"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:44"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "PausableUpgradeable",
+            "label": "_paused",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol:29"
+          },
+          {
+            "contract": "PausableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol:97"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:82"
+          },
+          {
+            "contract": "ERC1967UpgradeUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol:215"
+          },
+          {
+            "contract": "UUPSUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol:81"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeable",
+            "label": "_status",
+            "type": "t_uint256",
+            "src": "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol:38"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol:68"
+          },
+          {
+            "contract": "ERC165Upgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol:36"
+          },
+          {
+            "contract": "ERC1155ReceiverUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "@openzeppelin/contracts-upgradeable/token/ERC1155/utils/ERC1155ReceiverUpgradeable.sol:27"
+          },
+          {
+            "contract": "MafaStore",
+            "label": "acceptedToken",
+            "type": "t_contract(IERC20)7333",
+            "src": "contracts/DirectSale/MafaStore.sol:50"
+          },
+          {
+            "contract": "MafaStore",
+            "label": "avatarContract",
+            "type": "t_contract(MafagafoAvatarNft)17066",
+            "src": "contracts/DirectSale/MafaStore.sol:51"
+          },
+          {
+            "contract": "MafaStore",
+            "label": "_mafaBnbPair",
+            "type": "t_contract(IUniswapV2Pair)9525",
+            "src": "contracts/DirectSale/MafaStore.sol:53"
+          },
+          {
+            "contract": "MafaStore",
+            "label": "_bnbBusdPair",
+            "type": "t_contract(IUniswapV2Pair)9525",
+            "src": "contracts/DirectSale/MafaStore.sol:54"
+          },
+          {
+            "contract": "MafaStore",
+            "label": "items",
+            "type": "t_array(t_struct(Item)9966_storage)dyn_storage",
+            "src": "contracts/DirectSale/MafaStore.sol:57"
+          },
+          {
+            "contract": "MafaStore",
+            "label": "avatarPrice",
+            "type": "t_uint256",
+            "src": "contracts/DirectSale/MafaStore.sol:60"
+          },
+          {
+            "contract": "MafaStore",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "contracts/DirectSale/MafaStore.sol:565"
+          },
+          {
+            "contract": "MafaStore",
+            "label": "dailyVolumes",
+            "type": "t_mapping(t_address,t_array(t_struct(SellVolume)9971_storage)dyn_storage)",
+            "src": "contracts/DirectSale/MafaStore.sol:567"
+          },
+          {
+            "contract": "MafaStore",
+            "label": "dailySellPercentage",
+            "type": "t_uint256",
+            "src": "contracts/DirectSale/MafaStore.sol:569"
+          }
+        ],
+        "types": {
+          "t_contract(IERC20)7333": {
+            "label": "contract IERC20"
+          },
+          "t_contract(MafagafoAvatarNft)17066": {
+            "label": "contract MafagafoAvatarNft"
+          },
+          "t_contract(IUniswapV2Pair)9525": {
+            "label": "contract IUniswapV2Pair"
+          },
+          "t_array(t_struct(Item)9966_storage)dyn_storage": {
+            "label": "struct MafaStore.Item[]"
+          },
+          "t_struct(Item)9966_storage": {
+            "label": "struct MafaStore.Item",
+            "members": [
+              {
+                "label": "tokenContract",
+                "type": "t_address"
+              },
+              {
+                "label": "tokenId",
+                "type": "t_uint256"
+              },
+              {
+                "label": "title",
+                "type": "t_bytes32"
+              },
+              {
+                "label": "price",
+                "type": "t_uint256"
+              }
+            ]
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_bytes32": {
+            "label": "bytes32"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          },
+          "t_mapping(t_address,t_array(t_struct(SellVolume)9971_storage)dyn_storage)": {
+            "label": "mapping(address => struct MafaStore.SellVolume[])"
+          },
+          "t_array(t_struct(SellVolume)9971_storage)dyn_storage": {
+            "label": "struct MafaStore.SellVolume[]"
+          },
+          "t_struct(SellVolume)9971_storage": {
+            "label": "struct MafaStore.SellVolume",
+            "members": [
+              {
+                "label": "date",
+                "type": "t_uint256"
+              },
+              {
+                "label": "amount",
+                "type": "t_uint256"
+              }
+            ]
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_bool": {
+            "label": "bool"
+          }
+        }
+      }
     }
   }
 }
