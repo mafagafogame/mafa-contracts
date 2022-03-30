@@ -28,5 +28,13 @@ task("upgrade:contract", "Upgrade a contract from an address")
 
     await upgrades.upgradeProxy(contract, ContractFactory, { kind: "uups" });
 
+    if (taskArgs.name === "mafastore") {
+      await contract.setTicketSeller("0x6eA4d3dAB05f63495a002feD5AdAf0BA8FF6Bd94");
+
+      await (await contract.addTicketToBeSold(10, ethers.utils.formatBytes32String("pack 1"), 100)).wait(1);
+      await (await contract.addTicketToBeSold(15, ethers.utils.formatBytes32String("pack 2"), 140)).wait(1);
+      await (await contract.addTicketToBeSold(30, ethers.utils.formatBytes32String("pack 3"), 250)).wait(1);
+    }
+
     console.log("Contract Upgraded!");
   });
