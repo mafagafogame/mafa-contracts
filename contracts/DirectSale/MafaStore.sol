@@ -42,15 +42,6 @@ contract MafaStore is
         uint256 price;
     }
 
-    struct Ticket {
-        // quantity of tickets to sell
-        uint16 quantity;
-        // ticket title
-        bytes32 title;
-        // price in USD. Value is multiplied by 10**18.
-        uint256 price;
-    }
-
     struct SellVolume {
         uint256 date;
         uint256 amount;
@@ -190,7 +181,6 @@ contract MafaStore is
         bytes32 title,
         uint256 price
     ) external virtual onlyOwner {
-        require(tokenContract.isContract(), "NFT address must be a contract");
         require(price > 0, "Item price can't be 0");
 
         items.push(Item(tokenContract, tokenId, title, price));
@@ -258,6 +248,7 @@ contract MafaStore is
         require(amounts > 0, "Amounts must be greater than zero");
         require(id < items.length, "Item doesn't exists");
         Item memory item = items[id];
+        require(item.tokenContract.isContract(), "Only NFT items can be bought");
         require(item.title == title, "Title argument must match requested item title");
 
         address sender = _msgSender();
@@ -279,6 +270,35 @@ contract MafaStore is
         nftRegistry.mint(sender, item.tokenId, amounts, "");
 
         emit ItemBought(item.tokenContract, id, item.tokenId, owner(), sender, itemPriceInMAFA, amounts);
+    }
+
+    function buyTicket(uint256 id, bytes32 title) external virtual whenNotPaused nonReentrant {
+        require(id < items.length, "Item doesn't exists");
+        Item memory item = items[id];
+        require(!item.tokenContract.isContract(), "Only ticket packs can be bought");
+        require(item.title == title, "Title argument must match requested item title");
+
+        address sender = _msgSender();
+
+        uint256 mafaBusdPrice = getMAFAtoBUSDprice();
+        uint256 itemPriceInMAFA = (item.price.mul(10**18).div(mafaBusdPrice));
+
+        uint256 allowance = acceptedToken.allowance(sender, address(this));
+        require(allowance >= itemPriceInMAFA, "Check the token allowance");
+
+        // Transfer item price amount to ticket seller
+        require(
+            acceptedToken.transferFrom(sender, ticketSeller, itemPriceInMAFA),
+            "Fail transferring the item price amount to ticket seller"
+        );
+
+        emit TicketBought(id, item.title, sender, itemPriceInMAFA);
+    }
+
+    function setTicketSeller(address newTicketSeller) external virtual onlyOwner {
+        ticketSeller = payable(newTicketSeller);
+
+        emit TicketSellerUpdated(newTicketSeller);
     }
 
     /**
@@ -342,110 +362,6 @@ contract MafaStore is
         emit AvatarSold(_msgSender(), tokenIds, sellPriceInMAFA, tokenIds.length);
 
         require(acceptedToken.transfer(_msgSender(), sellPriceInMAFA), "Fail transferring the amount to the seller");
-    }
-
-    function setTicketSeller(address newTicketSeller) external virtual onlyOwner {
-        ticketSeller = payable(newTicketSeller);
-
-        emit TicketSellerUpdated(newTicketSeller);
-    }
-
-    /**
-     * @dev Add a new ticket type.
-     *  Can only be called by contract owner
-     * @param title Ticket title name
-     * @param price Price of the ticket
-     */
-    function addTicketToBeSold(
-        uint16 quantity,
-        bytes32 title,
-        uint256 price
-    ) external virtual onlyOwner {
-        require(quantity > 0, "Quantity must be greater than zero");
-        require(price > 0, "Ticket price can't be 0");
-
-        tickets.push(Ticket(quantity, title, price));
-
-        emit TicketAdded(tickets.length - 1, quantity, title, price);
-    }
-
-    /**
-     * @dev Remove an ticket
-     *  When we delete an ticket, we move the last ticket to the deleted position
-     * @param toDeleteIndex The array ID from tickets to be removed
-     */
-    function removeTicketFromStore(uint256 toDeleteIndex) external virtual onlyOwner {
-        require(toDeleteIndex < tickets.length, "Id should be between 0 and tickets length");
-
-        Ticket memory toDelete = tickets[toDeleteIndex];
-
-        uint256 lastIndex = tickets.length - 1;
-        if (lastIndex != toDeleteIndex) {
-            // Move the last value to the index where the value to delete is
-            tickets[toDeleteIndex] = tickets[lastIndex];
-        }
-
-        // Delete the slot where the moved value was stored
-        tickets.pop();
-
-        emit TicketDeleted(toDeleteIndex, toDelete.quantity, toDelete.title, toDelete.price);
-    }
-
-    /**
-     * @dev list all tickets. to be used on the frontend
-     */
-    function listTickets() external view returns (Ticket[] memory) {
-        return tickets;
-    }
-
-    /**
-     * @dev Update the price of an ticket.
-     *  Can only be called by contract owner
-     * @param id Id of the ticket
-     * @param newPrice New price of the ticket
-     */
-    function updateTicketPrice(uint256 id, uint256 newPrice) external virtual onlyOwner {
-        require(id < tickets.length, "Tickets doesn't exists");
-        require(newPrice != 0, "Tickets price can't be 0");
-
-        Ticket storage ticket = tickets[id];
-
-        ticket.price = newPrice;
-
-        emit TicketPriceUpdated(id, newPrice);
-    }
-
-    /**
-     * @dev Buy amounts of a ticket.
-     * @param id ID on tickets array
-     * @param title Ticket title name
-     */
-    function buyTicket(
-        uint256 id,
-        bytes32 title
-    ) external virtual payable whenNotPaused nonReentrant {
-        require(id < tickets.length, "Ticket doesn't exists");
-        Ticket memory ticket = tickets[id];
-        require(ticket.title == title, "Title argument must match requested ticket title");
-
-        address sender = _msgSender();
-
-        uint256 bnbBusdPrice = getBNBtoBUSDprice();
-        uint256 ticketPriceInBNB = (ticket.price.mul(bnbBusdPrice));
-        require(ticketPriceInBNB - ticketPriceInBNB.div(100) <= msg.value, "The amount of BNB is too low");
-
-        if (msg.value > ticketPriceInBNB) {
-            (bool success, ) = ticketSeller.call{value: ticketPriceInBNB}("");
-            require(success, "Failed to send BNB");
-
-            (bool returnSuccess, ) = payable(sender).call{value: msg.value - ticketPriceInBNB}("");
-            require(returnSuccess, "Failed to return excess BNB");
-        } else {
-            (bool success, ) = ticketSeller.call{value: msg.value}("");
-            require(success, "Failed to send BNB");
-        }
-
-        emit TicketBought(id, ticket.quantity, sender, ticketPriceInBNB);
     }
 
     function remove(SellVolume[] storage array, uint256 index) internal returns (bool success) {
@@ -614,31 +530,6 @@ contract MafaStore is
     }
 
     /**
-     * @dev gets the price of BNB per BUSD.
-     */
-    function getBNBtoBUSDprice() public view virtual returns (uint256 price) {
-        uint256 reserves0LP = 0;
-        uint256 reserves1LP = 0;
-
-        (reserves0LP, reserves1LP, ) = _bnbBusdPair.getReserves();
-
-        return reserves0LP.mul(10**18).div(reserves1LP);
-    }
-
-    /**
-     * @dev gets the price in BNB of a ticket.
-     * @param id ID on tickets array
-     */
-    function getTicketPriceInBNB(uint256 id) external view virtual returns (uint256 price) {
-        require(id < tickets.length, "Item doesn't exists");
-        Ticket memory ticket = tickets[id];
-
-        uint256 mafaBusdPrice = getBNBtoBUSDprice();
-
-        return (ticket.price.mul(10**18).mul(mafaBusdPrice));
-    }
-
-    /**
      * @dev upgradable version
      */
     function version() external pure virtual returns (string memory) {
@@ -692,11 +583,8 @@ contract MafaStore is
         uint256 price,
         uint256 amounts
     );
+    event TicketBought(uint256 id, bytes32 indexed title, address indexed buyer, uint256 indexed price);
     event TicketSellerUpdated(address indexed ticketSeller);
-    event TicketAdded(uint256 indexed id, uint16 indexed quantity, bytes32 title, uint256 indexed price);
-    event TicketDeleted(uint256 indexed toDeleteIndex, uint16 indexed quantity, bytes32 title, uint256 indexed price);
-    event TicketPriceUpdated(uint256 indexed id, uint256 indexed price);
-    event TicketBought(uint256 id, uint16 indexed quantity, address indexed buyer, uint256 indexed price);
     event AvatarSold(address indexed seller, uint256[] indexed tokenId, uint256 indexed price, uint256 amounts);
     event AcceptedTokenChanged(address indexed addr);
     event AvatarAddressChanged(address indexed addr);
@@ -710,9 +598,6 @@ contract MafaStore is
     mapping(address => SellVolume[]) public dailyVolumes;
 
     uint256 public dailySellPercentage;
-
-    // list of tickets available to sell
-    Ticket[] public tickets;
 
     address payable public ticketSeller;
 }

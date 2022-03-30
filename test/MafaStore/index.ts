@@ -157,16 +157,16 @@ describe("MafaStore", function () {
 
     describe("owner", function () {
       describe("add item", function () {
-        it("owner should not be able to add an item passing a non contract NFT address", async function () {
-          await expect(
-            mafastore.addItemToBeSold(
-              account1.address,
-              0,
-              ethers.utils.formatBytes32String("brooder 0"),
-              expandTo18Decimals(0),
-            ),
-          ).to.be.revertedWith("NFT address must be a contract");
-        });
+        // it("owner should not be able to add an item passing a non contract NFT address", async function () {
+        //   await expect(
+        //     mafastore.addItemToBeSold(
+        //       account1.address,
+        //       0,
+        //       ethers.utils.formatBytes32String("brooder 0"),
+        //       expandTo18Decimals(0),
+        //     ),
+        //   ).to.be.revertedWith("NFT address must be a contract");
+        // });
 
         it("owner should not be able to add an item with 0 price", async function () {
           await expect(
@@ -293,46 +293,34 @@ describe("MafaStore", function () {
     });
 
     describe("buy item", function () {
-      it("user should not be able to buy 0 amounts of an item", async function () {
+      beforeEach(async function () {
         await mafastore.addItemToBeSold(
           brooder.address,
           0,
           ethers.utils.formatBytes32String("brooder 0"),
           expandTo18Decimals(100),
         );
+      });
 
+      it("user should not be able to buy 0 amounts of an item", async function () {
         await expect(mafastore.buyItem(0, ethers.utils.formatBytes32String("brooder 0"), 0)).to.be.revertedWith(
           "Amounts must be greater than zero",
         );
       });
 
       it("user should not be able to buy an item passing an id that doesn't exists", async function () {
-        await expect(mafastore.buyItem(0, ethers.utils.formatBytes32String("brooder 0"), 1)).to.be.revertedWith(
+        await expect(mafastore.buyItem(1, ethers.utils.formatBytes32String("brooder 1"), 1)).to.be.revertedWith(
           "Item doesn't exists",
         );
       });
 
       it("user should not be able to buy an item if he doesn't allow the transfer", async function () {
-        await mafastore.addItemToBeSold(
-          brooder.address,
-          0,
-          ethers.utils.formatBytes32String("brooder 0"),
-          expandTo18Decimals(100),
-        );
-
         await expect(
           mafastore.connect(account1).buyItem(0, ethers.utils.formatBytes32String("brooder 0"), 1),
         ).to.be.revertedWith("Check the token allowance");
       });
 
       it("user should not be able to buy an item if allowances are not enough", async function () {
-        await mafastore.addItemToBeSold(
-          brooder.address,
-          0,
-          ethers.utils.formatBytes32String("brooder 0"),
-          expandTo18Decimals(100),
-        );
-
         await mafacoin.connect(account1).approve(mafastore.address, expandTo18Decimals(1));
 
         await expect(
@@ -341,13 +329,6 @@ describe("MafaStore", function () {
       });
 
       it("user should not be able to buy an item if he doesn't have enough balance", async function () {
-        await mafastore.addItemToBeSold(
-          brooder.address,
-          0,
-          ethers.utils.formatBytes32String("brooder 0"),
-          expandTo18Decimals(100),
-        );
-
         await mafacoin.connect(account2).approve(mafastore.address, ethers.constants.MaxUint256);
 
         await expect(
@@ -356,13 +337,6 @@ describe("MafaStore", function () {
       });
 
       it("user should not be able to buy an item passing wrong item title", async function () {
-        await mafastore.addItemToBeSold(
-          brooder.address,
-          0,
-          ethers.utils.formatBytes32String("brooder 0"),
-          expandTo18Decimals(100),
-        );
-
         await mafacoin.connect(account1).approve(mafastore.address, ethers.constants.MaxUint256);
 
         await expect(
@@ -371,13 +345,6 @@ describe("MafaStore", function () {
       });
 
       it("user should be able to buy an item", async function () {
-        await mafastore.addItemToBeSold(
-          brooder.address,
-          0,
-          ethers.utils.formatBytes32String("brooder 0"),
-          expandTo18Decimals(100),
-        );
-
         await mafacoin.connect(account1).approve(mafastore.address, ethers.constants.MaxUint256);
 
         expect(await brooder.totalSupply(0)).to.equal(0);
@@ -402,13 +369,6 @@ describe("MafaStore", function () {
       it("user should be able to buy multiple amounts of an item", async function () {
         const amount = 5;
 
-        await mafastore.addItemToBeSold(
-          brooder.address,
-          0,
-          ethers.utils.formatBytes32String("brooder 0"),
-          expandTo18Decimals(100),
-        );
-
         await mafacoin.connect(account1).approve(mafastore.address, ethers.constants.MaxUint256);
 
         expect(await brooder.totalSupply(0)).to.equal(0);
@@ -427,6 +387,87 @@ describe("MafaStore", function () {
           100000 - (amount * 100) / mafaPrice + 500,
         );
         expect(await brooder.balanceOf(account1.address, 0)).to.equal(amount);
+      });
+
+      describe("buy ticket", function () {
+        beforeEach(async function () {
+          await mafastore.setTicketSeller(account2.address);
+
+          await mafastore.addItemToBeSold(
+            "0x0000000000000000000000000000000000000000",
+            0,
+            ethers.utils.formatBytes32String("pack 1"),
+            expandTo18Decimals(100),
+          );
+        });
+
+        it("user should not be able to buy a ticket passing an id that doesn't exists", async function () {
+          await expect(mafastore.buyTicket(2, ethers.utils.formatBytes32String("pack 2"))).to.be.revertedWith(
+            "Item doesn't exists",
+          );
+        });
+
+        it("user should not be able to buy a ticket on buyItem function", async function () {
+          await expect(mafastore.buyItem(1, ethers.utils.formatBytes32String("pack 1"), 1)).to.be.revertedWith(
+            "Only NFT items can be bought",
+          );
+        });
+
+        it("user should not be able to buy a NFT on buyTicket function", async function () {
+          await expect(mafastore.buyTicket(0, ethers.utils.formatBytes32String("brooder 0"))).to.be.revertedWith(
+            "Only ticket packs can be bought",
+          );
+        });
+
+        it("user should not be able to buy a ticket if he doesn't allow the transfer", async function () {
+          await expect(
+            mafastore.connect(account1).buyTicket(1, ethers.utils.formatBytes32String("pack 1")),
+          ).to.be.revertedWith("Check the token allowance");
+        });
+
+        it("user should not be able to buy a ticket if allowances are not enough", async function () {
+          await mafacoin.connect(account1).approve(mafastore.address, expandTo18Decimals(1));
+
+          await expect(
+            mafastore.connect(account1).buyTicket(1, ethers.utils.formatBytes32String("pack 1")),
+          ).to.be.revertedWith("Check the token allowance");
+        });
+
+        it("user should not be able to buy a ticket if he doesn't have enough balance", async function () {
+          await mafacoin.connect(account2).approve(mafastore.address, ethers.constants.MaxUint256);
+
+          await expect(
+            mafastore.connect(account2).buyTicket(1, ethers.utils.formatBytes32String("pack 1")),
+          ).to.be.revertedWith("ERC20: transfer amount exceeds balance");
+        });
+
+        it("user should not be able to buy a ticket passing wrong item title", async function () {
+          await mafacoin.connect(account1).approve(mafastore.address, ethers.constants.MaxUint256);
+
+          await expect(
+            mafastore.connect(account1).buyTicket(1, ethers.utils.formatBytes32String("ultra pack")),
+          ).to.be.revertedWith("Title argument must match requested item title");
+        });
+
+        it("user should be able to buy a ticket", async function () {
+          await mafacoin.connect(account1).approve(mafastore.address, ethers.constants.MaxUint256);
+
+          expect(await brooder.totalSupply(0)).to.equal(0);
+          expect(await mafacoin.balanceOf(account1.address)).to.equal(expandTo18Decimals(100000));
+          expect(await brooder.balanceOf(account1.address, 0)).to.equal(0);
+
+          await expect(mafastore.connect(account1).buyTicket(1, ethers.utils.formatBytes32String("pack 1"))).to.emit(
+            mafastore,
+            "TicketBought",
+          );
+
+          mafaPrice = await getMAFAtoBUSDprice();
+
+          expect(bigNumberToFloat(await mafacoin.balanceOf(account1.address))).to.be.within(
+            100000 - 100 / mafaPrice - 100,
+            100000 - 100 / mafaPrice + 100,
+          );
+        });
       });
     });
 
@@ -722,139 +763,6 @@ describe("MafaStore", function () {
             });
           });
         });
-      });
-    });
-
-    describe.only("buy ticket", function () {
-      beforeEach(async function () {
-        await mafastore.setTicketSeller(account2.address);
-
-        await mafastore.addTicketToBeSold(10, ethers.utils.formatBytes32String("pack 1"), 100);
-        await mafastore.addTicketToBeSold(15, ethers.utils.formatBytes32String("pack 2"), 140);
-        await mafastore.addTicketToBeSold(30, ethers.utils.formatBytes32String("pack 3"), 250);
-      });
-
-      it("owner should be able to update ticket price", async function () {
-        await expect(mafastore.updateTicketPrice(0, 120)).to.emit(mafastore, "TicketPriceUpdated").withArgs(0, 120);
-
-        expect((await mafastore.tickets(0)).price).to.equal(120);
-      });
-
-      it("owner should be able to delete a ticket", async function () {
-        await expect(mafastore.removeTicketFromStore(0))
-          .to.emit(mafastore, "TicketDeleted")
-          .withArgs(0, 10, ethers.utils.formatBytes32String("pack 1"), 100);
-
-        expect((await mafastore.tickets(0)).price).to.equal(250);
-        expect((await mafastore.tickets(0)).title).to.equal(ethers.utils.formatBytes32String("pack 3"));
-      });
-
-      it("user should be able to buy pack 1 with BNB", async function () {
-        const previousBalanceAccount1 = bigNumberToFloat(await account1.getBalance());
-        const previousBalanceAccount2 = bigNumberToFloat(await account2.getBalance());
-
-        const bnbToBusdPrice = await mafastore.getBNBtoBUSDprice();
-
-        await expect(
-          mafastore.connect(account1).buyTicket(0, ethers.utils.formatBytes32String("pack 1"), {
-            value: bnbToBusdPrice.mul(100),
-          }),
-        ).to.emit(mafastore, "TicketBought");
-
-        expect(bigNumberToFloat(await account1.getBalance())).to.be.within(
-          previousBalanceAccount1 - bigNumberToFloat(bnbToBusdPrice) * 100 - 0.001,
-          previousBalanceAccount1 - bigNumberToFloat(bnbToBusdPrice) * 100,
-        );
-        expect(bigNumberToFloat(await account2.getBalance())).to.be.within(
-          previousBalanceAccount2 + bigNumberToFloat(bnbToBusdPrice) * 100 - 0.00001,
-          previousBalanceAccount2 + bigNumberToFloat(bnbToBusdPrice) * 100 + 0.00001,
-        );
-      });
-
-      it("user should be able to buy pack 2 with BNB", async function () {
-        const previousBalanceAccount1 = bigNumberToFloat(await account1.getBalance());
-        const previousBalanceAccount2 = bigNumberToFloat(await account2.getBalance());
-
-        const bnbToBusdPrice = await mafastore.getBNBtoBUSDprice();
-
-        await expect(
-          mafastore.connect(account1).buyTicket(1, ethers.utils.formatBytes32String("pack 2"), {
-            value: bnbToBusdPrice.mul(140),
-          }),
-        ).to.emit(mafastore, "TicketBought");
-
-        expect(bigNumberToFloat(await account1.getBalance())).to.be.within(
-          previousBalanceAccount1 - bigNumberToFloat(bnbToBusdPrice) * 140 - 0.001,
-          previousBalanceAccount1 - bigNumberToFloat(bnbToBusdPrice) * 140,
-        );
-        expect(bigNumberToFloat(await account2.getBalance())).to.be.within(
-          previousBalanceAccount2 + bigNumberToFloat(bnbToBusdPrice) * 140 - 0.00001,
-          previousBalanceAccount2 + bigNumberToFloat(bnbToBusdPrice) * 140 + 0.00001,
-        );
-      });
-
-      it("user should be able to buy pack 3 with BNB", async function () {
-        const previousBalanceAccount1 = bigNumberToFloat(await account1.getBalance());
-        const previousBalanceAccount2 = bigNumberToFloat(await account2.getBalance());
-
-        const bnbToBusdPrice = await mafastore.getBNBtoBUSDprice();
-
-        await expect(
-          mafastore.connect(account1).buyTicket(2, ethers.utils.formatBytes32String("pack 3"), {
-            value: bnbToBusdPrice.mul(250),
-          }),
-        ).to.emit(mafastore, "TicketBought");
-
-        expect(bigNumberToFloat(await account1.getBalance())).to.be.within(
-          previousBalanceAccount1 - bigNumberToFloat(bnbToBusdPrice) * 250 - 0.001,
-          previousBalanceAccount1 - bigNumberToFloat(bnbToBusdPrice) * 250,
-        );
-        expect(bigNumberToFloat(await account2.getBalance())).to.be.within(
-          previousBalanceAccount2 + bigNumberToFloat(bnbToBusdPrice) * 250 - 0.00001,
-          previousBalanceAccount2 + bigNumberToFloat(bnbToBusdPrice) * 250 + 0.00001,
-        );
-      });
-
-      it("user should not be able to buy a pack if BNB amount is lower than 1% of pack value", async function () {
-        const bnbToBusdPrice = await mafastore.getBNBtoBUSDprice();
-
-        await expect(
-          mafastore.connect(account1).buyTicket(0, ethers.utils.formatBytes32String("pack 1"), {
-            value: bnbToBusdPrice.mul(98),
-          }),
-        ).to.to.be.revertedWith("The amount of BNB is too low");
-      });
-
-      it("user should get excess BNB returned if she sends more than ticket amount", async function () {
-        const previousBalanceAccount1 = bigNumberToFloat(await account1.getBalance());
-        const previousBalanceAccount2 = bigNumberToFloat(await account2.getBalance());
-
-        const bnbToBusdPrice = await mafastore.getBNBtoBUSDprice();
-
-        await expect(
-          mafastore.connect(account1).buyTicket(0, ethers.utils.formatBytes32String("pack 1"), {
-            value: bnbToBusdPrice.mul(120),
-          }),
-        ).to.emit(mafastore, "TicketBought");
-
-        expect(bigNumberToFloat(await account1.getBalance())).to.be.within(
-          previousBalanceAccount1 - bigNumberToFloat(bnbToBusdPrice) * 100 - 0.001,
-          previousBalanceAccount1 - bigNumberToFloat(bnbToBusdPrice) * 100,
-        );
-        expect(bigNumberToFloat(await account2.getBalance())).to.be.within(
-          previousBalanceAccount2 + bigNumberToFloat(bnbToBusdPrice) * 100 - 0.00001,
-          previousBalanceAccount2 + bigNumberToFloat(bnbToBusdPrice) * 100 + 0.00001,
-        );
-      });
-
-      it("owner should be able to update ticket seller address", async function () {
-        expect(await mafastore.ticketSeller()).to.equal(account2.address);
-
-        await expect(mafastore.setTicketSeller(account1.address))
-          .to.emit(mafastore, "TicketSellerUpdated")
-          .withArgs(account1.address);
-
-        expect(await mafastore.ticketSeller()).to.equal(account1.address);
       });
     });
 
