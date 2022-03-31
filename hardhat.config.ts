@@ -7,9 +7,12 @@ import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "solidity-coverage";
 import "@openzeppelin/hardhat-upgrades";
+import "hardhat-docgen";
 
 import "./tasks/accounts";
 import "./tasks/clean";
+import "./tasks/upgradeContract";
+import "./tasks/deployNfts";
 
 import { resolve } from "path";
 
@@ -60,7 +63,7 @@ const config: HardhatUserConfig = {
     },
     hardhat: {
       forking: {
-        url: `${process.env.QUICKNODE_PROVIDER}`,
+        url: `${process.env.CHAINSTACK_PROVIDER}`,
       },
       accounts: { mnemonic },
     },
@@ -77,6 +80,10 @@ const config: HardhatUserConfig = {
     cache: "./cache",
     sources: "./contracts",
     tests: "./test",
+  },
+  docgen: {
+    path: "./docs",
+    clear: true,
   },
   typechain: {
     outDir: "typechain",

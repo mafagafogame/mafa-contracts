@@ -12,26 +12,33 @@ contract MafagafoAvatarBase is BaseNft {
         uint16 version;
         // number or distance of parents to the g0.
         uint32 generation;
+        // custom flags for external use
+        uint32 flags;
+        // When it was born
+        uint64 birthTime;
+        // date time to be available to reproduce again
+        uint64 cooldown;
+        // number of times it reproduced
+        uint256 matings;
         // reference to the parents
         uint256 parent1Id;
         // reference to the parents
         uint256 parent2Id;
-        // When it was born
-        uint64 birthTime;
-        // number of times it reproduced
-        uint256 matings;
-        // date time to be available to reproduce again
-        uint64 cooldown;
-        //
-        uint8 rarity;
-        //
-        uint8 breed;
         // genetic code
         bytes32 genes;
-    
-        uint256[50] private __gap;
     }
 
+    /**
+     * @dev Create a new mafagafo
+     * @param _to user that will receive the new mafagafo
+     * @param _id NFT id of the new mafagafo
+     * @param _version mafagafo version
+     * @param _genes genes passed from parents
+     * @param _generation generation of the mafagafo
+     * @param _parent1Id NFT id of the 1st parent
+     * @param _parent2Id NFT id of the 2nd parent
+     * @param _flags custom flags
+     */
     function _createMafagafo(
         address _to,
         uint256 _id,
@@ -39,7 +46,8 @@ contract MafagafoAvatarBase is BaseNft {
         bytes32 _genes,
         uint32 _generation,
         uint256 _parent1Id,
-        uint256 _parent2Id
+        uint256 _parent2Id,
+        uint32 _flags
     ) internal virtual {
         mafagafo[_id] = Mafagafo({
             version: _version,
@@ -49,10 +57,50 @@ contract MafagafoAvatarBase is BaseNft {
             parent2Id: _parent2Id,
             birthTime: uint64(block.timestamp),
             cooldown: 0,
-            matings: 0
+            matings: 0,
+            flags: _flags
         });
 
-        emit Birth(_to, _id, _version, _genes, _generation, [_parent1Id, _parent2Id], uint64(block.timestamp));
+        emit Birth(_to, _id, _version, _genes, _generation, [_parent1Id, _parent2Id], uint64(block.timestamp), _flags);
+    }
+
+    /**
+     * @dev Gets a mafagafo by id
+     * @param id unique ID of the mafagafo
+     */
+    function getMafagafo(uint256 id)
+        public
+        view
+        virtual
+        returns (
+            uint16 version,
+            bytes32 genes,
+            uint32 generation,
+            uint256 parent1Id,
+            uint256 parent2Id,
+            uint64 birthTime,
+            uint64 cooldown,
+            uint256 matings,
+            uint32 flags
+        )
+    {
+        Mafagafo memory _mafagafo = mafagafo[id];
+
+        return (
+            _mafagafo.version,
+            _mafagafo.genes,
+            _mafagafo.generation,
+            _mafagafo.parent1Id,
+            _mafagafo.parent2Id,
+            _mafagafo.birthTime,
+            _mafagafo.cooldown,
+            _mafagafo.matings,
+            _mafagafo.flags
+        );
+    }
+
+    function getNftData(uint256 id) external view returns (Mafagafo memory) {
+        return mafagafo[id];
     }
 
     // EVENTS
@@ -63,6 +111,53 @@ contract MafagafoAvatarBase is BaseNft {
         bytes32 genes,
         uint32 generation,
         uint256[2] parentsIDs,
-        uint64 birthTime
+        uint64 birthTime,
+        uint32 flags
     );
+
+    // I am not proud of this, but solidity dont have appendable arrays yet
+    function getMateableAvatars() external view returns (uint256[] memory) {
+        uint256[] memory mineIds = listMyNftIds();
+        uint256 count = 0;
+        for (uint256 i = 0; i < mineIds.length; i++) {
+            Mafagafo memory mine = mafagafo[mineIds[i]];
+            if (mine.matings == 0 && mine.generation == 0) {
+                count++;
+            }
+        }
+        uint256[] memory ret = new uint256[](count);
+        count = 0;
+        for (uint256 i = 0; i < mineIds.length; i++) {
+            Mafagafo memory mine = mafagafo[mineIds[i]];
+            if (mine.matings == 0 && mine.generation == 0) {
+                ret[count] = mineIds[i];
+                count++;
+            }
+        }
+        return ret;
+    }
+
+    function getMateableAvatarsPaginated(uint256 offset, uint256 limit) external view returns (uint256[] memory) {
+        uint256[] memory mineIds = listMyNftIdsPaginated(offset, limit);
+        uint256 count = 0;
+        for (uint256 i = 0; i < mineIds.length; i++) {
+            Mafagafo memory mine = mafagafo[mineIds[i]];
+            if (mine.matings == 0 && mine.generation == 0) {
+                count++;
+            }
+        }
+        uint256[] memory ret = new uint256[](count);
+        count = 0;
+        for (uint256 i = 0; i < mineIds.length; i++) {
+            Mafagafo memory mine = mafagafo[mineIds[i]];
+            if (mine.matings == 0 && mine.generation == 0) {
+                ret[count] = mineIds[i];
+                count++;
+            }
+        }
+        return ret;
+    }
+
+    // this should be the latest space to allocate. do not add anything bellow this
+    uint256[50] private __gap;
 }

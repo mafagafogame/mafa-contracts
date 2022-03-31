@@ -22,8 +22,10 @@ contract EggNft is EggBase {
         require(brooderAddress.isContract(), "Brooder NFT address must be a contract");
         brooderContract = BrooderNft(brooderAddress);
 
+        hatchTime = 30 weeks;
+
         // TODO: add the correct urlbase
-        __BaseNft_init("Egg", "EGG", "");
+        __BaseNft_init("Mafa Egg", "MEGG", "");
     }
 
     /**
@@ -49,6 +51,15 @@ contract EggNft is EggBase {
         emit BrooderAddressChanged(addr);
     }
 
+    /**
+     * @dev Mint a new egg
+     * @param _to user that will receive the new egg
+     * @param _version mafagafo version
+     * @param _genes genes to pass to the newborn mafagafo
+     * @param _generation generation of the newborn mafagafo
+     * @param _parent1Id NFT id of the 1st parent
+     * @param _parent2Id NFT id of the 2nd parent
+     */
     function mint(
         address _to,
         uint16 _version,
@@ -62,7 +73,11 @@ contract EggNft is EggBase {
         super.mint(_to);
     }
 
-    // hatch an egg after enough time has passed
+    /**
+     * @dev Hatch an egg
+     *  caller must be the owner of the egg
+     * @param id NFT id of the egg
+     */
     function hatchEgg(uint256 id) public virtual {
         require(ownerOf(id) == _msgSender(), "Sender must be the owner of the egg");
 
@@ -70,7 +85,6 @@ contract EggNft is EggBase {
         require(block.timestamp >= _egg.hatchDate, "Egg is not in time to hatch");
 
         super._burn(id);
-        mafagafoContract.mint(_msgSender(), _egg.version, _egg.genes, _egg.generation, _egg.parent1Id, _egg.parent2Id);
 
         emit EggHatched(
             id,
@@ -80,22 +94,72 @@ contract EggNft is EggBase {
             _egg.generation,
             [_egg.parent1Id, _egg.parent2Id]
         );
+
+        uint32 _flags = 0x00000000;
+        if (_egg.generation == 1) {
+            _flags = 0x10000000;
+        }
+
+        mafagafoContract.mint(
+            _msgSender(),
+            _egg.version,
+            _egg.genes,
+            _egg.generation,
+            _egg.parent1Id,
+            _egg.parent2Id,
+            _flags
+        );
     }
 
+    /**
+     * @dev Hatch multiple eggs
+     *  caller must be the owner of all the eggs
+     * @param ids array of NFT ids of the eggs
+     */
+    function hatchEgg(uint256[] memory ids) external virtual {
+        require(ids.length <= 120, "You can hatch at most 120 eggs at a time");
+
+        for (uint256 i = 0; i < ids.length; i++) {
+            hatchEgg(ids[i]);
+        }
+    }
+
+    /**
+     * @dev Breed an egg
+     *  caller must be the owner of the egg and the brooder
+     * @param id NFT id of the egg
+     * @param brooderId NFT id of the brooder
+     */
     function breedEgg(uint256 id, uint256 brooderId) public virtual {
         require(ownerOf(id) == _msgSender(), "Sender must be the owner of the egg");
         require(brooderContract.balanceOf(_msgSender(), brooderId) > 0, "You don't own any of this brooder");
 
         Egg storage _egg = egg[id];
 
+        require(_egg.breeding == false, "Egg is already breeding");
+
         uint256 newTimer = block.timestamp + brooderContract.getBrooder(brooderId);
         _egg.hatchDate = newTimer;
         _egg.breeding = true;
         _egg.brooderType = bytes32(brooderId);
 
-        brooderContract.onUse(_msgSender(), brooderId);
-
         emit EggBreeded(id, brooderId, newTimer);
+        brooderContract.onUse(_msgSender(), brooderId);
+    }
+
+    /**
+     * @dev Breed multiple eggs
+     *  caller must be the owner of the egg and the brooder
+     * @param ids array of NFT ids of the eggs
+     * @param brooderIds array of NFT ids of the brooders
+     */
+    function breedEgg(uint256[] memory ids, uint256[] memory brooderIds) external virtual {
+        require(ids.length == brooderIds.length, "ids and brooderIds arrays must be equal");
+        require(ids.length <= 600, "You can breed at most 600 eggs at a time");
+
+        for (uint256 i = 0; i < ids.length; i++) {
+            breedEgg(ids[i], brooderIds[i]);
+        }
     }
 
     // EVENTS
@@ -110,4 +174,7 @@ contract EggNft is EggBase {
     event EggBreeded(uint256 id, uint256 brooderId, uint256 newTimer);
     event MafagafoAddressChanged(address indexed addr);
     event BrooderAddressChanged(address indexed addr);
+
+    // this should be the latest space to allocate. do not add anything bellow this
+    uint256[50] private __gap;
 }

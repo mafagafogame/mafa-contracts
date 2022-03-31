@@ -50,39 +50,44 @@ contract MafaBox is BaseERC1155 {
      * @param newProbabilities new probabilities array
      */
     function setProbabilities(uint256[] memory newProbabilities) external virtual onlyRole(DEFAULT_ADMIN_ROLE) {
+        _requireProbabilitiesMatch(newProbabilities);
         probabilities = newProbabilities;
 
-        emit ProbabilitiesAddressChanged(newProbabilities);
+        emit ProbabilitiesChanged(newProbabilities);
     }
 
     /**
-     * @dev Open a mystery box and mint a random mafagafo (from generation 0) to sender
+     * @dev Open an amount of mystery boxes and mint an `amount` of random mafagafos (from generation 0) to sender
      * @param id box type
+     * @param amount Amount of boxes to open
      */
-    function openBox(uint256 id) external virtual {
+    function openBox(uint256 id, uint256 amount) external virtual {
+        require(amount > 0, "You must open at least 1 box");
+        require(amount <= 100, "You can only open at most 100 box at a time");
         require(balanceOf(_msgSender(), id) > 0, "You don't have any box to open");
-        super._burn(_msgSender(), id, 1);
+        super._burn(_msgSender(), id, amount);
 
-        uint256 randomNumber = _random();
+        uint256[] memory mafagafoTypes = new uint256[](amount);
+        for (uint256 i = 0; i < amount; i++) {
+            mafagafoTypes[i] = _random();
+            mafagafoContract.mint(
+                _msgSender(),
+                mafagafoContract.mafaVersion(),
+                bytes32(mafagafoTypes[i]),
+                0,
+                0,
+                0,
+                0x00000000
+            );
 
-        uint256 maxValue = 0;
-        uint256 mafagafoType;
-        for (uint256 i = 0; i < probabilities.length; i++) {
-            maxValue = maxValue.add(probabilities[i]);
-            if (randomNumber < maxValue) {
-                mafagafoContract.mint(_msgSender(), mafagafoContract.mafaVersion(), bytes32(i), 0, 0, 0);
-                mafagafoType = i;
-                break;
-            }
+            _totalOpen.increment();
         }
 
-        emit BoxOpened(id, _msgSender(), mafagafoType, _totalOpen.current());
-
-        _totalOpen.increment();
+        emit BoxOpened(id, _msgSender(), mafagafoTypes);
     }
 
     /**
-     * @dev requires that probabilities array sum equals 10000
+     * @dev Require that probabilities array sum equals 10**18
      * @param _probabilities array of probabilities
      */
     function _requireProbabilitiesMatch(uint256[] memory _probabilities) internal pure virtual {
@@ -92,20 +97,24 @@ contract MafaBox is BaseERC1155 {
             sum = sum.add(_probabilities[i]);
         }
 
-        require(sum == 10000, "probabilities values sum must equal 10000");
+        require(sum == 10**18, "probabilities values sum must equal 10**18");
     }
 
     /**
-     * @dev generates a random number between 0 and 10000
+     * @dev Generate a random number between 0 and 10**18
      */
     function _random() internal view virtual returns (uint256 randomNumber) {
         return
-            uint256(keccak256(abi.encodePacked(block.difficulty, block.timestamp, _msgSender(), _totalOpen.current())))
-                .mod(10000);
+            uint256(keccak256(abi.encodePacked(block.difficulty, _msgSender(), _totalOpen.current()))).mod(
+                probabilities.length
+            );
     }
 
     // EVENTS
-    event BoxOpened(uint256 boxID, address sender, uint256 mafagafoType, uint256 totalOpen);
+    event BoxOpened(uint256 boxID, address sender, uint256[] mafagafoTypes);
     event MafagafoAddressChanged(address indexed addr);
-    event ProbabilitiesAddressChanged(uint256[] newProbabilities);
+    event ProbabilitiesChanged(uint256[] newProbabilities);
+
+    // this should be the latest space to allocate. do not add anything bellow this
+    uint256[50] private __gap;
 }

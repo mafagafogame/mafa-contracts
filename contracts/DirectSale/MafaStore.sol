@@ -16,6 +16,7 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
 
+import "../NFTs/BaseNft.sol";
 import "../NFTs/BaseERC1155.sol";
 import "../NFTs/MafagafoAvatarNft.sol";
 
@@ -41,6 +42,11 @@ contract MafaStore is
         uint256 price;
     }
 
+    struct SellVolume {
+        uint256 date;
+        uint256 amount;
+    }
+
     IERC20 public acceptedToken;
     MafagafoAvatarNft public avatarContract;
 
@@ -49,6 +55,9 @@ contract MafaStore is
 
     // list of items available to sell
     Item[] public items;
+
+    // 10**18 data. The value is in USD and converted to MAFA. The store pays it in return when it receives a mafagafo.
+    uint256 public avatarPrice;
 
     /**
      * @param _acceptedToken accepted ERC20 token address
@@ -71,6 +80,8 @@ contract MafaStore is
         avatarContract = MafagafoAvatarNft(avatarAddress);
         _mafaBnbPair = IUniswapV2Pair(mafaBnb);
         _bnbBusdPair = IUniswapV2Pair(bnbBusd);
+
+        avatarPrice = 300 * 10**18;
 
         __Pausable_init();
         __Ownable_init();
@@ -121,25 +132,43 @@ contract MafaStore is
         emit BnbBusdPairChanged(addr);
     }
 
+    /**
+     * @dev Update the USD price of the avatar
+     * @param price new price
+     */
+    function setAvatarPrice(uint256 price) external virtual onlyOwner {
+        require(price != 0, "New price cannot be 0");
+        avatarPrice = price;
+
+        emit AvatarPriceChanged(price);
+    }
+
+    function setDailySellPercentage(uint256 percentage) external virtual onlyOwner {
+        require(percentage != 0, "New percentage cannot be 0");
+        dailySellPercentage = percentage;
+
+        emit DailySellPercentageChanged(percentage);
+    }
+
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
     /**
      * @dev pause the contract
      */
-    function pause() public virtual onlyOwner {
+    function pause() external virtual onlyOwner {
         _pause();
     }
 
     /**
      * @dev unpause the contract
      */
-    function unpause() public virtual onlyOwner {
+    function unpause() external virtual onlyOwner {
         _unpause();
     }
 
     /**
-     * @dev Add a new item
+     * @dev Add a new item.
      *  Can only be called by contract owner
      * @param tokenContract Address of ERC1155 inventory of items
      * @param tokenId of the ERC1155 contract. it is the item category.
@@ -152,7 +181,6 @@ contract MafaStore is
         bytes32 title,
         uint256 price
     ) external virtual onlyOwner {
-        require(tokenContract.isContract(), "NFT address must be a contract");
         require(price > 0, "Item price can't be 0");
 
         items.push(Item(tokenContract, tokenId, title, price));
@@ -162,6 +190,7 @@ contract MafaStore is
 
     /**
      * @dev Remove an item
+     *  When we delete an item, we move the last item to the deleted position
      * @param toDeleteIndex The array ID from items to be removed
      */
     function removeItemFromStore(uint256 toDeleteIndex) external virtual onlyOwner {
@@ -189,14 +218,14 @@ contract MafaStore is
     }
 
     /**
-     * @dev Update the price of an item
+     * @dev Update the price of an item.
      *  Can only be called by contract owner
      * @param id Id of the item
      * @param newPrice New price of the item
      */
     function updateItemPrice(uint256 id, uint256 newPrice) external virtual onlyOwner {
         require(id < items.length, "Item doesn't exists");
-        require(newPrice > 0, "Item price can't be 0");
+        require(newPrice != 0, "Item price can't be 0");
 
         Item storage item = items[id];
 
@@ -205,7 +234,6 @@ contract MafaStore is
         emit ItemPriceUpdated(id, newPrice);
     }
 
-    // Ex.: when we delete an item, we move the last item to the deleted position
     /**
      * @dev Buy amounts of an item.
      * @param id ID on items array
@@ -217,8 +245,10 @@ contract MafaStore is
         bytes32 title,
         uint256 amounts
     ) external virtual whenNotPaused nonReentrant {
+        require(amounts > 0, "Amounts must be greater than zero");
         require(id < items.length, "Item doesn't exists");
         Item memory item = items[id];
+        require(item.tokenContract.isContract(), "Only NFT items can be bought");
         require(item.title == title, "Title argument must match requested item title");
 
         address sender = _msgSender();
@@ -242,29 +272,105 @@ contract MafaStore is
         emit ItemBought(item.tokenContract, id, item.tokenId, owner(), sender, itemPriceInMAFA, amounts);
     }
 
-    /**
-     * @dev Sell an avatar to this contract
-     * @param tokenId ERC721 token ID of the avatar to be sold
-     */
-    function sellAvatar(uint256 tokenId) external virtual whenNotPaused nonReentrant {
-        require(
-            acceptedToken.balanceOf(address(this)) >= 300,
-            "The mafastore is unable to receive new avatars for the moment"
-        );
+    function buyTicket(uint256 id, bytes32 title) external virtual whenNotPaused nonReentrant {
+        require(id < items.length, "Item doesn't exists");
+        Item memory item = items[id];
+        require(!item.tokenContract.isContract(), "Only ticket packs can be bought");
+        require(item.title == title, "Title argument must match requested item title");
 
         address sender = _msgSender();
-        require(avatarContract.ownerOf(tokenId) == sender, "You have to own this avatar to be able to sell it");
-        require(avatarContract.getApproved(tokenId) == address(this), "Check the token approval for this token ID");
 
         uint256 mafaBusdPrice = getMAFAtoBUSDprice();
-        uint256 sellPriceInMAFA = (uint256(300).mul(10**36).div(mafaBusdPrice));
+        uint256 itemPriceInMAFA = (item.price.mul(10**18).div(mafaBusdPrice));
 
-        // Transfer 300 BUSD in mafa to avatar seller
-        require(acceptedToken.transfer(sender, sellPriceInMAFA), "Fail transferring the amount to the seller");
+        uint256 allowance = acceptedToken.allowance(sender, address(this));
+        require(allowance >= itemPriceInMAFA, "Check the token allowance");
 
-        avatarContract.transferFrom(sender, address(this), tokenId);
+        // Transfer item price amount to ticket seller
+        require(
+            acceptedToken.transferFrom(sender, ticketSeller, itemPriceInMAFA),
+            "Fail transferring the item price amount to ticket seller"
+        );
 
-        emit AvatarSold(sender, tokenId);
+        emit TicketBought(id, item.title, sender, itemPriceInMAFA);
+    }
+
+    function setTicketSeller(address newTicketSeller) external virtual onlyOwner {
+        ticketSeller = payable(newTicketSeller);
+
+        emit TicketSellerUpdated(newTicketSeller);
+    }
+
+    /**
+     * @dev Sell an avatar to this contract
+     * @param tokenIds ERC721 token IDs of the avatars to be sold
+     */
+    function sellAvatar(uint256[] memory tokenIds) external virtual whenNotPaused nonReentrant {
+        require(tokenIds.length > 0, "You must sell at least one avatar");
+        require(tokenIds.length <= 500, "You can sell at most 500 avatars at a time");
+
+        require(avatarContract.isApprovedForAll(_msgSender(), address(this)), "Check the approval of your avatars");
+
+        uint256 priceInBUSD = tokenIds.length.mul(avatarPrice);
+        uint256 mafaBusdPrice = getMAFAtoBUSDprice();
+        uint256 sellPriceInMAFA = (priceInBUSD.mul(10**18).div(mafaBusdPrice));
+
+        uint256 storeBalance = acceptedToken.balanceOf(address(this));
+        require(storeBalance >= sellPriceInMAFA, "Amount exceeds mafastore balance");
+        uint256 storeBalancePercentage = storeBalance.mul(dailySellPercentage).div(100 * 10**18);
+        if (tokenIds.length > 1) {
+            require(sellPriceInMAFA <= storeBalancePercentage, "Price exceedes your maximum sell amount for the day");
+        }
+
+        SellVolume[] storage sellVolumes = dailyVolumes[_msgSender()];
+
+        uint256 accumulator = 0;
+        uint256 i = 0;
+        while (true) {
+            if (i < sellVolumes.length) {
+                if (sellVolumes[i].date + 1 days >= block.timestamp) {
+                    accumulator += sellVolumes[i].amount;
+                    i++;
+                } else {
+                    remove(sellVolumes, i);
+                }
+            } else break;
+        }
+
+        if (accumulator > 0) {
+            require(
+                accumulator + sellPriceInMAFA <= storeBalancePercentage,
+                "You already exceeded your maximum sell amount for the day"
+            );
+        }
+
+        sellVolumes.push(SellVolume({ date: block.timestamp, amount: sellPriceInMAFA }));
+
+        for (uint256 j = 0; j < tokenIds.length; j++) {
+            require(
+                avatarContract.ownerOf(tokenIds[j]) == _msgSender(),
+                "You have to own this avatar to be able to sell it"
+            );
+
+            (uint16 mafaVersion, , uint32 generation, , , , , , ) = avatarContract.getMafagafo(tokenIds[j]);
+            require(mafaVersion == 0, "You can only sell avatars from version 0");
+            require(generation == 1, "You can only sell avatars from generation 1");
+
+            avatarContract.transferFrom(_msgSender(), address(this), tokenIds[j]);
+        }
+
+        emit AvatarSold(_msgSender(), tokenIds, sellPriceInMAFA, tokenIds.length);
+
+        require(acceptedToken.transfer(_msgSender(), sellPriceInMAFA), "Fail transferring the amount to the seller");
+    }
+
+    function remove(SellVolume[] storage array, uint256 index) internal returns (bool success) {
+        if (index >= array.length) return false;
+
+        array[index] = array[array.length - 1];
+        array.pop();
+
+        return true;
     }
 
     /**
@@ -273,6 +379,7 @@ contract MafaStore is
      * @param amount amount to withdraw
      */
     function withdraw(address payable to, uint256 amount) external virtual onlyOwner {
+        require(to != address(0), "transfer to the zero address");
         require(amount <= payable(address(this)).balance, "You are trying to withdraw more funds than available");
         to.transfer(amount);
     }
@@ -296,29 +403,59 @@ contract MafaStore is
             "You are trying to withdraw more funds than available"
         );
 
-        tokenContract.transfer(to, amount);
+        require(tokenContract.transfer(to, amount), "Fail on transfer");
     }
 
     /**
      * @dev Withdraw any ERC721 token from this contract
      * @param tokenAddress ERC721 token to withdraw
      * @param to receiver address
-     * @param tokenId ID of the NFT to withdraw
+     * @param tokenIds IDs of the NFTs to withdraw
      */
     function withdrawERC721(
         address tokenAddress,
         address to,
-        uint256 tokenId
+        uint256[] memory tokenIds
     ) external virtual onlyOwner {
+        require(tokenIds.length <= 550, "You can withdraw at most 550 avatars at a time");
         require(tokenAddress.isContract(), "ERC721 token address must be a contract");
 
         IERC721 tokenContract = IERC721(tokenAddress);
-        require(
-            tokenContract.ownerOf(tokenId) == address(this),
-            "Mafastore doesn't own the NFT you are trying to withdraw"
-        );
+        for (uint256 i = 0; i < tokenIds.length; i++) {
+            require(
+                tokenContract.ownerOf(tokenIds[i]) == address(this),
+                "Mafastore doesn't own the NFT you are trying to withdraw"
+            );
 
-        tokenContract.safeTransferFrom(address(this), to, tokenId);
+            tokenContract.safeTransferFrom(address(this), to, tokenIds[i]);
+        }
+    }
+
+    /**
+     * @dev Withdraw any ERC721 token from this contract
+     * @param tokenAddress ERC721 token to withdraw
+     * @param to receiver address
+     * @param amount amount to withdraw
+     */
+    function withdrawNFTs(
+        address tokenAddress,
+        address to,
+        uint256 amount
+    ) external virtual onlyOwner {
+        require(amount <= 500, "You can withdraw at most 500 avatars at a time");
+        require(tokenAddress.isContract(), "ERC721 token address must be a contract");
+
+        BaseNft tokenContract = BaseNft(tokenAddress);
+        uint256[] memory tokenIds = tokenContract.listMyNftIds();
+        require(tokenIds.length >= amount, "Mafastore doesn't own the amount of NFTs");
+        for (uint256 i = 0; i < amount; i++) {
+            require(
+                tokenContract.ownerOf(tokenIds[i]) == address(this),
+                "Mafastore doesn't own the NFT you are trying to withdraw"
+            );
+
+            tokenContract.safeTransferFrom(address(this), to, tokenIds[i]);
+        }
     }
 
     /**
@@ -349,16 +486,53 @@ contract MafaStore is
      * @dev gets the price of MAFA per BUSD.
      */
     function getMAFAtoBUSDprice() public view virtual returns (uint256 price) {
-        (uint256 reserves0LP0, uint256 reserves1LP0, ) = _mafaBnbPair.getReserves();
-        (uint256 reserves0LP1, uint256 reserves1LP1, ) = _bnbBusdPair.getReserves();
+        uint256 reserves0LP0 = 0;
+        uint256 reserves1LP0 = 0;
+        uint256 reserves0LP1 = 0;
+        uint256 reserves1LP1 = 0;
 
-        return (reserves1LP1.mul(reserves1LP0).mul(10**18)).div(reserves0LP1.mul(reserves0LP0));
+        if (_mafaBnbPair.token1() == _bnbBusdPair.token0()) {
+            (reserves0LP0, reserves1LP0, ) = _mafaBnbPair.getReserves();
+            (reserves0LP1, reserves1LP1, ) = _bnbBusdPair.getReserves();
+
+            return (reserves1LP1.mul(reserves1LP0).mul(10**18)).div(reserves0LP1.mul(reserves0LP0));
+        } else if (_mafaBnbPair.token1() == _bnbBusdPair.token1()) {
+            (reserves0LP0, reserves1LP0, ) = _mafaBnbPair.getReserves();
+            (reserves1LP1, reserves0LP1, ) = _bnbBusdPair.getReserves();
+
+            return (reserves1LP1.mul(reserves1LP0).mul(10**18)).div(reserves0LP1.mul(reserves0LP0));
+        } else if (_mafaBnbPair.token0() == _bnbBusdPair.token0()) {
+            (reserves1LP0, reserves0LP0, ) = _mafaBnbPair.getReserves();
+            (reserves0LP1, reserves1LP1, ) = _bnbBusdPair.getReserves();
+
+            return (reserves1LP1.mul(reserves1LP0).mul(10**18)).div(reserves0LP1.mul(reserves0LP0));
+        } else {
+            (reserves1LP0, reserves0LP0, ) = _mafaBnbPair.getReserves();
+            (reserves1LP1, reserves0LP1, ) = _bnbBusdPair.getReserves();
+
+            return (reserves1LP1.mul(reserves1LP0).mul(10**18)).div(reserves0LP1.mul(reserves0LP0));
+        }
+    }
+
+    /**
+     * @dev gets the price in MAFA of an item.
+     * @param id ID on items array
+     * @param amounts Amounts of the items
+     */
+    function getItemPriceInMAFA(uint256 id, uint256 amounts) external view virtual returns (uint256 price) {
+        require(amounts > 0, "Amounts must be greater than zero");
+        require(id < items.length, "Item doesn't exists");
+        Item memory item = items[id];
+
+        uint256 mafaBusdPrice = getMAFAtoBUSDprice();
+
+        return (item.price.mul(amounts).mul(10**18).div(mafaBusdPrice));
     }
 
     /**
      * @dev upgradable version
      */
-    function version() public pure virtual returns (string memory) {
+    function version() external pure virtual returns (string memory) {
         return "1.0.0";
     }
 
@@ -409,17 +583,27 @@ contract MafaStore is
         uint256 price,
         uint256 amounts
     );
-    event AvatarSold(address indexed seller, uint256 tokenId);
+    event TicketBought(uint256 id, bytes32 indexed title, address indexed buyer, uint256 indexed price);
+    event TicketSellerUpdated(address indexed ticketSeller);
+    event AvatarSold(address indexed seller, uint256[] indexed tokenId, uint256 indexed price, uint256 amounts);
     event AcceptedTokenChanged(address indexed addr);
     event AvatarAddressChanged(address indexed addr);
     event MafaBnbPairChanged(address indexed addr);
     event BnbBusdPairChanged(address indexed addr);
+    event AvatarPriceChanged(uint256 indexed price);
+    event DailySellPercentageChanged(uint256 indexed percentage);
 
     uint256[50] private __gap;
+
+    mapping(address => SellVolume[]) public dailyVolumes;
+
+    uint256 public dailySellPercentage;
+
+    address payable public ticketSeller;
 }
 
 contract MafaStoreTestV2 is MafaStore {
-    function version() public pure virtual override returns (string memory) {
+    function version() external pure virtual override returns (string memory) {
         return "2.0.0";
     }
 }

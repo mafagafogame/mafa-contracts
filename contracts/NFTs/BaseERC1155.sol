@@ -48,16 +48,15 @@ contract BaseERC1155 is
         return (_uris[tokenId]);
     }
 
-    function setTokenUri(uint256 tokenId, string memory _uri) public onlyRole(URI_SETTER_ROLE) {
-        require(bytes(_uris[tokenId]).length == 0, "Cannot set uri twice");
+    function setTokenUri(uint256 tokenId, string memory _uri) external onlyRole(URI_SETTER_ROLE) {
         _uris[tokenId] = _uri;
     }
 
-    function pause() public onlyRole(PAUSER_ROLE) {
+    function pause() external onlyRole(PAUSER_ROLE) {
         _pause();
     }
 
-    function unpause() public onlyRole(PAUSER_ROLE) {
+    function unpause() external onlyRole(PAUSER_ROLE) {
         _unpause();
     }
 
@@ -66,17 +65,74 @@ contract BaseERC1155 is
         uint256 id,
         uint256 amount,
         bytes memory data
-    ) public onlyRole(MINTER_ROLE) {
+    ) external onlyRole(MINTER_ROLE) {
         _mint(account, id, amount, data);
     }
 
+    // todo: create a function that sends an airdrop of elements to a batch of users
     function mintBatch(
         address to,
         uint256[] memory ids,
         uint256[] memory amounts,
         bytes memory data
-    ) public onlyRole(MINTER_ROLE) {
+    ) external onlyRole(MINTER_ROLE) {
         _mintBatch(to, ids, amounts, data);
+    }
+
+    function multiMint(
+        address[] memory addresses,
+        uint256[] memory ids,
+        uint256[] memory amounts,
+        bytes memory data
+    ) external onlyRole(MINTER_ROLE) {
+        require(addresses.length == ids.length, "addresses and ids arrays must be equal");
+        require(addresses.length == amounts.length, "addresses and amounts arrays must be equal");
+        require(addresses.length <= 500, "Can't mint to more than 500 addresses in one batch");
+
+        for (uint16 i = 0; i < addresses.length; i++) {
+            _mint(addresses[i], ids[i], amounts[i], data);
+        }
+    }
+
+    function multiMintEqualId(
+        address[] memory addresses,
+        uint256 id,
+        uint256[] memory amounts,
+        bytes memory data
+    ) external onlyRole(MINTER_ROLE) {
+        require(addresses.length == amounts.length, "addresses and amounts arrays must be equal");
+        require(addresses.length <= 500, "Can't mint to more than 500 addresses in one batch");
+
+        for (uint16 i = 0; i < addresses.length; i++) {
+            _mint(addresses[i], id, amounts[i], data);
+        }
+    }
+
+    function multiMintEqualAmount(
+        address[] memory addresses,
+        uint256[] memory ids,
+        uint256 amount,
+        bytes memory data
+    ) external onlyRole(MINTER_ROLE) {
+        require(addresses.length == ids.length, "addresses and ids arrays must be equal");
+        require(addresses.length <= 500, "Can't mint to more than 500 addresses in one batch");
+
+        for (uint16 i = 0; i < addresses.length; i++) {
+            _mint(addresses[i], ids[i], amount, data);
+        }
+    }
+
+    function multiMintEqualIdAndAmount(
+        address[] memory addresses,
+        uint256 id,
+        uint256 amount,
+        bytes memory data
+    ) external onlyRole(MINTER_ROLE) {
+        require(addresses.length <= 500, "Can't mint to more than 500 addresses in one batch");
+
+        for (uint16 i = 0; i < addresses.length; i++) {
+            _mint(addresses[i], id, amount, data);
+        }
     }
 
     function _beforeTokenTransfer(
@@ -90,13 +146,11 @@ contract BaseERC1155 is
         super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
     }
 
-    function version() public pure virtual returns (string memory) {
+    function version() external pure virtual returns (string memory) {
         return "1.0.0";
     }
 
     function _authorizeUpgrade(address newImplementation) internal override onlyRole(UPGRADER_ROLE) {}
-
-    uint256[50] private __gap;
 
     // The following functions are overrides required by Solidity.
 
@@ -108,4 +162,7 @@ contract BaseERC1155 is
     {
         return super.supportsInterface(interfaceId);
     }
+
+    // this should be the latest space to allocate. do not add anything bellow this
+    uint256[50] private __gap;
 }
