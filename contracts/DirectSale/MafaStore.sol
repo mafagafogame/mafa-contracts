@@ -43,14 +43,14 @@ contract MafaStore is
     }
 
     // uncomment to upgrade on testnet
-    struct Ticket {
-        // quantity of tickets to sell
-        uint16 quantity;
-        // ticket title
-        bytes32 title;
-        // price in USD. Value is multiplied by 10**18.
-        uint256 price;
-    }
+    // struct Ticket {
+    //     // quantity of tickets to sell
+    //     uint16 quantity;
+    //     // ticket title
+    //     bytes32 title;
+    //     // price in USD. Value is multiplied by 10**18.
+    //     uint256 price;
+    // }
 
     struct SellVolume {
         uint256 date;
@@ -619,7 +619,7 @@ contract MafaStore is
     uint256 public dailySellPercentage;
 
     // uncomment to upgrade on testnet
-    Ticket[] public tickets;
+    // Ticket[] public tickets;
 
     address payable public ticketSeller;
 }
