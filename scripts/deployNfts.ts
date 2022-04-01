@@ -69,7 +69,7 @@ async function main() {
 
   console.log("Deployed mafagafoAvatar at:", mafagafoAvatar.address);
 
-  await egg.setMafagafoContract(mafagafoAvatar.address);
+  await egg.setMafagafoAddress(mafagafoAvatar.address);
 
   const mafastoreFactory: MafaStore__factory = await ethers.getContractFactory("MafaStore");
   let mafastore = <MafaStore>await upgrades.deployProxy(
@@ -115,7 +115,7 @@ async function main() {
       mafaBox.address,
       0,
       ethers.utils.formatBytes32String("mafabox"),
-      expandTo18Decimals(50),
+      expandTo18Decimals(200),
     )
   ).wait(1);
 
@@ -147,6 +147,15 @@ async function main() {
   ).wait(1);
 
   console.log("Brooders created at the store");
+
+  await (
+    await mafastore.addItemToBeSold(
+      "0x0000000000000000000000000000000000000000",
+      0,
+      ethers.utils.formatBytes32String("pack 1"),
+      ethers.utils.parseEther("100"),
+    )
+  ).wait(1);
 
   await (await mafagafoAvatar.setBaseURI("https://jsonkeeper.com/b/B8X8/")).wait(1);
   await (await egg.setBaseURI("https://jsonkeeper.com/b/Q6WL/")).wait(1);
