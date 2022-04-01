@@ -38,6 +38,16 @@ contract MafaStore is
         uint256 tokenId;
         // item title
         bytes32 title;
+        // item price. Value is multiplied by 10**18.
+        uint256 price;
+    }
+
+    // uncomment to upgrade on testnet
+    struct Ticket {
+        // quantity of tickets to sell
+        uint16 quantity;
+        // ticket title
+        bytes32 title;
         // price in USD. Value is multiplied by 10**18.
         uint256 price;
     }
@@ -253,8 +263,13 @@ contract MafaStore is
 
         address sender = _msgSender();
 
-        uint256 mafaBusdPrice = getMAFAtoBUSDprice();
-        uint256 itemPriceInMAFA = (item.price.mul(amounts).mul(10**18).div(mafaBusdPrice));
+        uint256 itemPriceInMAFA = 0;
+        if (item.title == bytes32("mafabox")) {
+            itemPriceInMAFA = item.price;
+        } else {
+            uint256 mafaBusdPrice = getMAFAtoBUSDprice();
+            itemPriceInMAFA = (item.price.mul(amounts).mul(10**18).div(mafaBusdPrice));
+        }
 
         uint256 allowance = acceptedToken.allowance(sender, address(this));
         require(allowance >= itemPriceInMAFA, "Check the token allowance");
@@ -272,6 +287,11 @@ contract MafaStore is
         emit ItemBought(item.tokenContract, id, item.tokenId, owner(), sender, itemPriceInMAFA, amounts);
     }
 
+    /**
+     * @dev Buy a pack of tickets.
+     * @param id ID on items array
+     * @param title Ticket pack title name
+     */
     function buyTicket(uint256 id, bytes32 title) external virtual whenNotPaused nonReentrant {
         require(id < items.length, "Item doesn't exists");
         Item memory item = items[id];
@@ -280,8 +300,7 @@ contract MafaStore is
 
         address sender = _msgSender();
 
-        uint256 mafaBusdPrice = getMAFAtoBUSDprice();
-        uint256 itemPriceInMAFA = (item.price.mul(10**18).div(mafaBusdPrice));
+        uint256 itemPriceInMAFA = item.price;
 
         uint256 allowance = acceptedToken.allowance(sender, address(this));
         require(allowance >= itemPriceInMAFA, "Check the token allowance");
@@ -598,6 +617,9 @@ contract MafaStore is
     mapping(address => SellVolume[]) public dailyVolumes;
 
     uint256 public dailySellPercentage;
+
+    // uncomment to upgrade on testnet
+    Ticket[] public tickets;
 
     address payable public ticketSeller;
 }
