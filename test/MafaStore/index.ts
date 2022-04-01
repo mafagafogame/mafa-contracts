@@ -292,13 +292,20 @@ describe("MafaStore", function () {
       });
     });
 
-    describe("buy item", function () {
+    describe.only("buy item", function () {
       beforeEach(async function () {
         await mafastore.addItemToBeSold(
           brooder.address,
           0,
           ethers.utils.formatBytes32String("brooder 0"),
           expandTo18Decimals(100),
+        );
+
+        await mafastore.addItemToBeSold(
+          brooder.address,
+          0,
+          ethers.utils.formatBytes32String("mafabox"),
+          expandTo18Decimals(200),
         );
       });
 
@@ -309,7 +316,7 @@ describe("MafaStore", function () {
       });
 
       it("user should not be able to buy an item passing an id that doesn't exists", async function () {
-        await expect(mafastore.buyItem(1, ethers.utils.formatBytes32String("brooder 1"), 1)).to.be.revertedWith(
+        await expect(mafastore.buyItem(2, ethers.utils.formatBytes32String("brooder 1"), 1)).to.be.revertedWith(
           "Item doesn't exists",
         );
       });
@@ -366,6 +373,23 @@ describe("MafaStore", function () {
         expect(await brooder.balanceOf(account1.address, 0)).to.equal(1);
       });
 
+      it("user should be able to buy an item with price locked on MAFA", async function () {
+        await mafacoin.connect(account1).approve(mafastore.address, ethers.constants.MaxUint256);
+
+        expect(await brooder.totalSupply(0)).to.equal(0);
+        expect(await mafacoin.balanceOf(account1.address)).to.equal(expandTo18Decimals(100000));
+        expect(await brooder.balanceOf(account1.address, 0)).to.equal(0);
+
+        await expect(mafastore.connect(account1).buyItem(1, ethers.utils.formatBytes32String("mafabox"), 1)).to.emit(
+          mafastore,
+          "ItemBought",
+        );
+
+        expect(await brooder.totalSupply(0)).to.equal(1);
+        expect(bigNumberToFloat(await mafacoin.balanceOf(account1.address))).to.equal(99800);
+        expect(await brooder.balanceOf(account1.address, 0)).to.equal(1);
+      });
+
       it("user should be able to buy multiple amounts of an item", async function () {
         const amount = 5;
 
@@ -402,13 +426,13 @@ describe("MafaStore", function () {
         });
 
         it("user should not be able to buy a ticket passing an id that doesn't exists", async function () {
-          await expect(mafastore.buyTicket(2, ethers.utils.formatBytes32String("pack 2"))).to.be.revertedWith(
+          await expect(mafastore.buyTicket(3, ethers.utils.formatBytes32String("pack 2"))).to.be.revertedWith(
             "Item doesn't exists",
           );
         });
 
         it("user should not be able to buy a ticket on buyItem function", async function () {
-          await expect(mafastore.buyItem(1, ethers.utils.formatBytes32String("pack 1"), 1)).to.be.revertedWith(
+          await expect(mafastore.buyItem(2, ethers.utils.formatBytes32String("pack 1"), 1)).to.be.revertedWith(
             "Only NFT items can be bought",
           );
         });
@@ -421,7 +445,7 @@ describe("MafaStore", function () {
 
         it("user should not be able to buy a ticket if he doesn't allow the transfer", async function () {
           await expect(
-            mafastore.connect(account1).buyTicket(1, ethers.utils.formatBytes32String("pack 1")),
+            mafastore.connect(account1).buyTicket(2, ethers.utils.formatBytes32String("pack 1")),
           ).to.be.revertedWith("Check the token allowance");
         });
 
@@ -429,7 +453,7 @@ describe("MafaStore", function () {
           await mafacoin.connect(account1).approve(mafastore.address, expandTo18Decimals(1));
 
           await expect(
-            mafastore.connect(account1).buyTicket(1, ethers.utils.formatBytes32String("pack 1")),
+            mafastore.connect(account1).buyTicket(2, ethers.utils.formatBytes32String("pack 1")),
           ).to.be.revertedWith("Check the token allowance");
         });
 
@@ -437,7 +461,7 @@ describe("MafaStore", function () {
           await mafacoin.connect(account2).approve(mafastore.address, ethers.constants.MaxUint256);
 
           await expect(
-            mafastore.connect(account2).buyTicket(1, ethers.utils.formatBytes32String("pack 1")),
+            mafastore.connect(account2).buyTicket(2, ethers.utils.formatBytes32String("pack 1")),
           ).to.be.revertedWith("ERC20: transfer amount exceeds balance");
         });
 
@@ -445,7 +469,7 @@ describe("MafaStore", function () {
           await mafacoin.connect(account1).approve(mafastore.address, ethers.constants.MaxUint256);
 
           await expect(
-            mafastore.connect(account1).buyTicket(1, ethers.utils.formatBytes32String("ultra pack")),
+            mafastore.connect(account1).buyTicket(2, ethers.utils.formatBytes32String("ultra pack")),
           ).to.be.revertedWith("Title argument must match requested item title");
         });
 
@@ -456,17 +480,14 @@ describe("MafaStore", function () {
           expect(await mafacoin.balanceOf(account1.address)).to.equal(expandTo18Decimals(100000));
           expect(await brooder.balanceOf(account1.address, 0)).to.equal(0);
 
-          await expect(mafastore.connect(account1).buyTicket(1, ethers.utils.formatBytes32String("pack 1"))).to.emit(
+          await expect(mafastore.connect(account1).buyTicket(2, ethers.utils.formatBytes32String("pack 1"))).to.emit(
             mafastore,
             "TicketBought",
           );
 
           mafaPrice = await getMAFAtoBUSDprice();
 
-          expect(bigNumberToFloat(await mafacoin.balanceOf(account1.address))).to.be.within(
-            100000 - 100 / mafaPrice - 100,
-            100000 - 100 / mafaPrice + 100,
-          );
+          expect(bigNumberToFloat(await mafacoin.balanceOf(account1.address))).to.equal(99900);
         });
       });
     });
