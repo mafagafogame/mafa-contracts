@@ -265,7 +265,7 @@ contract MafaStore is
 
         uint256 itemPriceInMAFA = 0;
         if (item.title == bytes32("mafabox")) {
-            itemPriceInMAFA = item.price;
+            itemPriceInMAFA = item.price.mul(amounts);
         } else {
             uint256 mafaBusdPrice = getMAFAtoBUSDprice();
             itemPriceInMAFA = (item.price.mul(amounts).mul(10**18).div(mafaBusdPrice));
