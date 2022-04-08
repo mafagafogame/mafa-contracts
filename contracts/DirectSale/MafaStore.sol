@@ -38,9 +38,19 @@ contract MafaStore is
         uint256 tokenId;
         // item title
         bytes32 title;
-        // price in USD. Value is multiplied by 10**18.
+        // item price. Value is multiplied by 10**18.
         uint256 price;
     }
+
+    // uncomment to upgrade on testnet
+    // struct Ticket {
+    //     // quantity of tickets to sell
+    //     uint16 quantity;
+    //     // ticket title
+    //     bytes32 title;
+    //     // price in USD. Value is multiplied by 10**18.
+    //     uint256 price;
+    // }
 
     struct SellVolume {
         uint256 date;
@@ -181,7 +191,6 @@ contract MafaStore is
         bytes32 title,
         uint256 price
     ) external virtual onlyOwner {
-        require(tokenContract.isContract(), "NFT address must be a contract");
         require(price > 0, "Item price can't be 0");
 
         items.push(Item(tokenContract, tokenId, title, price));
@@ -249,12 +258,18 @@ contract MafaStore is
         require(amounts > 0, "Amounts must be greater than zero");
         require(id < items.length, "Item doesn't exists");
         Item memory item = items[id];
+        require(item.tokenContract.isContract(), "Only NFT items can be bought");
         require(item.title == title, "Title argument must match requested item title");
 
         address sender = _msgSender();
 
-        uint256 mafaBusdPrice = getMAFAtoBUSDprice();
-        uint256 itemPriceInMAFA = (item.price.mul(amounts).mul(10**18).div(mafaBusdPrice));
+        uint256 itemPriceInMAFA = 0;
+        if (item.title == bytes32("mafabox")) {
+            itemPriceInMAFA = item.price.mul(amounts);
+        } else {
+            uint256 mafaBusdPrice = getMAFAtoBUSDprice();
+            itemPriceInMAFA = (item.price.mul(amounts).mul(10**18).div(mafaBusdPrice));
+        }
 
         uint256 allowance = acceptedToken.allowance(sender, address(this));
         require(allowance >= itemPriceInMAFA, "Check the token allowance");
@@ -270,6 +285,39 @@ contract MafaStore is
         nftRegistry.mint(sender, item.tokenId, amounts, "");
 
         emit ItemBought(item.tokenContract, id, item.tokenId, owner(), sender, itemPriceInMAFA, amounts);
+    }
+
+    /**
+     * @dev Buy a pack of tickets.
+     * @param id ID on items array
+     * @param title Ticket pack title name
+     */
+    function buyTicket(uint256 id, bytes32 title) external virtual whenNotPaused nonReentrant {
+        require(id < items.length, "Item doesn't exists");
+        Item memory item = items[id];
+        require(!item.tokenContract.isContract(), "Only ticket packs can be bought");
+        require(item.title == title, "Title argument must match requested item title");
+
+        address sender = _msgSender();
+
+        uint256 itemPriceInMAFA = item.price;
+
+        uint256 allowance = acceptedToken.allowance(sender, address(this));
+        require(allowance >= itemPriceInMAFA, "Check the token allowance");
+
+        // Transfer item price amount to ticket seller
+        require(
+            acceptedToken.transferFrom(sender, ticketSeller, itemPriceInMAFA),
+            "Fail transferring the item price amount to ticket seller"
+        );
+
+        emit TicketBought(id, item.title, sender, itemPriceInMAFA);
+    }
+
+    function setTicketSeller(address newTicketSeller) external virtual onlyOwner {
+        ticketSeller = payable(newTicketSeller);
+
+        emit TicketSellerUpdated(newTicketSeller);
     }
 
     /**
@@ -554,6 +602,8 @@ contract MafaStore is
         uint256 price,
         uint256 amounts
     );
+    event TicketBought(uint256 id, bytes32 indexed title, address indexed buyer, uint256 indexed price);
+    event TicketSellerUpdated(address indexed ticketSeller);
     event AvatarSold(address indexed seller, uint256[] indexed tokenId, uint256 indexed price, uint256 amounts);
     event AcceptedTokenChanged(address indexed addr);
     event AvatarAddressChanged(address indexed addr);
@@ -567,6 +617,11 @@ contract MafaStore is
     mapping(address => SellVolume[]) public dailyVolumes;
 
     uint256 public dailySellPercentage;
+
+    // uncomment to upgrade on testnet
+    // Ticket[] public tickets;
+
+    address payable public ticketSeller;
 }
 
 contract MafaStoreTestV2 is MafaStore {

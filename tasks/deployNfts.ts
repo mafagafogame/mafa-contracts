@@ -158,7 +158,7 @@ task("deploy:nfts", "Deploy all contracts related to nfts")
         mafaBox.address,
         0,
         ethers.utils.formatBytes32String("mafabox"),
-        ethers.utils.parseEther("50"),
+        ethers.utils.parseEther("200"),
       )
     ).wait(1);
 
@@ -188,6 +188,19 @@ task("deploy:nfts", "Deploy all contracts related to nfts")
         ethers.utils.parseEther("150"),
       )
     ).wait(1);
+
+    console.log("brooders created at the store");
+
+    await (
+      await mafastore.addItemToBeSold(
+        "0x0000000000000000000000000000000000000000",
+        0,
+        ethers.utils.formatBytes32String("pack 1"),
+        ethers.utils.parseEther("100"),
+      )
+    ).wait(1);
+
+    console.log("ticket packs created at the store");
 
     console.log("Brooders created at the store");
     console.log("NFTs uris setted");
