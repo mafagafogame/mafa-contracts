@@ -28,19 +28,20 @@ task("upgrade:contract", "Upgrade a contract from an address")
 
     await upgrades.upgradeProxy(contract, ContractFactory, { kind: "uups" });
 
-    if (taskArgs.name === "mafastore") {
-      await (await contract.setTicketSeller("0xE341d141133D82Def0Ee59a3D9365fd2942Eeb63")).wait(3);
-
+    if (taskArgs.name === "mafabox") {
       await (
-        await contract.addItemToBeSold(
-          "0x0000000000000000000000000000000000000000",
-          0,
-          ethers.utils.formatBytes32String("pack 1"),
-          ethers.utils.parseEther("100"),
-        )
+        await contract.setProbabilities([
+          ethers.utils.parseEther("0.19"), // Original
+          ethers.utils.parseEther("0.19"), // Galito
+          ethers.utils.parseEther("0.08"), // Mafagalo
+          ethers.utils.parseEther("0.19"), // Flamingafo
+          ethers.utils.parseEther("0.08"), // Mafaflamingo
+          ethers.utils.parseEther("0.19"), // Pagafo
+          ethers.utils.parseEther("0.08"), // Mafavão
+        ])
       ).wait(3);
 
-      await (await contract.updateItemPrice(0, ethers.utils.parseEther("200"))).wait(3);
+      console.log("probabilities set");
     }
 
     console.log("Contract Upgraded!");
