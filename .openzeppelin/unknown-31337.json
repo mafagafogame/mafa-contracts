@@ -2,11 +2,6 @@
   "manifestVersion": "3.2",
   "proxies": [
     {
-      "address": "0x1858efabd1Aa22233E4A6298933e6Faf32f2A663",
-      "txHash": "0xd762fdfccf52d4182ec61aea22e5829d5439aab44ac8f7d1ed875ef1c0b4e93d",
-      "kind": "uups"
-    },
-    {
       "address": "0x95bEc9Cd4A8C26b08685B3758A0082799b9F548c",
       "txHash": "0x8d02e38e40c19f590e67edc76236beccaa1549d3d21ade78de33bd230f565902",
       "kind": "uups"
@@ -119,6 +114,11 @@
     {
       "address": "0x2d472843a65D9009F77C255f210AFe5b946a5109",
       "txHash": "0x0c8060e7ca57a182c9ef74cceed42eb8b236e6ca84de858a013a55b992a2cb74",
+      "kind": "uups"
+    },
+    {
+      "address": "0x1858efabd1Aa22233E4A6298933e6Faf32f2A663",
+      "txHash": "0xd762fdfccf52d4182ec61aea22e5829d5439aab44ac8f7d1ed875ef1c0b4e93d",
       "kind": "uups"
     }
   ],
@@ -245,7 +245,7 @@
           {
             "contract": "BrooderNft",
             "label": "brooder",
-            "type": "t_mapping(t_uint256,t_struct(Brooder)15010_storage)",
+            "type": "t_mapping(t_uint256,t_struct(Brooder)14731_storage)",
             "src": "contracts/NFTs/BrooderNft.sol:20"
           },
           {
@@ -256,13 +256,13 @@
           }
         ],
         "types": {
-          "t_mapping(t_uint256,t_struct(Brooder)15010_storage)": {
+          "t_mapping(t_uint256,t_struct(Brooder)14731_storage)": {
             "label": "mapping(uint256 => struct BrooderNft.Brooder)"
           },
           "t_uint256": {
             "label": "uint256"
           },
-          "t_struct(Brooder)15010_storage": {
+          "t_struct(Brooder)14731_storage": {
             "label": "struct BrooderNft.Brooder",
             "members": [
               {

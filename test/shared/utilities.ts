@@ -1,4 +1,4 @@
-import { BigNumber } from "ethers";
+import { BigNumber, utils } from "ethers";
 import { artifacts, ethers, waffle } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { Artifact } from "hardhat/types";
@@ -10,7 +10,7 @@ export function expandTo18Decimals(n: number): BigNumber {
 }
 
 export function bigNumberToFloat(n: BigNumber): number {
-  return parseFloat(ethers.utils.formatEther(n));
+  return parseFloat(utils.formatEther(n));
 }
 
 export function daysToUnixDate(days: number): number {
@@ -19,16 +19,17 @@ export function daysToUnixDate(days: number): number {
 
 export async function deployMafaCoin(owner: SignerWithAddress) {
   const mafacoinArtifact: Artifact = await artifacts.readArtifact("MafaCoinV2");
-  const mafacoin = <MafaCoinV2>await waffle.deployContract(owner, mafacoinArtifact);
+  const mafacoin = <MafaCoinV2>(
+    await waffle.deployContract(owner, mafacoinArtifact, ["Mafacoin", "MAFA", utils.parseEther("1000000000")])
+  );
 
   await mafacoin.afterPreSale();
   await mafacoin.setBurnBuyFee(0);
   await mafacoin.setBurnSellFee(0);
-  await mafacoin.setLiquidyBuyFee(0);
-  await mafacoin.setLiquidySellFee(0);
+  await mafacoin.setLiquidityBuyFee(0);
+  await mafacoin.setLiquiditySellFee(0);
   await mafacoin.setTeamBuyFee(0);
   await mafacoin.setTeamSellFee(0);
-  await mafacoin.setLotterySellFee(0);
   return mafacoin;
 }
 

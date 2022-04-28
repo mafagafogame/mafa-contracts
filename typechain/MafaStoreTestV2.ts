@@ -65,7 +65,6 @@ export interface MafaStoreTestV2Interface extends utils.Interface {
     "setTicketSeller(address)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "ticketSeller()": FunctionFragment;
-    "tickets(uint256)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
     "unpause()": FunctionFragment;
     "updateItemPrice(uint256,uint256)": FunctionFragment;
@@ -187,10 +186,6 @@ export interface MafaStoreTestV2Interface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "ticketSeller",
     values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "tickets",
-    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "transferOwnership",
@@ -325,7 +320,6 @@ export interface MafaStoreTestV2Interface extends utils.Interface {
     functionFragment: "ticketSeller",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "tickets", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "transferOwnership",
     data: BytesLike
@@ -723,17 +717,6 @@ export interface MafaStoreTestV2 extends BaseContract {
 
     ticketSeller(overrides?: CallOverrides): Promise<[string]>;
 
-    tickets(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<
-      [number, string, BigNumber] & {
-        quantity: number;
-        title: string;
-        price: BigNumber;
-      }
-    >;
-
     transferOwnership(
       newOwner: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -953,17 +936,6 @@ export interface MafaStoreTestV2 extends BaseContract {
 
   ticketSeller(overrides?: CallOverrides): Promise<string>;
 
-  tickets(
-    arg0: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<
-    [number, string, BigNumber] & {
-      quantity: number;
-      title: string;
-      price: BigNumber;
-    }
-  >;
-
   transferOwnership(
     newOwner: string,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -1166,17 +1138,6 @@ export interface MafaStoreTestV2 extends BaseContract {
     ): Promise<boolean>;
 
     ticketSeller(overrides?: CallOverrides): Promise<string>;
-
-    tickets(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<
-      [number, string, BigNumber] & {
-        quantity: number;
-        title: string;
-        price: BigNumber;
-      }
-    >;
 
     transferOwnership(
       newOwner: string,
@@ -1540,8 +1501,6 @@ export interface MafaStoreTestV2 extends BaseContract {
 
     ticketSeller(overrides?: CallOverrides): Promise<BigNumber>;
 
-    tickets(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-
     transferOwnership(
       newOwner: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1758,11 +1717,6 @@ export interface MafaStoreTestV2 extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     ticketSeller(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    tickets(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
 
     transferOwnership(
       newOwner: string,
