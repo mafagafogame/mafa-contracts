@@ -251,6 +251,10 @@ describe.only("MafaCoinV2", function () {
           await contract.setMaxWalletAmount(utils.parseEther("10000"));
         });
 
+        it("Should allow transfer between accounts of amounts thatm exceeds maximum wallet amount allowed", async function () {
+          await expect(contract.transfer(address4.address, utils.parseEther("100000"))).to.emit(contract, "Transfer");
+        });
+
         it("Should swap ETH for Tokens if the balance of the buy after buying is lower than maximum wallet amount allowed", async function () {
           await expect(
             router
@@ -265,7 +269,7 @@ describe.only("MafaCoinV2", function () {
           ).to.emit(contract, "Transfer");
         });
 
-        it("Should revert sell buy transaction if the balance of the buy after buying is greater than maximum wallet amount allowed", async function () {
+        it("Should revert buy transaction if the balance of the buy after buying is greater than maximum wallet amount allowed", async function () {
           await expect(
             router
               .connect(address4)

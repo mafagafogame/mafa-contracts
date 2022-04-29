@@ -87,11 +87,11 @@ contract MafaCoinV2 is ERC20, Ownable {
         liquidityBuyFee = 3 * 10**16; // 4%
         burnBuyFee = 1 * 10**16; // 1%
 
-        teamSellFee = 5 * 10**16; // 2%
-        liquiditySellFee = 3 * 10**16; // 4%
+        teamSellFee = 5 * 10**16; // 5%
+        liquiditySellFee = 3 * 10**16; // 3%
         burnSellFee = 1 * 10**16; // 1%
 
-        maxWalletAmount = totalSupply().div(10**2); // 0.01% of total supply
+        maxWalletAmount = totalSupply().mul(3).div(10**3); // 0.3% of total supply
 
         tradingIsEnabled = true;
     }
@@ -287,7 +287,12 @@ contract MafaCoinV2 is ERC20, Ownable {
                     super._transfer(from, DEAD_ADDRESS, tokensToBurn);
                 }
             } else {
-                require(balanceOf(to) + amount <= maxWalletAmount, "New balance exceeds the maximum allowed amount");
+                if (automatedMarketMakerPairs[from]) {
+                    require(
+                        balanceOf(to) + amount <= maxWalletAmount,
+                        "New balance exceeds the maximum allowed amount"
+                    );
+                }
 
                 if (teamBuyFee > 0) {
                     tokensToTeam = amount.mul(teamBuyFee).div(10**decimals());
