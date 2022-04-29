@@ -242,6 +242,46 @@ describe.only("MafaCoinV2", function () {
         expect(initialBalance).to.be.lt(finalBalance);
       });
 
+      describe("Max Sell amount", function () {
+        beforeEach(async function () {
+          await contract.setTeamSellFee(0);
+          await contract.setLiquiditySellFee(0);
+          await contract.setBurnSellFee(0);
+
+          await contract.setMaxSellAmount(utils.parseEther("10000"));
+          await contract.transfer(address4.address, utils.parseEther("10001"));
+          await contract.connect(address4).approve(router.address, ethers.constants.MaxUint256);
+        });
+
+        it("Should swap ETH for Tokens if sell amount is lower than maximum sell amount allowed", async function () {
+          await expect(
+            router
+              .connect(address4)
+              .swapExactTokensForETHSupportingFeeOnTransferTokens(
+                utils.parseEther("10000"),
+                0,
+                [contract.address, WETH],
+                address4.address,
+                ethers.constants.MaxUint256,
+              ),
+          ).to.emit(contract, "Transfer");
+        });
+
+        it("Should revert sell transaction if sell amount is greater than maximum sell amount allowed", async function () {
+          await expect(
+            router
+              .connect(address4)
+              .swapExactTokensForETHSupportingFeeOnTransferTokens(
+                utils.parseEther("10001"),
+                0,
+                [contract.address, WETH],
+                address4.address,
+                ethers.constants.MaxUint256,
+              ),
+          ).to.be.revertedWith("TransferHelper: TRANSFER_FROM_FAILED");
+        });
+      });
+
       describe("Max wallet amount", function () {
         beforeEach(async function () {
           await contract.setTeamBuyFee(0);

@@ -38,6 +38,7 @@ export interface MafaCoinV2Interface extends utils.Interface {
     "liquidityAddress()": FunctionFragment;
     "liquidityBuyFee()": FunctionFragment;
     "liquiditySellFee()": FunctionFragment;
+    "maxSellAmount()": FunctionFragment;
     "maxWalletAmount()": FunctionFragment;
     "name()": FunctionFragment;
     "owner()": FunctionFragment;
@@ -48,6 +49,7 @@ export interface MafaCoinV2Interface extends utils.Interface {
     "setLiquidityAddress(address)": FunctionFragment;
     "setLiquidityBuyFee(uint256)": FunctionFragment;
     "setLiquiditySellFee(uint256)": FunctionFragment;
+    "setMaxSellAmount(uint256)": FunctionFragment;
     "setMaxWalletAmount(uint256)": FunctionFragment;
     "setTeamAddress(address)": FunctionFragment;
     "setTeamBuyFee(uint256)": FunctionFragment;
@@ -130,6 +132,10 @@ export interface MafaCoinV2Interface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "maxSellAmount",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "maxWalletAmount",
     values?: undefined
   ): string;
@@ -161,6 +167,10 @@ export interface MafaCoinV2Interface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "setLiquiditySellFee",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setMaxSellAmount",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
@@ -274,6 +284,10 @@ export interface MafaCoinV2Interface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "maxSellAmount",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "maxWalletAmount",
     data: BytesLike
   ): Result;
@@ -305,6 +319,10 @@ export interface MafaCoinV2Interface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "setLiquiditySellFee",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setMaxSellAmount",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -365,6 +383,7 @@ export interface MafaCoinV2Interface extends utils.Interface {
     "ExcludeFromFees(address,bool)": EventFragment;
     "LiquidityAddressUpdated(address)": EventFragment;
     "LiquidityFeeUpdated(uint256)": EventFragment;
+    "MaxSellAmountUpdated(uint256)": EventFragment;
     "MaxWalletAmountUpdated(uint256)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
     "SetAutomatedMarketMakerPair(address,bool)": EventFragment;
@@ -379,6 +398,7 @@ export interface MafaCoinV2Interface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "ExcludeFromFees"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "LiquidityAddressUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "LiquidityFeeUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MaxSellAmountUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "MaxWalletAmountUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(
@@ -423,6 +443,14 @@ export type LiquidityFeeUpdatedEvent = TypedEvent<
 
 export type LiquidityFeeUpdatedEventFilter =
   TypedEventFilter<LiquidityFeeUpdatedEvent>;
+
+export type MaxSellAmountUpdatedEvent = TypedEvent<
+  [BigNumber],
+  { amount: BigNumber }
+>;
+
+export type MaxSellAmountUpdatedEventFilter =
+  TypedEventFilter<MaxSellAmountUpdatedEvent>;
 
 export type MaxWalletAmountUpdatedEvent = TypedEvent<
   [BigNumber],
@@ -571,6 +599,8 @@ export interface MafaCoinV2 extends BaseContract {
 
     liquiditySellFee(overrides?: CallOverrides): Promise<[BigNumber]>;
 
+    maxSellAmount(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     maxWalletAmount(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     name(overrides?: CallOverrides): Promise<[string]>;
@@ -609,6 +639,11 @@ export interface MafaCoinV2 extends BaseContract {
 
     setLiquiditySellFee(
       newFee: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setMaxSellAmount(
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -730,6 +765,8 @@ export interface MafaCoinV2 extends BaseContract {
 
   liquiditySellFee(overrides?: CallOverrides): Promise<BigNumber>;
 
+  maxSellAmount(overrides?: CallOverrides): Promise<BigNumber>;
+
   maxWalletAmount(overrides?: CallOverrides): Promise<BigNumber>;
 
   name(overrides?: CallOverrides): Promise<string>;
@@ -768,6 +805,11 @@ export interface MafaCoinV2 extends BaseContract {
 
   setLiquiditySellFee(
     newFee: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setMaxSellAmount(
+    amount: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -890,6 +932,8 @@ export interface MafaCoinV2 extends BaseContract {
 
     liquiditySellFee(overrides?: CallOverrides): Promise<BigNumber>;
 
+    maxSellAmount(overrides?: CallOverrides): Promise<BigNumber>;
+
     maxWalletAmount(overrides?: CallOverrides): Promise<BigNumber>;
 
     name(overrides?: CallOverrides): Promise<string>;
@@ -926,6 +970,11 @@ export interface MafaCoinV2 extends BaseContract {
 
     setLiquiditySellFee(
       newFee: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setMaxSellAmount(
+      amount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1023,6 +1072,13 @@ export interface MafaCoinV2 extends BaseContract {
     LiquidityFeeUpdated(
       fee?: BigNumberish | null
     ): LiquidityFeeUpdatedEventFilter;
+
+    "MaxSellAmountUpdated(uint256)"(
+      amount?: BigNumberish | null
+    ): MaxSellAmountUpdatedEventFilter;
+    MaxSellAmountUpdated(
+      amount?: BigNumberish | null
+    ): MaxSellAmountUpdatedEventFilter;
 
     "MaxWalletAmountUpdated(uint256)"(
       amount?: BigNumberish | null
@@ -1151,6 +1207,8 @@ export interface MafaCoinV2 extends BaseContract {
 
     liquiditySellFee(overrides?: CallOverrides): Promise<BigNumber>;
 
+    maxSellAmount(overrides?: CallOverrides): Promise<BigNumber>;
+
     maxWalletAmount(overrides?: CallOverrides): Promise<BigNumber>;
 
     name(overrides?: CallOverrides): Promise<BigNumber>;
@@ -1189,6 +1247,11 @@ export interface MafaCoinV2 extends BaseContract {
 
     setLiquiditySellFee(
       newFee: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setMaxSellAmount(
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1317,6 +1380,8 @@ export interface MafaCoinV2 extends BaseContract {
 
     liquiditySellFee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    maxSellAmount(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     maxWalletAmount(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
@@ -1355,6 +1420,11 @@ export interface MafaCoinV2 extends BaseContract {
 
     setLiquiditySellFee(
       newFee: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setMaxSellAmount(
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

@@ -9,6 +9,8 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
 
+import "hardhat/console.sol";
+
 contract MafaCoinV2 is ERC20, Ownable {
     using SafeMath for uint256;
 
@@ -41,6 +43,9 @@ contract MafaCoinV2 is ERC20, Ownable {
 
     // @dev maximum amount of tokens a user can hold
     uint256 public maxWalletAmount;
+
+    // @dev max amount of tokens a user can sell on a single transaction
+    uint256 public maxSellAmount;
 
     // @dev the defauld dex router
     IUniswapV2Router02 public dexRouter;
@@ -92,6 +97,7 @@ contract MafaCoinV2 is ERC20, Ownable {
         burnSellFee = 1 * 10**16; // 1%
 
         maxWalletAmount = totalSupply().mul(3).div(10**3); // 0.3% of total supply
+        maxSellAmount = totalSupply().mul(3).div(10**4); // 0.05% of total supply
 
         tradingIsEnabled = true;
     }
@@ -184,6 +190,12 @@ contract MafaCoinV2 is ERC20, Ownable {
         emit MaxWalletAmountUpdated(amount);
     }
 
+    function setMaxSellAmount(uint256 amount) public onlyOwner {
+        maxSellAmount = amount;
+
+        emit MaxSellAmountUpdated(amount);
+    }
+
     function _swapAndLiquify(uint256 amount, address cakeReceiver) private {
         uint256 half = amount.div(2); // this token
         uint256 otherHalf = amount.sub(half);
@@ -262,7 +274,7 @@ contract MafaCoinV2 is ERC20, Ownable {
 
         if (isExcludedFromFees[from] || isExcludedFromFees[to]) {
             super._transfer(from, to, amount);
-        } else {                
+        } else {
             uint256 tokensToTeam = 0;
             uint256 tokensToLiquidity = 0;
             uint256 tokensToBurn = 0;
@@ -271,6 +283,8 @@ contract MafaCoinV2 is ERC20, Ownable {
             // automatedMarketMakerPairs[from] -> buy tokens on dex
             // automatedMarketMakerPairs[to]   -> sell tokens on dex
             if (automatedMarketMakerPairs[to]) {
+                require(amount <= maxSellAmount, "Amount being sold exceeds the maximum allowed amount");
+
                 if (teamSellFee > 0) {
                     tokensToTeam = amount.mul(teamSellFee).div(10**decimals());
                     _takeFee(from, teamAddress, tokensToTeam);
@@ -322,7 +336,8 @@ contract MafaCoinV2 is ERC20, Ownable {
     event LiquidityAddressUpdated(address indexed liquidityAddress);
     event LiquidityFeeUpdated(uint256 indexed fee);
     event BurnFeeUpdated(uint256 indexed fee);
-    event MaxWalletAmountUpdated (uint256 indexed amount);
+    event MaxWalletAmountUpdated(uint256 indexed amount);
+    event MaxSellAmountUpdated(uint256 indexed amount);
     event SwapAndLiquify(
         uint256 indexed tokensSwapped,
         uint256 indexed bnbReceived,
