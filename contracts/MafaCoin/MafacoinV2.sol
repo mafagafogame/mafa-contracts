@@ -39,6 +39,9 @@ contract MafaCoinV2 is ERC20, Ownable {
     // @dev the fee the burn takes on sell txs.
     uint256 public burnSellFee;
 
+    // @dev maximum amount of tokens a user can hold
+    uint256 public maxWalletAmount;
+
     // @dev the defauld dex router
     IUniswapV2Router02 public dexRouter;
 
@@ -87,6 +90,8 @@ contract MafaCoinV2 is ERC20, Ownable {
         teamSellFee = 5 * 10**16; // 2%
         liquiditySellFee = 3 * 10**16; // 4%
         burnSellFee = 1 * 10**16; // 1%
+
+        maxWalletAmount = totalSupply().div(10**2); // 0.01% of total supply
 
         tradingIsEnabled = true;
     }
@@ -173,6 +178,12 @@ contract MafaCoinV2 is ERC20, Ownable {
         return teamSellFee.add(liquiditySellFee).add(burnSellFee);
     }
 
+    function setMaxWalletAmount(uint256 amount) public onlyOwner {
+        maxWalletAmount = amount;
+
+        emit MaxWalletAmountUpdated(amount);
+    }
+
     function _swapAndLiquify(uint256 amount, address cakeReceiver) private {
         uint256 half = amount.div(2); // this token
         uint256 otherHalf = amount.sub(half);
@@ -251,7 +262,7 @@ contract MafaCoinV2 is ERC20, Ownable {
 
         if (isExcludedFromFees[from] || isExcludedFromFees[to]) {
             super._transfer(from, to, amount);
-        } else {
+        } else {                
             uint256 tokensToTeam = 0;
             uint256 tokensToLiquidity = 0;
             uint256 tokensToBurn = 0;
@@ -276,6 +287,8 @@ contract MafaCoinV2 is ERC20, Ownable {
                     super._transfer(from, DEAD_ADDRESS, tokensToBurn);
                 }
             } else {
+                require(balanceOf(to) + amount <= maxWalletAmount, "New balance exceeds the maximum allowed amount");
+
                 if (teamBuyFee > 0) {
                     tokensToTeam = amount.mul(teamBuyFee).div(10**decimals());
                     super._transfer(from, teamAddress, tokensToTeam);
@@ -304,6 +317,7 @@ contract MafaCoinV2 is ERC20, Ownable {
     event LiquidityAddressUpdated(address indexed liquidityAddress);
     event LiquidityFeeUpdated(uint256 indexed fee);
     event BurnFeeUpdated(uint256 indexed fee);
+    event MaxWalletAmountUpdated (uint256 indexed amount);
     event SwapAndLiquify(
         uint256 indexed tokensSwapped,
         uint256 indexed bnbReceived,

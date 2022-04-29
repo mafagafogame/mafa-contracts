@@ -241,6 +241,44 @@ describe.only("MafaCoinV2", function () {
         expect(await contract.balanceOf(await contract.DEAD_ADDRESS())).to.equal(utils.parseEther("500000000"));
         expect(initialBalance).to.be.lt(finalBalance);
       });
+
+      describe("Max wallet amount", function () {
+        beforeEach(async function () {
+          await contract.setTeamBuyFee(0);
+          await contract.setLiquidityBuyFee(0);
+          await contract.setBurnBuyFee(0);
+
+          await contract.setMaxWalletAmount(utils.parseEther("10000"));
+        });
+
+        it("Should swap ETH for Tokens if the balance of the buy after buying is lower than maximum wallet amount allowed", async function () {
+          await expect(
+            router
+              .connect(address4)
+              .swapExactETHForTokensSupportingFeeOnTransferTokens(
+                0,
+                [WETH, contract.address],
+                address4.address,
+                ethers.constants.MaxUint256,
+                { value: utils.parseEther("100") },
+              ),
+          ).to.emit(contract, "Transfer");
+        });
+
+        it("Should revert sell buy transaction if the balance of the buy after buying is greater than maximum wallet amount allowed", async function () {
+          await expect(
+            router
+              .connect(address4)
+              .swapExactETHForTokensSupportingFeeOnTransferTokens(
+                0,
+                [WETH, contract.address],
+                address4.address,
+                ethers.constants.MaxUint256,
+                { value: utils.parseEther("120") },
+              ),
+          ).to.be.revertedWith("Pancake: TRANSFER_FAILED");
+        });
+      });
     });
   });
 
