@@ -117,7 +117,8 @@ contract MafaCoinV2 is ERC20, Ownable {
     }
 
     function setDevelopmentAddress(address newAddress) external onlyOwner {
-        require(developmentAddress != newAddress, "Development address already setted");
+        require(newAddress != address(0), "Development address cannot be zero address");
+        require(developmentAddress != newAddress, "Development address already set");
         developmentAddress = newAddress;
 
         emit DevelopmentAddressUpdated(newAddress);
@@ -136,7 +137,8 @@ contract MafaCoinV2 is ERC20, Ownable {
     }
 
     function setMarketingAddress(address newAddress) external onlyOwner {
-        require(marketingAddress != newAddress, "Marketing address already setted");
+        require(newAddress != address(0), "Marketing address cannot be zero address");
+        require(marketingAddress != newAddress, "Marketing address already set");
         marketingAddress = newAddress;
 
         emit MarketingAddressUpdated(newAddress);
@@ -155,7 +157,8 @@ contract MafaCoinV2 is ERC20, Ownable {
     }
 
     function setLiquidityAddress(address newAddress) external onlyOwner {
-        require(liquidityAddress != newAddress, "Liquidity address already setted");
+        require(newAddress != address(0), "Liquidity address cannot be zero address");
+        require(liquidityAddress != newAddress, "Liquidity address already set");
         liquidityAddress = newAddress;
 
         emit LiquidityAddressUpdated(newAddress);
