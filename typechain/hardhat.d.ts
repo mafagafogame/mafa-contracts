@@ -241,6 +241,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.LibMintable__factory>;
     getContractFactory(
+      name: "AbstractRoyalties",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.AbstractRoyalties__factory>;
+    getContractFactory(
       name: "LibPart",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.LibPart__factory>;
@@ -550,6 +554,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.LibMintable>;
+    getContractAt(
+      name: "AbstractRoyalties",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.AbstractRoyalties>;
     getContractAt(
       name: "LibPart",
       address: string,

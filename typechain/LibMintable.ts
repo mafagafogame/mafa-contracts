@@ -17,15 +17,24 @@ import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
 export interface LibMintableInterface extends utils.Interface {
   functions: {
     "_INTERFACE_ID_ERC2981()": FunctionFragment;
+    "c_0xf55ef18a(bytes32)": FunctionFragment;
   };
 
   encodeFunctionData(
     functionFragment: "_INTERFACE_ID_ERC2981",
     values?: undefined
   ): string;
+  encodeFunctionData(
+    functionFragment: "c_0xf55ef18a",
+    values: [BytesLike]
+  ): string;
 
   decodeFunctionResult(
     functionFragment: "_INTERFACE_ID_ERC2981",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "c_0xf55ef18a",
     data: BytesLike
   ): Result;
 
@@ -60,22 +69,47 @@ export interface LibMintable extends BaseContract {
 
   functions: {
     _INTERFACE_ID_ERC2981(overrides?: CallOverrides): Promise<[string]>;
+
+    c_0xf55ef18a(
+      c__0xf55ef18a: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[void]>;
   };
 
   _INTERFACE_ID_ERC2981(overrides?: CallOverrides): Promise<string>;
 
+  c_0xf55ef18a(
+    c__0xf55ef18a: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<void>;
+
   callStatic: {
     _INTERFACE_ID_ERC2981(overrides?: CallOverrides): Promise<string>;
+
+    c_0xf55ef18a(
+      c__0xf55ef18a: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
   };
 
   filters: {};
 
   estimateGas: {
     _INTERFACE_ID_ERC2981(overrides?: CallOverrides): Promise<BigNumber>;
+
+    c_0xf55ef18a(
+      c__0xf55ef18a: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
     _INTERFACE_ID_ERC2981(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    c_0xf55ef18a(
+      c__0xf55ef18a: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };

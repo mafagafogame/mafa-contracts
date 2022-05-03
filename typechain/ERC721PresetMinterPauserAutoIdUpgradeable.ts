@@ -26,6 +26,7 @@ export interface ERC721PresetMinterPauserAutoIdUpgradeableInterface
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
     "burn(uint256)": FunctionFragment;
+    "c_0x14600763(bytes32)": FunctionFragment;
     "getApproved(uint256)": FunctionFragment;
     "getRoleAdmin(bytes32)": FunctionFragment;
     "getRoleMember(bytes32,uint256)": FunctionFragment;
@@ -70,6 +71,10 @@ export interface ERC721PresetMinterPauserAutoIdUpgradeableInterface
   ): string;
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
   encodeFunctionData(functionFragment: "burn", values: [BigNumberish]): string;
+  encodeFunctionData(
+    functionFragment: "c_0x14600763",
+    values: [BytesLike]
+  ): string;
   encodeFunctionData(
     functionFragment: "getApproved",
     values: [BigNumberish]
@@ -164,6 +169,10 @@ export interface ERC721PresetMinterPauserAutoIdUpgradeableInterface
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "burn", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "c_0x14600763",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "getApproved",
     data: BytesLike
@@ -347,6 +356,11 @@ export interface ERC721PresetMinterPauserAutoIdUpgradeable
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    c_0x14600763(
+      c__0x14600763: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[void]>;
+
     getApproved(
       tokenId: BigNumberish,
       overrides?: CallOverrides
@@ -490,6 +504,11 @@ export interface ERC721PresetMinterPauserAutoIdUpgradeable
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  c_0x14600763(
+    c__0x14600763: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<void>;
+
   getApproved(
     tokenId: BigNumberish,
     overrides?: CallOverrides
@@ -623,6 +642,11 @@ export interface ERC721PresetMinterPauserAutoIdUpgradeable
     balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     burn(tokenId: BigNumberish, overrides?: CallOverrides): Promise<void>;
+
+    c_0x14600763(
+      c__0x14600763: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     getApproved(
       tokenId: BigNumberish,
@@ -829,6 +853,11 @@ export interface ERC721PresetMinterPauserAutoIdUpgradeable
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    c_0x14600763(
+      c__0x14600763: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     getApproved(
       tokenId: BigNumberish,
       overrides?: CallOverrides
@@ -979,6 +1008,11 @@ export interface ERC721PresetMinterPauserAutoIdUpgradeable
     burn(
       tokenId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    c_0x14600763(
+      c__0x14600763: BytesLike,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     getApproved(

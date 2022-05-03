@@ -31,6 +31,8 @@ export interface BrooderNftInterface extends utils.Interface {
     "brooder(uint256)": FunctionFragment;
     "burn(address,uint256,uint256)": FunctionFragment;
     "burnBatch(address,uint256[],uint256[])": FunctionFragment;
+    "c_0x3d1838a2(bytes32)": FunctionFragment;
+    "c_0xde2625b8(bytes32)": FunctionFragment;
     "createBrooder(uint256,uint256)": FunctionFragment;
     "exists(uint256)": FunctionFragment;
     "getBrooder(uint256)": FunctionFragment;
@@ -106,6 +108,14 @@ export interface BrooderNftInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "burnBatch",
     values: [string, BigNumberish[], BigNumberish[]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "c_0x3d1838a2",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "c_0xde2625b8",
+    values: [BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "createBrooder",
@@ -242,6 +252,14 @@ export interface BrooderNftInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "brooder", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "burn", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "burnBatch", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "c_0x3d1838a2",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "c_0xde2625b8",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "createBrooder",
     data: BytesLike
@@ -508,6 +526,16 @@ export interface BrooderNft extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    c_0x3d1838a2(
+      c__0x3d1838a2: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[void]>;
+
+    c_0xde2625b8(
+      c__0xde2625b8: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[void]>;
+
     createBrooder(
       id: BigNumberish,
       breedTime: BigNumberish,
@@ -717,6 +745,16 @@ export interface BrooderNft extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  c_0x3d1838a2(
+    c__0x3d1838a2: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<void>;
+
+  c_0xde2625b8(
+    c__0xde2625b8: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<void>;
+
   createBrooder(
     id: BigNumberish,
     breedTime: BigNumberish,
@@ -917,6 +955,16 @@ export interface BrooderNft extends BaseContract {
       account: string,
       ids: BigNumberish[],
       values: BigNumberish[],
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    c_0x3d1838a2(
+      c__0x3d1838a2: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    c_0xde2625b8(
+      c__0xde2625b8: BytesLike,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1232,6 +1280,16 @@ export interface BrooderNft extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    c_0x3d1838a2(
+      c__0x3d1838a2: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    c_0xde2625b8(
+      c__0xde2625b8: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     createBrooder(
       id: BigNumberish,
       breedTime: BigNumberish,
@@ -1445,6 +1503,16 @@ export interface BrooderNft extends BaseContract {
       ids: BigNumberish[],
       values: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    c_0x3d1838a2(
+      c__0x3d1838a2: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    c_0xde2625b8(
+      c__0xde2625b8: BytesLike,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     createBrooder(

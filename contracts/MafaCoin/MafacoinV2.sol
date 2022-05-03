@@ -14,17 +14,14 @@ import "hardhat/console.sol";
 contract MafaCoinV2 is ERC20, Ownable {
     using SafeMath for uint256;
 
-    // @dev dead address
-    address public constant DEAD_ADDRESS = 0x000000000000000000000000000000000000dEaD;
+    // @dev the fee the development takes on buy txs.
+    uint256 public developmentBuyFee;
 
-    // @dev the fee the team takes on buy txs.
-    uint256 public teamBuyFee;
+    // @dev the fee the development takes on sell txs.
+    uint256 public developmentSellFee;
 
-    // @dev the fee the team takes on sell txs.
-    uint256 public teamSellFee;
-
-    // @dev which wallet will receive the team fee
-    address public teamAddress;
+    // @dev which wallet will receive the development fee
+    address public developmentAddress;
 
     // @dev the fee the liquidity takes on buy txs.
     uint256 public liquidityBuyFee;
@@ -35,11 +32,14 @@ contract MafaCoinV2 is ERC20, Ownable {
     // @dev which wallet will receive the cake tokens from liquidity.
     address public liquidityAddress;
 
-    // @dev the fee the burn takes on buy txs.
-    uint256 public burnBuyFee;
+    // @dev the fee the marketing takes on buy txs.
+    uint256 public marketingBuyFee;
 
-    // @dev the fee the burn takes on sell txs.
-    uint256 public burnSellFee;
+    // @dev the fee the marketing takes on sell txs.
+    uint256 public marketingSellFee;
+
+    // @dev which wallet will receive the marketing fee
+    address public marketingAddress;
 
     // @dev maximum amount of tokens a user can hold
     uint256 public maxWalletAmount;
@@ -62,9 +62,6 @@ contract MafaCoinV2 is ERC20, Ownable {
     // @dev what pairs are allowed to work in the token
     mapping(address => bool) public automatedMarketMakerPairs;
 
-    // @dev checks if transfer is allowed for non excluded from fees users
-    bool public tradingIsEnabled = false;
-
     constructor(
         string memory name,
         string memory symbol,
@@ -72,9 +69,9 @@ contract MafaCoinV2 is ERC20, Ownable {
     ) ERC20(name, symbol) {
         excludeFromFees(address(this), true);
         excludeFromFees(owner(), true);
-        excludeFromFees(DEAD_ADDRESS, true);
 
-        teamAddress = owner();
+        developmentAddress = owner();
+        marketingAddress = owner();
         liquidityAddress = owner();
 
         _mint(owner(), totalSupply);
@@ -85,21 +82,19 @@ contract MafaCoinV2 is ERC20, Ownable {
 
         dexPair = IUniswapV2Factory(dexRouter.factory()).createPair(address(this), dexRouter.WETH());
         _setAutomatedMarketMakerPair(dexPair, true);
-    }
 
-    function afterPreSale() external onlyOwner {
-        teamBuyFee = 1 * 10**16; // 2%
-        liquidityBuyFee = 3 * 10**16; // 4%
-        burnBuyFee = 1 * 10**16; // 1%
+        // 5% buy fee
+        marketingBuyFee = 1 * 10**16; // 1%
+        developmentBuyFee = 3 * 10**16; // 3%
+        liquidityBuyFee = 1 * 10**16; // 1%
 
-        teamSellFee = 5 * 10**16; // 5%
-        liquiditySellFee = 3 * 10**16; // 3%
-        burnSellFee = 1 * 10**16; // 1%
+        // 5% sell fee
+        marketingSellFee = 2 * 10**16; // 2%
+        developmentSellFee = 2 * 10**16; // 2%
+        liquiditySellFee = 1 * 10**16; // 1%
 
-        maxWalletAmount = totalSupply().mul(3).div(10**3); // 0.3% of total supply
-        maxSellAmount = totalSupply().mul(3).div(10**4); // 0.05% of total supply
-
-        tradingIsEnabled = true;
+        maxWalletAmount = totalSupply.mul(3).div(10**3); // 0.3% of total supply
+        maxSellAmount = totalSupply.mul(3).div(10**4); // 0.05% of total supply
     }
 
     receive() external payable {}
@@ -124,23 +119,42 @@ contract MafaCoinV2 is ERC20, Ownable {
         emit ExcludeFromFees(account, excluded);
     }
 
-    function setTeamAddress(address newAddress) public onlyOwner {
-        require(teamAddress != newAddress, "Team address already setted");
-        teamAddress = newAddress;
+    function setDevelopmentAddress(address newAddress) public onlyOwner {
+        require(developmentAddress != newAddress, "Development address already setted");
+        developmentAddress = newAddress;
 
-        emit TeamAddressUpdated(newAddress);
+        emit DevelopmentAddressUpdated(newAddress);
     }
 
-    function setTeamBuyFee(uint256 newFee) public onlyOwner {
-        teamBuyFee = newFee;
+    function setDevelopmentBuyFee(uint256 newFee) public onlyOwner {
+        developmentBuyFee = newFee;
 
-        emit TeamFeeUpdated(newFee);
+        emit DevelopmentFeeUpdated(newFee);
     }
 
-    function setTeamSellFee(uint256 newFee) public onlyOwner {
-        teamSellFee = newFee;
+    function setDevelopmentSellFee(uint256 newFee) public onlyOwner {
+        developmentSellFee = newFee;
 
-        emit TeamFeeUpdated(newFee);
+        emit DevelopmentFeeUpdated(newFee);
+    }
+
+    function setMarketingAddress(address newAddress) public onlyOwner {
+        require(marketingAddress != newAddress, "Marketing address already setted");
+        marketingAddress = newAddress;
+
+        emit MarketingAddressUpdated(newAddress);
+    }
+
+    function setMarketingBuyFee(uint256 newFee) public onlyOwner {
+        marketingBuyFee = newFee;
+
+        emit MarketingFeeUpdated(newFee);
+    }
+
+    function setMarketingSellFee(uint256 newFee) public onlyOwner {
+        marketingSellFee = newFee;
+
+        emit MarketingFeeUpdated(newFee);
     }
 
     function setLiquidityAddress(address newAddress) public onlyOwner {
@@ -162,26 +176,14 @@ contract MafaCoinV2 is ERC20, Ownable {
         emit LiquidityFeeUpdated(newFee);
     }
 
-    function setBurnBuyFee(uint256 newFee) public onlyOwner {
-        burnBuyFee = newFee;
-
-        emit BurnFeeUpdated(newFee);
-    }
-
-    function setBurnSellFee(uint256 newFee) public onlyOwner {
-        burnSellFee = newFee;
-
-        emit BurnFeeUpdated(newFee);
-    }
-
     // @dev just to simplify to the user, the total fees on buy
     function totalBuyFees() external view returns (uint256) {
-        return teamBuyFee.add(liquidityBuyFee).add(burnBuyFee);
+        return developmentBuyFee.add(liquidityBuyFee).add(marketingBuyFee);
     }
 
     // @dev just to simplify to the user, the total fees on sell
     function totalSellFees() external view returns (uint256) {
-        return teamSellFee.add(liquiditySellFee).add(burnSellFee);
+        return developmentSellFee.add(liquiditySellFee).add(marketingSellFee);
     }
 
     function setMaxWalletAmount(uint256 amount) public onlyOwner {
@@ -270,14 +272,13 @@ contract MafaCoinV2 is ERC20, Ownable {
         require(from != address(0), "ERC20: transfer from the zero address");
         require(to != address(0), "ERC20: transfer to the zero address");
         require(amount > 0, "Transfer amount must be greater than zero");
-        require(tradingIsEnabled || (isExcludedFromFees[from] || isExcludedFromFees[to]), "Trading has not started");
 
         if (isExcludedFromFees[from] || isExcludedFromFees[to]) {
             super._transfer(from, to, amount);
         } else {
-            uint256 tokensToTeam = 0;
+            uint256 tokensToDevelopment = 0;
             uint256 tokensToLiquidity = 0;
-            uint256 tokensToBurn = 0;
+            uint256 tokensToMarketing = 0;
             uint256 finalAmount = 0;
 
             // automatedMarketMakerPairs[from] -> buy tokens on dex
@@ -285,9 +286,9 @@ contract MafaCoinV2 is ERC20, Ownable {
             if (automatedMarketMakerPairs[to]) {
                 require(amount <= maxSellAmount, "Amount being sold exceeds the maximum allowed amount");
 
-                if (teamSellFee > 0) {
-                    tokensToTeam = amount.mul(teamSellFee).div(10**decimals());
-                    _takeFee(from, teamAddress, tokensToTeam);
+                if (developmentSellFee > 0) {
+                    tokensToDevelopment = amount.mul(developmentSellFee).div(10**decimals());
+                    _takeFee(from, developmentAddress, tokensToDevelopment);
                 }
 
                 if (liquiditySellFee > 0) {
@@ -296,9 +297,9 @@ contract MafaCoinV2 is ERC20, Ownable {
                     _swapAndLiquify(balanceOf(address(this)), liquidityAddress);
                 }
 
-                if (burnSellFee > 0 && balanceOf(DEAD_ADDRESS) < totalSupply().div(2)) {
-                    tokensToBurn = amount.mul(burnSellFee).div(10**decimals());
-                    super._transfer(from, DEAD_ADDRESS, tokensToBurn);
+                if (marketingSellFee > 0) {
+                    tokensToMarketing = amount.mul(marketingSellFee).div(10**decimals());
+                    _takeFee(from, marketingAddress, tokensToMarketing);
                 }
             } else {
                 if (automatedMarketMakerPairs[from]) {
@@ -308,9 +309,9 @@ contract MafaCoinV2 is ERC20, Ownable {
                     );
                 }
 
-                if (teamBuyFee > 0) {
-                    tokensToTeam = amount.mul(teamBuyFee).div(10**decimals());
-                    super._transfer(from, teamAddress, tokensToTeam);
+                if (developmentBuyFee > 0) {
+                    tokensToDevelopment = amount.mul(developmentBuyFee).div(10**decimals());
+                    super._transfer(from, developmentAddress, tokensToDevelopment);
                 }
 
                 if (liquidityBuyFee > 0) {
@@ -318,24 +319,25 @@ contract MafaCoinV2 is ERC20, Ownable {
                     super._transfer(from, address(this), tokensToLiquidity);
                 }
 
-                if (burnBuyFee > 0 && balanceOf(DEAD_ADDRESS) < totalSupply().div(2)) {
-                    tokensToBurn = amount.mul(burnBuyFee).div(10**decimals());
-                    super._transfer(from, DEAD_ADDRESS, tokensToBurn);
+                if (marketingBuyFee > 0) {
+                    tokensToMarketing = amount.mul(marketingBuyFee).div(10**decimals());
+                    super._transfer(from, marketingAddress, tokensToMarketing);
                 }
             }
 
-            finalAmount = amount.sub(tokensToTeam).sub(tokensToLiquidity).sub(tokensToBurn);
+            finalAmount = amount.sub(tokensToDevelopment).sub(tokensToLiquidity).sub(tokensToMarketing);
             super._transfer(from, to, finalAmount);
         }
     }
 
     event ExcludeFromFees(address indexed account, bool indexed value);
     event SetAutomatedMarketMakerPair(address indexed pair, bool indexed value);
-    event TeamAddressUpdated(address indexed ecoSystemAddress);
-    event TeamFeeUpdated(uint256 indexed fee);
+    event DevelopmentAddressUpdated(address indexed developmentAddress);
+    event DevelopmentFeeUpdated(uint256 indexed fee);
     event LiquidityAddressUpdated(address indexed liquidityAddress);
     event LiquidityFeeUpdated(uint256 indexed fee);
-    event BurnFeeUpdated(uint256 indexed fee);
+    event MarketingAddressUpdated(address indexed marketingAddress);
+    event MarketingFeeUpdated(uint256 indexed fee);
     event MaxWalletAmountUpdated(uint256 indexed amount);
     event MaxSellAmountUpdated(uint256 indexed amount);
     event SwapAndLiquify(

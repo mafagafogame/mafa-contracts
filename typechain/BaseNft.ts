@@ -34,6 +34,11 @@ export interface BaseNftInterface extends utils.Interface {
     "balanceOf(address)": FunctionFragment;
     "baseURI()": FunctionFragment;
     "burn(uint256)": FunctionFragment;
+    "c_0x14600763(bytes32)": FunctionFragment;
+    "c_0x49a66134(bytes32)": FunctionFragment;
+    "c_0x73acb500(bytes32)": FunctionFragment;
+    "c_0x93a19b2e(bytes32)": FunctionFragment;
+    "c_0xc269ca96(bytes32)": FunctionFragment;
     "getApproved(uint256)": FunctionFragment;
     "getRaribleV2Royalties(uint256)": FunctionFragment;
     "getRoleAdmin(bytes32)": FunctionFragment;
@@ -90,6 +95,26 @@ export interface BaseNftInterface extends utils.Interface {
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
   encodeFunctionData(functionFragment: "baseURI", values?: undefined): string;
   encodeFunctionData(functionFragment: "burn", values: [BigNumberish]): string;
+  encodeFunctionData(
+    functionFragment: "c_0x14600763",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "c_0x49a66134",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "c_0x73acb500",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "c_0x93a19b2e",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "c_0xc269ca96",
+    values: [BytesLike]
+  ): string;
   encodeFunctionData(
     functionFragment: "getApproved",
     values: [BigNumberish]
@@ -220,6 +245,26 @@ export interface BaseNftInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "baseURI", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "burn", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "c_0x14600763",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "c_0x49a66134",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "c_0x73acb500",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "c_0x93a19b2e",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "c_0xc269ca96",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "getApproved",
     data: BytesLike
@@ -475,6 +520,31 @@ export interface BaseNft extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    c_0x14600763(
+      c__0x14600763: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[void]>;
+
+    c_0x49a66134(
+      c__0x49a66134: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[void]>;
+
+    c_0x73acb500(
+      c__0x73acb500: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[void]>;
+
+    c_0x93a19b2e(
+      c__0x93a19b2e: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[void]>;
+
+    c_0xc269ca96(
+      c__0xc269ca96: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[void]>;
+
     getApproved(
       tokenId: BigNumberish,
       overrides?: CallOverrides
@@ -678,6 +748,31 @@ export interface BaseNft extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  c_0x14600763(
+    c__0x14600763: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<void>;
+
+  c_0x49a66134(
+    c__0x49a66134: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<void>;
+
+  c_0x73acb500(
+    c__0x73acb500: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<void>;
+
+  c_0x93a19b2e(
+    c__0x93a19b2e: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<void>;
+
+  c_0xc269ca96(
+    c__0xc269ca96: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<void>;
+
   getApproved(
     tokenId: BigNumberish,
     overrides?: CallOverrides
@@ -871,6 +966,31 @@ export interface BaseNft extends BaseContract {
     baseURI(overrides?: CallOverrides): Promise<string>;
 
     burn(tokenId: BigNumberish, overrides?: CallOverrides): Promise<void>;
+
+    c_0x14600763(
+      c__0x14600763: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    c_0x49a66134(
+      c__0x49a66134: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    c_0x73acb500(
+      c__0x73acb500: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    c_0x93a19b2e(
+      c__0x93a19b2e: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    c_0xc269ca96(
+      c__0xc269ca96: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     getApproved(
       tokenId: BigNumberish,
@@ -1160,6 +1280,31 @@ export interface BaseNft extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    c_0x14600763(
+      c__0x14600763: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    c_0x49a66134(
+      c__0x49a66134: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    c_0x73acb500(
+      c__0x73acb500: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    c_0x93a19b2e(
+      c__0x93a19b2e: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    c_0xc269ca96(
+      c__0xc269ca96: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     getApproved(
       tokenId: BigNumberish,
       overrides?: CallOverrides
@@ -1368,6 +1513,31 @@ export interface BaseNft extends BaseContract {
     burn(
       tokenId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    c_0x14600763(
+      c__0x14600763: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    c_0x49a66134(
+      c__0x49a66134: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    c_0x73acb500(
+      c__0x73acb500: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    c_0x93a19b2e(
+      c__0x93a19b2e: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    c_0xc269ca96(
+      c__0xc269ca96: BytesLike,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     getApproved(

@@ -24,10 +24,15 @@ export type PartStructOutput = [string, BigNumber] & {
 
 export interface RoyaltiesV2UpgradeableInterface extends utils.Interface {
   functions: {
+    "c_0xc269ca96(bytes32)": FunctionFragment;
     "getRaribleV2Royalties(uint256)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
   };
 
+  encodeFunctionData(
+    functionFragment: "c_0xc269ca96",
+    values: [BytesLike]
+  ): string;
   encodeFunctionData(
     functionFragment: "getRaribleV2Royalties",
     values: [BigNumberish]
@@ -37,6 +42,10 @@ export interface RoyaltiesV2UpgradeableInterface extends utils.Interface {
     values: [BytesLike]
   ): string;
 
+  decodeFunctionResult(
+    functionFragment: "c_0xc269ca96",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "getRaribleV2Royalties",
     data: BytesLike
@@ -87,6 +96,11 @@ export interface RoyaltiesV2Upgradeable extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    c_0xc269ca96(
+      c__0xc269ca96: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[void]>;
+
     getRaribleV2Royalties(
       id: BigNumberish,
       overrides?: CallOverrides
@@ -97,6 +111,11 @@ export interface RoyaltiesV2Upgradeable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
   };
+
+  c_0xc269ca96(
+    c__0xc269ca96: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<void>;
 
   getRaribleV2Royalties(
     id: BigNumberish,
@@ -109,6 +128,11 @@ export interface RoyaltiesV2Upgradeable extends BaseContract {
   ): Promise<boolean>;
 
   callStatic: {
+    c_0xc269ca96(
+      c__0xc269ca96: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     getRaribleV2Royalties(
       id: BigNumberish,
       overrides?: CallOverrides
@@ -129,6 +153,11 @@ export interface RoyaltiesV2Upgradeable extends BaseContract {
   };
 
   estimateGas: {
+    c_0xc269ca96(
+      c__0xc269ca96: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     getRaribleV2Royalties(
       id: BigNumberish,
       overrides?: CallOverrides
@@ -141,6 +170,11 @@ export interface RoyaltiesV2Upgradeable extends BaseContract {
   };
 
   populateTransaction: {
+    c_0xc269ca96(
+      c__0xc269ca96: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     getRaribleV2Royalties(
       id: BigNumberish,
       overrides?: CallOverrides
