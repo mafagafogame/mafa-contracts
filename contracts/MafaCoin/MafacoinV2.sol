@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.9;
+pragma solidity 0.8.9;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
@@ -12,8 +11,6 @@ import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
 import "hardhat/console.sol";
 
 contract MafaCoinV2 is ERC20, Ownable {
-    using SafeMath for uint256;
-
     // @dev the fee the development takes on buy txs.
     uint256 public developmentBuyFee;
 
@@ -93,8 +90,8 @@ contract MafaCoinV2 is ERC20, Ownable {
         developmentSellFee = 2 * 10**16; // 2%
         liquiditySellFee = 1 * 10**16; // 1%
 
-        maxWalletAmount = totalSupply.mul(3).div(10**3); // 0.3% of total supply
-        maxSellAmount = totalSupply.mul(3).div(10**4); // 0.05% of total supply
+        maxWalletAmount = (totalSupply * 3) / 10**3; // 0.3% of total supply
+        maxSellAmount = (totalSupply * 3) / 10**4; // 0.05% of total supply
     }
 
     receive() external payable {}
@@ -178,12 +175,12 @@ contract MafaCoinV2 is ERC20, Ownable {
 
     // @dev just to simplify to the user, the total fees on buy
     function totalBuyFees() external view returns (uint256) {
-        return developmentBuyFee.add(liquidityBuyFee).add(marketingBuyFee);
+        return developmentBuyFee + liquidityBuyFee + marketingBuyFee;
     }
 
     // @dev just to simplify to the user, the total fees on sell
     function totalSellFees() external view returns (uint256) {
-        return developmentSellFee.add(liquiditySellFee).add(marketingSellFee);
+        return developmentSellFee + liquiditySellFee + marketingSellFee;
     }
 
     function setMaxWalletAmount(uint256 amount) external onlyOwner {
@@ -199,14 +196,14 @@ contract MafaCoinV2 is ERC20, Ownable {
     }
 
     function _swapAndLiquify(uint256 amount, address cakeReceiver) private {
-        uint256 half = amount.div(2); // this token
-        uint256 otherHalf = amount.sub(half);
+        uint256 half = amount / 2; // this token
+        uint256 otherHalf = amount - half;
 
         uint256 initialAmount = address(this).balance;
 
         _swapTokensForBNB(half);
 
-        uint256 newAmount = address(this).balance.sub(initialAmount); // chain token
+        uint256 newAmount = address(this).balance - initialAmount; // chain token
 
         _addLiquidity(otherHalf, newAmount, cakeReceiver);
 
@@ -225,7 +222,7 @@ contract MafaCoinV2 is ERC20, Ownable {
             0,
             path,
             address(this),
-            block.timestamp.add(300)
+            block.timestamp
         );
     }
 
@@ -236,14 +233,7 @@ contract MafaCoinV2 is ERC20, Ownable {
     ) private {
         _approve(address(this), address(dexRouter), tokenAmount);
 
-        dexRouter.addLiquidityETH{ value: bnbAmount }(
-            address(this),
-            tokenAmount,
-            0,
-            0,
-            cakeReceiver,
-            block.timestamp.add(300)
-        );
+        dexRouter.addLiquidityETH{ value: bnbAmount }(address(this), tokenAmount, 0, 0, cakeReceiver, block.timestamp);
     }
 
     function _takeFee(
@@ -261,7 +251,7 @@ contract MafaCoinV2 is ERC20, Ownable {
 
         _approve(address(this), address(dexRouter), amount);
 
-        dexRouter.swapExactTokensForETHSupportingFeeOnTransferTokens(amount, 0, path, to, block.timestamp.add(300));
+        dexRouter.swapExactTokensForETHSupportingFeeOnTransferTokens(amount, 0, path, to, block.timestamp);
     }
 
     function _transfer(
@@ -287,18 +277,18 @@ contract MafaCoinV2 is ERC20, Ownable {
                 require(amount <= maxSellAmount, "Amount being sold exceeds the maximum allowed amount");
 
                 if (developmentSellFee > 0) {
-                    tokensToDevelopment = amount.mul(developmentSellFee).div(10**decimals());
+                    tokensToDevelopment = (amount * developmentSellFee) / 10**decimals();
                     _takeFee(from, developmentAddress, tokensToDevelopment);
                 }
 
                 if (liquiditySellFee > 0) {
-                    tokensToLiquidity = amount.mul(liquiditySellFee).div(10**decimals());
+                    tokensToLiquidity = (amount * liquiditySellFee) / 10**decimals();
                     super._transfer(from, address(this), tokensToLiquidity);
                     _swapAndLiquify(balanceOf(address(this)), liquidityAddress);
                 }
 
                 if (marketingSellFee > 0) {
-                    tokensToMarketing = amount.mul(marketingSellFee).div(10**decimals());
+                    tokensToMarketing = (amount * marketingSellFee) / 10**decimals();
                     _takeFee(from, marketingAddress, tokensToMarketing);
                 }
             } else {
@@ -310,22 +300,22 @@ contract MafaCoinV2 is ERC20, Ownable {
                 }
 
                 if (developmentBuyFee > 0) {
-                    tokensToDevelopment = amount.mul(developmentBuyFee).div(10**decimals());
+                    tokensToDevelopment = (amount * developmentBuyFee) / 10**decimals();
                     super._transfer(from, developmentAddress, tokensToDevelopment);
                 }
 
                 if (liquidityBuyFee > 0) {
-                    tokensToLiquidity = amount.mul(liquidityBuyFee).div(10**decimals());
+                    tokensToLiquidity = (amount * liquidityBuyFee) / 10**decimals();
                     super._transfer(from, address(this), tokensToLiquidity);
                 }
 
                 if (marketingBuyFee > 0) {
-                    tokensToMarketing = amount.mul(marketingBuyFee).div(10**decimals());
+                    tokensToMarketing = (amount * marketingBuyFee) / 10**decimals();
                     super._transfer(from, marketingAddress, tokensToMarketing);
                 }
             }
 
-            finalAmount = amount.sub(tokensToDevelopment).sub(tokensToLiquidity).sub(tokensToMarketing);
+            finalAmount = amount - tokensToDevelopment - tokensToLiquidity - tokensToMarketing;
             super._transfer(from, to, finalAmount);
         }
     }

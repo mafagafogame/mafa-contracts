@@ -83,6 +83,7 @@ describe.only("MafaCoinV2", function () {
       await contract.setDevelopmentBuyFee(utils.parseEther("0.1"));
       await contract.setDevelopmentSellFee(utils.parseEther("0.1"));
       expect(await contract.totalBuyFees()).to.equal(utils.parseEther("0.1"));
+      expect(await contract.totalSellFees()).to.equal(utils.parseEther("0.1"));
     });
 
     it("should charge buy fees on basic transfer", async function () {
