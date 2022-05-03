@@ -119,58 +119,58 @@ contract MafaCoinV2 is ERC20, Ownable {
         emit ExcludeFromFees(account, excluded);
     }
 
-    function setDevelopmentAddress(address newAddress) public onlyOwner {
+    function setDevelopmentAddress(address newAddress) external onlyOwner {
         require(developmentAddress != newAddress, "Development address already setted");
         developmentAddress = newAddress;
 
         emit DevelopmentAddressUpdated(newAddress);
     }
 
-    function setDevelopmentBuyFee(uint256 newFee) public onlyOwner {
+    function setDevelopmentBuyFee(uint256 newFee) external onlyOwner {
         developmentBuyFee = newFee;
 
         emit DevelopmentFeeUpdated(newFee);
     }
 
-    function setDevelopmentSellFee(uint256 newFee) public onlyOwner {
+    function setDevelopmentSellFee(uint256 newFee) external onlyOwner {
         developmentSellFee = newFee;
 
         emit DevelopmentFeeUpdated(newFee);
     }
 
-    function setMarketingAddress(address newAddress) public onlyOwner {
+    function setMarketingAddress(address newAddress) external onlyOwner {
         require(marketingAddress != newAddress, "Marketing address already setted");
         marketingAddress = newAddress;
 
         emit MarketingAddressUpdated(newAddress);
     }
 
-    function setMarketingBuyFee(uint256 newFee) public onlyOwner {
+    function setMarketingBuyFee(uint256 newFee) external onlyOwner {
         marketingBuyFee = newFee;
 
         emit MarketingFeeUpdated(newFee);
     }
 
-    function setMarketingSellFee(uint256 newFee) public onlyOwner {
+    function setMarketingSellFee(uint256 newFee) external onlyOwner {
         marketingSellFee = newFee;
 
         emit MarketingFeeUpdated(newFee);
     }
 
-    function setLiquidityAddress(address newAddress) public onlyOwner {
+    function setLiquidityAddress(address newAddress) external onlyOwner {
         require(liquidityAddress != newAddress, "Liquidity address already setted");
         liquidityAddress = newAddress;
 
         emit LiquidityAddressUpdated(newAddress);
     }
 
-    function setLiquidityBuyFee(uint256 newFee) public onlyOwner {
+    function setLiquidityBuyFee(uint256 newFee) external onlyOwner {
         liquidityBuyFee = newFee;
 
         emit LiquidityFeeUpdated(newFee);
     }
 
-    function setLiquiditySellFee(uint256 newFee) public onlyOwner {
+    function setLiquiditySellFee(uint256 newFee) external onlyOwner {
         liquiditySellFee = newFee;
 
         emit LiquidityFeeUpdated(newFee);
@@ -186,13 +186,13 @@ contract MafaCoinV2 is ERC20, Ownable {
         return developmentSellFee.add(liquiditySellFee).add(marketingSellFee);
     }
 
-    function setMaxWalletAmount(uint256 amount) public onlyOwner {
+    function setMaxWalletAmount(uint256 amount) external onlyOwner {
         maxWalletAmount = amount;
 
         emit MaxWalletAmountUpdated(amount);
     }
 
-    function setMaxSellAmount(uint256 amount) public onlyOwner {
+    function setMaxSellAmount(uint256 amount) external onlyOwner {
         maxSellAmount = amount;
 
         emit MaxSellAmountUpdated(amount);
