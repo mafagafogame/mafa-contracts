@@ -24,25 +24,10 @@ export type PartStructOutput = [string, BigNumber] & {
 
 export interface RoyaltiesV2UpgradeableImplInterface extends utils.Interface {
   functions: {
-    "c_0x49a66134(bytes32)": FunctionFragment;
-    "c_0x73acb500(bytes32)": FunctionFragment;
-    "c_0xc269ca96(bytes32)": FunctionFragment;
     "getRaribleV2Royalties(uint256)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
   };
 
-  encodeFunctionData(
-    functionFragment: "c_0x49a66134",
-    values: [BytesLike]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "c_0x73acb500",
-    values: [BytesLike]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "c_0xc269ca96",
-    values: [BytesLike]
-  ): string;
   encodeFunctionData(
     functionFragment: "getRaribleV2Royalties",
     values: [BigNumberish]
@@ -52,18 +37,6 @@ export interface RoyaltiesV2UpgradeableImplInterface extends utils.Interface {
     values: [BytesLike]
   ): string;
 
-  decodeFunctionResult(
-    functionFragment: "c_0x49a66134",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "c_0x73acb500",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "c_0xc269ca96",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "getRaribleV2Royalties",
     data: BytesLike
@@ -114,21 +87,6 @@ export interface RoyaltiesV2UpgradeableImpl extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
-    c_0x49a66134(
-      c__0x49a66134: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<[void]>;
-
-    c_0x73acb500(
-      c__0x73acb500: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<[void]>;
-
-    c_0xc269ca96(
-      c__0xc269ca96: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<[void]>;
-
     getRaribleV2Royalties(
       id: BigNumberish,
       overrides?: CallOverrides
@@ -139,21 +97,6 @@ export interface RoyaltiesV2UpgradeableImpl extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
   };
-
-  c_0x49a66134(
-    c__0x49a66134: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
-  c_0x73acb500(
-    c__0x73acb500: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
-  c_0xc269ca96(
-    c__0xc269ca96: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<void>;
 
   getRaribleV2Royalties(
     id: BigNumberish,
@@ -166,21 +109,6 @@ export interface RoyaltiesV2UpgradeableImpl extends BaseContract {
   ): Promise<boolean>;
 
   callStatic: {
-    c_0x49a66134(
-      c__0x49a66134: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    c_0x73acb500(
-      c__0x73acb500: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    c_0xc269ca96(
-      c__0xc269ca96: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     getRaribleV2Royalties(
       id: BigNumberish,
       overrides?: CallOverrides
@@ -201,21 +129,6 @@ export interface RoyaltiesV2UpgradeableImpl extends BaseContract {
   };
 
   estimateGas: {
-    c_0x49a66134(
-      c__0x49a66134: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    c_0x73acb500(
-      c__0x73acb500: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    c_0xc269ca96(
-      c__0xc269ca96: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     getRaribleV2Royalties(
       id: BigNumberish,
       overrides?: CallOverrides
@@ -228,21 +141,6 @@ export interface RoyaltiesV2UpgradeableImpl extends BaseContract {
   };
 
   populateTransaction: {
-    c_0x49a66134(
-      c__0x49a66134: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    c_0x73acb500(
-      c__0x73acb500: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    c_0xc269ca96(
-      c__0xc269ca96: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     getRaribleV2Royalties(
       id: BigNumberish,
       overrides?: CallOverrides

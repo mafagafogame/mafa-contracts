@@ -18,7 +18,6 @@ import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
 
 export interface TimeLockedWalletInterface extends utils.Interface {
   functions: {
-    "c_0x3db6ad82(bytes32)": FunctionFragment;
     "createdAt()": FunctionFragment;
     "creator()": FunctionFragment;
     "info()": FunctionFragment;
@@ -31,10 +30,6 @@ export interface TimeLockedWalletInterface extends utils.Interface {
     "withdraw()": FunctionFragment;
   };
 
-  encodeFunctionData(
-    functionFragment: "c_0x3db6ad82",
-    values: [BytesLike]
-  ): string;
   encodeFunctionData(functionFragment: "createdAt", values?: undefined): string;
   encodeFunctionData(functionFragment: "creator", values?: undefined): string;
   encodeFunctionData(functionFragment: "info", values?: undefined): string;
@@ -55,10 +50,6 @@ export interface TimeLockedWalletInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "withdraw", values?: undefined): string;
 
-  decodeFunctionResult(
-    functionFragment: "c_0x3db6ad82",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "createdAt", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "creator", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "info", data: BytesLike): Result;
@@ -136,11 +127,6 @@ export interface TimeLockedWallet extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
-    c_0x3db6ad82(
-      c__0x3db6ad82: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<[void]>;
-
     createdAt(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     creator(overrides?: CallOverrides): Promise<[string]>;
@@ -170,11 +156,6 @@ export interface TimeLockedWallet extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
-
-  c_0x3db6ad82(
-    c__0x3db6ad82: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<void>;
 
   createdAt(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -206,11 +187,6 @@ export interface TimeLockedWallet extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
-    c_0x3db6ad82(
-      c__0x3db6ad82: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     createdAt(overrides?: CallOverrides): Promise<BigNumber>;
 
     creator(overrides?: CallOverrides): Promise<string>;
@@ -266,11 +242,6 @@ export interface TimeLockedWallet extends BaseContract {
   };
 
   estimateGas: {
-    c_0x3db6ad82(
-      c__0x3db6ad82: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     createdAt(overrides?: CallOverrides): Promise<BigNumber>;
 
     creator(overrides?: CallOverrides): Promise<BigNumber>;
@@ -300,11 +271,6 @@ export interface TimeLockedWallet extends BaseContract {
   };
 
   populateTransaction: {
-    c_0x3db6ad82(
-      c__0x3db6ad82: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     createdAt(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     creator(overrides?: CallOverrides): Promise<PopulatedTransaction>;

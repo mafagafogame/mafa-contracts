@@ -25,7 +25,6 @@ export interface MafaCoinInterface extends utils.Interface {
     "automatedMarketMakerPairs(address)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
     "burnFee()": FunctionFragment;
-    "c_0xfec9b0c5(bytes32)": FunctionFragment;
     "decimals()": FunctionFragment;
     "decreaseAllowance(address,uint256)": FunctionFragment;
     "dexPair()": FunctionFragment;
@@ -80,10 +79,6 @@ export interface MafaCoinInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
   encodeFunctionData(functionFragment: "burnFee", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "c_0xfec9b0c5",
-    values: [BytesLike]
-  ): string;
   encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "decreaseAllowance",
@@ -212,10 +207,6 @@ export interface MafaCoinInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "burnFee", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "c_0xfec9b0c5",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "decimals", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "decreaseAllowance",
@@ -445,11 +436,6 @@ export interface MafaCoin extends BaseContract {
 
     burnFee(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    c_0xfec9b0c5(
-      c__0xfec9b0c5: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<[void]>;
-
     decimals(overrides?: CallOverrides): Promise<[number]>;
 
     decreaseAllowance(
@@ -601,11 +587,6 @@ export interface MafaCoin extends BaseContract {
 
   burnFee(overrides?: CallOverrides): Promise<BigNumber>;
 
-  c_0xfec9b0c5(
-    c__0xfec9b0c5: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
   decimals(overrides?: CallOverrides): Promise<number>;
 
   decreaseAllowance(
@@ -751,11 +732,6 @@ export interface MafaCoin extends BaseContract {
     balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     burnFee(overrides?: CallOverrides): Promise<BigNumber>;
-
-    c_0xfec9b0c5(
-      c__0xfec9b0c5: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     decimals(overrides?: CallOverrides): Promise<number>;
 
@@ -969,11 +945,6 @@ export interface MafaCoin extends BaseContract {
 
     burnFee(overrides?: CallOverrides): Promise<BigNumber>;
 
-    c_0xfec9b0c5(
-      c__0xfec9b0c5: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     decimals(overrides?: CallOverrides): Promise<BigNumber>;
 
     decreaseAllowance(
@@ -1128,11 +1099,6 @@ export interface MafaCoin extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     burnFee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    c_0xfec9b0c5(
-      c__0xfec9b0c5: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
 
     decimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

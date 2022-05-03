@@ -17,24 +17,15 @@ import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
 export interface LibRoyaltiesV2Interface extends utils.Interface {
   functions: {
     "_INTERFACE_ID_ROYALTIES()": FunctionFragment;
-    "c_0xa0896c75(bytes32)": FunctionFragment;
   };
 
   encodeFunctionData(
     functionFragment: "_INTERFACE_ID_ROYALTIES",
     values?: undefined
   ): string;
-  encodeFunctionData(
-    functionFragment: "c_0xa0896c75",
-    values: [BytesLike]
-  ): string;
 
   decodeFunctionResult(
     functionFragment: "_INTERFACE_ID_ROYALTIES",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "c_0xa0896c75",
     data: BytesLike
   ): Result;
 
@@ -69,47 +60,22 @@ export interface LibRoyaltiesV2 extends BaseContract {
 
   functions: {
     _INTERFACE_ID_ROYALTIES(overrides?: CallOverrides): Promise<[string]>;
-
-    c_0xa0896c75(
-      c__0xa0896c75: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<[void]>;
   };
 
   _INTERFACE_ID_ROYALTIES(overrides?: CallOverrides): Promise<string>;
 
-  c_0xa0896c75(
-    c__0xa0896c75: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
   callStatic: {
     _INTERFACE_ID_ROYALTIES(overrides?: CallOverrides): Promise<string>;
-
-    c_0xa0896c75(
-      c__0xa0896c75: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<void>;
   };
 
   filters: {};
 
   estimateGas: {
     _INTERFACE_ID_ROYALTIES(overrides?: CallOverrides): Promise<BigNumber>;
-
-    c_0xa0896c75(
-      c__0xa0896c75: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
     _INTERFACE_ID_ROYALTIES(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    c_0xa0896c75(
-      c__0xa0896c75: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };

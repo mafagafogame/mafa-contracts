@@ -17,20 +17,11 @@ import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
 export interface LibPartInterface extends utils.Interface {
   functions: {
     "TYPE_HASH()": FunctionFragment;
-    "c_0x4404a813(bytes32)": FunctionFragment;
   };
 
   encodeFunctionData(functionFragment: "TYPE_HASH", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "c_0x4404a813",
-    values: [BytesLike]
-  ): string;
 
   decodeFunctionResult(functionFragment: "TYPE_HASH", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "c_0x4404a813",
-    data: BytesLike
-  ): Result;
 
   events: {};
 }
@@ -63,46 +54,21 @@ export interface LibPart extends BaseContract {
 
   functions: {
     TYPE_HASH(overrides?: CallOverrides): Promise<[string]>;
-
-    c_0x4404a813(
-      c__0x4404a813: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<[void]>;
   };
 
   TYPE_HASH(overrides?: CallOverrides): Promise<string>;
 
-  c_0x4404a813(
-    c__0x4404a813: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
   callStatic: {
     TYPE_HASH(overrides?: CallOverrides): Promise<string>;
-
-    c_0x4404a813(
-      c__0x4404a813: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<void>;
   };
 
   filters: {};
 
   estimateGas: {
     TYPE_HASH(overrides?: CallOverrides): Promise<BigNumber>;
-
-    c_0x4404a813(
-      c__0x4404a813: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
     TYPE_HASH(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    c_0x4404a813(
-      c__0x4404a813: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
   };
 }

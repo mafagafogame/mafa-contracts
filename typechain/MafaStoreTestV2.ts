@@ -40,8 +40,6 @@ export interface MafaStoreTestV2Interface extends utils.Interface {
     "avatarPrice()": FunctionFragment;
     "buyItem(uint256,bytes32,uint256)": FunctionFragment;
     "buyTicket(uint256,bytes32)": FunctionFragment;
-    "c_0x0f0b8583(bytes32)": FunctionFragment;
-    "c_0x343b6811(bytes32)": FunctionFragment;
     "dailySellPercentage()": FunctionFragment;
     "dailyVolumes(address,uint256)": FunctionFragment;
     "getItemPriceInMAFA(uint256,uint256)": FunctionFragment;
@@ -103,14 +101,6 @@ export interface MafaStoreTestV2Interface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "buyTicket",
     values: [BigNumberish, BytesLike]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "c_0x0f0b8583",
-    values: [BytesLike]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "c_0x343b6811",
-    values: [BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "dailySellPercentage",
@@ -251,14 +241,6 @@ export interface MafaStoreTestV2Interface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "buyItem", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "buyTicket", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "c_0x0f0b8583",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "c_0x343b6811",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "dailySellPercentage",
     data: BytesLike
@@ -605,16 +587,6 @@ export interface MafaStoreTestV2 extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    c_0x0f0b8583(
-      c__0x0f0b8583: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<[void]>;
-
-    c_0x343b6811(
-      c__0x343b6811: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<[void]>;
-
     dailySellPercentage(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     dailyVolumes(
@@ -836,16 +808,6 @@ export interface MafaStoreTestV2 extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  c_0x0f0b8583(
-    c__0x0f0b8583: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
-  c_0x343b6811(
-    c__0x343b6811: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
   dailySellPercentage(overrides?: CallOverrides): Promise<BigNumber>;
 
   dailyVolumes(
@@ -1062,16 +1024,6 @@ export interface MafaStoreTestV2 extends BaseContract {
     buyTicket(
       id: BigNumberish,
       title: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    c_0x0f0b8583(
-      c__0x0f0b8583: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    c_0x343b6811(
-      c__0x343b6811: BytesLike,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1431,16 +1383,6 @@ export interface MafaStoreTestV2 extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    c_0x0f0b8583(
-      c__0x0f0b8583: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    c_0x343b6811(
-      c__0x343b6811: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     dailySellPercentage(overrides?: CallOverrides): Promise<BigNumber>;
 
     dailyVolumes(
@@ -1649,16 +1591,6 @@ export interface MafaStoreTestV2 extends BaseContract {
       id: BigNumberish,
       title: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    c_0x0f0b8583(
-      c__0x0f0b8583: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    c_0x343b6811(
-      c__0x343b6811: BytesLike,
-      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     dailySellPercentage(

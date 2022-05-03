@@ -29,8 +29,6 @@ export interface MafaBoxInterface extends utils.Interface {
     "balanceOfBatch(address[],uint256[])": FunctionFragment;
     "burn(address,uint256,uint256)": FunctionFragment;
     "burnBatch(address,uint256[],uint256[])": FunctionFragment;
-    "c_0x306f018d(bytes32)": FunctionFragment;
-    "c_0xde2625b8(bytes32)": FunctionFragment;
     "exists(uint256)": FunctionFragment;
     "getRoleAdmin(bytes32)": FunctionFragment;
     "grantRole(bytes32,address)": FunctionFragment;
@@ -100,14 +98,6 @@ export interface MafaBoxInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "burnBatch",
     values: [string, BigNumberish[], BigNumberish[]]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "c_0x306f018d",
-    values: [BytesLike]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "c_0xde2625b8",
-    values: [BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "exists",
@@ -247,14 +237,6 @@ export interface MafaBoxInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "burn", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "burnBatch", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "c_0x306f018d",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "c_0xde2625b8",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "exists", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getRoleAdmin",
@@ -545,16 +527,6 @@ export interface MafaBox extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    c_0x306f018d(
-      c__0x306f018d: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<[void]>;
-
-    c_0xde2625b8(
-      c__0xde2625b8: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<[void]>;
-
     exists(id: BigNumberish, overrides?: CallOverrides): Promise<[boolean]>;
 
     getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<[string]>;
@@ -768,16 +740,6 @@ export interface MafaBox extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  c_0x306f018d(
-    c__0x306f018d: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
-  c_0xde2625b8(
-    c__0xde2625b8: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
   exists(id: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
 
   getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<string>;
@@ -985,16 +947,6 @@ export interface MafaBox extends BaseContract {
       account: string,
       ids: BigNumberish[],
       values: BigNumberish[],
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    c_0x306f018d(
-      c__0x306f018d: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    c_0xde2625b8(
-      c__0xde2625b8: BytesLike,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1335,16 +1287,6 @@ export interface MafaBox extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    c_0x306f018d(
-      c__0x306f018d: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    c_0xde2625b8(
-      c__0xde2625b8: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     exists(id: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
     getRoleAdmin(
@@ -1562,16 +1504,6 @@ export interface MafaBox extends BaseContract {
       ids: BigNumberish[],
       values: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    c_0x306f018d(
-      c__0x306f018d: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    c_0xde2625b8(
-      c__0xde2625b8: BytesLike,
-      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     exists(
