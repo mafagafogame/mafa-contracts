@@ -45,16 +45,16 @@ contract MafaCoinV2 is ERC20, Ownable {
     uint256 public maxSellAmount;
 
     // @dev the defauld dex router
-    IUniswapV2Router02 public dexRouter;
+    IUniswapV2Router02 public immutable dexRouter;
 
     // @dev the dex factory address
-    address public dexFactory;
+    address public immutable dexFactory;
 
     // @dev mapping of excluded from fees elements
     mapping(address => bool) public isExcludedFromFees;
 
     // @dev the default dex pair
-    address public dexPair;
+    address public immutable dexPair;
 
     // @dev what pairs are allowed to work in the token
     mapping(address => bool) public automatedMarketMakerPairs;
@@ -62,7 +62,7 @@ contract MafaCoinV2 is ERC20, Ownable {
     constructor(
         string memory name,
         string memory symbol,
-        uint256 totalSupply
+        uint256 tSupply // totalSupply
     ) ERC20(name, symbol) {
         excludeFromFees(address(this), true);
         excludeFromFees(owner(), true);
@@ -71,7 +71,7 @@ contract MafaCoinV2 is ERC20, Ownable {
         marketingAddress = owner();
         liquidityAddress = owner();
 
-        _mint(owner(), totalSupply);
+        _mint(owner(), tSupply);
 
         // Create a uniswap pair for this new token
         dexRouter = IUniswapV2Router02(0x10ED43C718714eb63d5aA57B78B54704E256024E);
@@ -90,8 +90,8 @@ contract MafaCoinV2 is ERC20, Ownable {
         developmentSellFee = 2 * 10**16; // 2%
         liquiditySellFee = 1 * 10**16; // 1%
 
-        maxWalletAmount = (totalSupply * 3) / 10**3; // 0.3% of total supply
-        maxSellAmount = (totalSupply * 3) / 10**4; // 0.05% of total supply
+        maxWalletAmount = (tSupply * 3) / 10**3; // 0.3% of total supply
+        maxSellAmount = (tSupply * 3) / 10**4; // 0.05% of total supply
     }
 
     receive() external payable {}
