@@ -69,16 +69,25 @@ contract MafaBox is BaseERC1155 {
 
         uint256[] memory mafagafoTypes = new uint256[](amount);
         for (uint256 i = 0; i < amount; i++) {
-            mafagafoTypes[i] = _random();
-            mafagafoContract.mint(
-                _msgSender(),
-                mafagafoContract.mafaVersion(),
-                bytes32(mafagafoTypes[i]),
-                0,
-                0,
-                0,
-                0x00000000
-            );
+            uint256 randomNumber = _random();
+
+            uint256 maxValue = 0;
+            for (uint256 j = 0; j < probabilities.length; j++) {
+                maxValue = maxValue.add(probabilities[j]);
+                if (randomNumber < maxValue) {
+                    mafagafoContract.mint(
+                        _msgSender(),
+                        mafagafoContract.mafaVersion(),
+                        bytes32(j),
+                        0,
+                        0,
+                        0,
+                        0x00000000
+                    );
+                    mafagafoTypes[i] = j;
+                    break;
+                }
+            }
 
             _totalOpen.increment();
         }
@@ -104,10 +113,7 @@ contract MafaBox is BaseERC1155 {
      * @dev Generate a random number between 0 and 10**18
      */
     function _random() internal view virtual returns (uint256 randomNumber) {
-        return
-            uint256(keccak256(abi.encodePacked(block.difficulty, _msgSender(), _totalOpen.current()))).mod(
-                probabilities.length
-            );
+        return uint256(keccak256(abi.encodePacked(block.difficulty, _msgSender(), _totalOpen.current()))).mod(10**18);
     }
 
     // EVENTS

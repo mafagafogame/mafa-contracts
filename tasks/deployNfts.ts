@@ -1,4 +1,5 @@
 /* eslint-disable camelcase */
+import { utils } from "ethers";
 import { task } from "hardhat/config";
 
 import {
@@ -55,17 +56,15 @@ task("deploy:nfts", "Deploy all contracts related to nfts")
         mafacoin = MafaCoinFactory.attach("0xa76a7d869c42a0021B9aB69E5012aD3fc38dEaA1");
         break;
       case "localhost":
-        mafacoin = await MafaCoinFactory.deploy();
+        mafacoin = await MafaCoinFactory.deploy("Mafacoin", "MAFA", utils.parseEther("1000000000"));
         mafacoin = await mafacoin.deployed();
 
-        await (await mafacoin.afterPreSale()).wait(1);
-        await (await mafacoin.setBurnBuyFee(0)).wait(1);
-        await (await mafacoin.setBurnSellFee(0)).wait(1);
-        await (await mafacoin.setLiquidyBuyFee(0)).wait(1);
-        await (await mafacoin.setLiquidySellFee(0)).wait(1);
-        await (await mafacoin.setTeamBuyFee(0)).wait(1);
-        await (await mafacoin.setTeamSellFee(0)).wait(1);
-        await (await mafacoin.setLotterySellFee(0)).wait(1);
+        await (await mafacoin.setDevelopmentBuyFee(0)).wait(1);
+        await (await mafacoin.setDevelopmentSellFee(0)).wait(1);
+        await (await mafacoin.setMarketingBuyFee(0)).wait(1);
+        await (await mafacoin.setMarketingSellFee(0)).wait(1);
+        await (await mafacoin.setLiquidityBuyFee(0)).wait(1);
+        await (await mafacoin.setLiquiditySellFee(0)).wait(1);
         break;
       default:
         throw Error("unknown chain");

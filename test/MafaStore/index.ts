@@ -292,7 +292,7 @@ describe("MafaStore", function () {
       });
     });
 
-    describe.only("buy item", function () {
+    describe("buy item", function () {
       beforeEach(async function () {
         await mafastore.addItemToBeSold(
           brooder.address,

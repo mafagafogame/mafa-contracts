@@ -19,71 +19,54 @@ import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
 
 export interface MafaCoinV2Interface extends utils.Interface {
   functions: {
-    "DEAD_ADDRESS()": FunctionFragment;
-    "TOTAL_SUPPLY()": FunctionFragment;
-    "afterPreSale()": FunctionFragment;
     "allowance(address,address)": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
     "automatedMarketMakerPairs(address)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
-    "blacklistAccount(address,bool)": FunctionFragment;
-    "burnBuyFee()": FunctionFragment;
-    "burnSellFee()": FunctionFragment;
     "decimals()": FunctionFragment;
     "decreaseAllowance(address,uint256)": FunctionFragment;
+    "developmentAddress()": FunctionFragment;
+    "developmentBuyFee()": FunctionFragment;
+    "developmentSellFee()": FunctionFragment;
+    "dexFactory()": FunctionFragment;
     "dexPair()": FunctionFragment;
     "dexRouter()": FunctionFragment;
-    "excludeFromFees(address,bool)": FunctionFragment;
+    "excludeFromFees(address)": FunctionFragment;
+    "includeInFees(address)": FunctionFragment;
     "increaseAllowance(address,uint256)": FunctionFragment;
-    "isBlacklisted(address)": FunctionFragment;
     "isExcludedFromFees(address)": FunctionFragment;
+    "liquidityAddress()": FunctionFragment;
     "liquidityBuyFee()": FunctionFragment;
     "liquiditySellFee()": FunctionFragment;
-    "lotteryBuyFee()": FunctionFragment;
-    "lotterySellFee()": FunctionFragment;
-    "lotteryWallet()": FunctionFragment;
-    "lpRecipient()": FunctionFragment;
+    "marketingAddress()": FunctionFragment;
+    "marketingBuyFee()": FunctionFragment;
+    "marketingSellFee()": FunctionFragment;
+    "maxSellAmount()": FunctionFragment;
+    "maxWalletAmount()": FunctionFragment;
     "name()": FunctionFragment;
     "owner()": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
     "setAutomatedMarketMakerPair(address,bool)": FunctionFragment;
-    "setBurnBuyFee(uint256)": FunctionFragment;
-    "setBurnSellFee(uint256)": FunctionFragment;
-    "setLiquidyBuyFee(uint256)": FunctionFragment;
-    "setLiquidySellFee(uint256)": FunctionFragment;
-    "setLotteryBuyFee(uint256)": FunctionFragment;
-    "setLotterySellFee(uint256)": FunctionFragment;
-    "setLotteryWallet(address)": FunctionFragment;
-    "setLpRecipient(address)": FunctionFragment;
-    "setTeamBuyFee(uint256)": FunctionFragment;
-    "setTeamSellFee(uint256)": FunctionFragment;
-    "setTeamWallet(address)": FunctionFragment;
-    "startLiquidity(address)": FunctionFragment;
+    "setDevelopmentAddress(address)": FunctionFragment;
+    "setDevelopmentBuyFee(uint256)": FunctionFragment;
+    "setDevelopmentSellFee(uint256)": FunctionFragment;
+    "setLiquidityAddress(address)": FunctionFragment;
+    "setLiquidityBuyFee(uint256)": FunctionFragment;
+    "setLiquiditySellFee(uint256)": FunctionFragment;
+    "setMarketingAddress(address)": FunctionFragment;
+    "setMarketingBuyFee(uint256)": FunctionFragment;
+    "setMarketingSellFee(uint256)": FunctionFragment;
+    "setMaxSellAmount(uint256)": FunctionFragment;
+    "setMaxWalletAmount(uint256)": FunctionFragment;
     "symbol()": FunctionFragment;
-    "teamBuyFee()": FunctionFragment;
-    "teamSellFee()": FunctionFragment;
-    "teamWallet()": FunctionFragment;
-    "totalBuyFee()": FunctionFragment;
-    "totalSellFee()": FunctionFragment;
+    "totalBuyFees()": FunctionFragment;
+    "totalSellFees()": FunctionFragment;
     "totalSupply()": FunctionFragment;
-    "tradingIsEnabled()": FunctionFragment;
     "transfer(address,uint256)": FunctionFragment;
     "transferFrom(address,address,uint256)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
   };
 
-  encodeFunctionData(
-    functionFragment: "DEAD_ADDRESS",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "TOTAL_SUPPLY",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "afterPreSale",
-    values?: undefined
-  ): string;
   encodeFunctionData(
     functionFragment: "allowance",
     values: [string, string]
@@ -97,40 +80,48 @@ export interface MafaCoinV2Interface extends utils.Interface {
     values: [string]
   ): string;
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
-  encodeFunctionData(
-    functionFragment: "blacklistAccount",
-    values: [string, boolean]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "burnBuyFee",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "burnSellFee",
-    values?: undefined
-  ): string;
   encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "decreaseAllowance",
     values: [string, BigNumberish]
   ): string;
+  encodeFunctionData(
+    functionFragment: "developmentAddress",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "developmentBuyFee",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "developmentSellFee",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "dexFactory",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "dexPair", values?: undefined): string;
   encodeFunctionData(functionFragment: "dexRouter", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "excludeFromFees",
-    values: [string, boolean]
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "includeInFees",
+    values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "increaseAllowance",
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "isBlacklisted",
+    functionFragment: "isExcludedFromFees",
     values: [string]
   ): string;
   encodeFunctionData(
-    functionFragment: "isExcludedFromFees",
-    values: [string]
+    functionFragment: "liquidityAddress",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "liquidityBuyFee",
@@ -141,19 +132,23 @@ export interface MafaCoinV2Interface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "lotteryBuyFee",
+    functionFragment: "marketingAddress",
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "lotterySellFee",
+    functionFragment: "marketingBuyFee",
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "lotteryWallet",
+    functionFragment: "marketingSellFee",
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "lpRecipient",
+    functionFragment: "maxSellAmount",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "maxWalletAmount",
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
@@ -167,80 +162,60 @@ export interface MafaCoinV2Interface extends utils.Interface {
     values: [string, boolean]
   ): string;
   encodeFunctionData(
-    functionFragment: "setBurnBuyFee",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setBurnSellFee",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setLiquidyBuyFee",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setLiquidySellFee",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setLotteryBuyFee",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setLotterySellFee",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setLotteryWallet",
+    functionFragment: "setDevelopmentAddress",
     values: [string]
   ): string;
   encodeFunctionData(
-    functionFragment: "setLpRecipient",
-    values: [string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setTeamBuyFee",
+    functionFragment: "setDevelopmentBuyFee",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "setTeamSellFee",
+    functionFragment: "setDevelopmentSellFee",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "setTeamWallet",
+    functionFragment: "setLiquidityAddress",
     values: [string]
   ): string;
   encodeFunctionData(
-    functionFragment: "startLiquidity",
+    functionFragment: "setLiquidityBuyFee",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setLiquiditySellFee",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setMarketingAddress",
     values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setMarketingBuyFee",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setMarketingSellFee",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setMaxSellAmount",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setMaxWalletAmount",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "teamBuyFee",
+    functionFragment: "totalBuyFees",
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "teamSellFee",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "teamWallet",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "totalBuyFee",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "totalSellFee",
+    functionFragment: "totalSellFees",
     values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "totalSupply",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "tradingIsEnabled",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -256,18 +231,6 @@ export interface MafaCoinV2Interface extends utils.Interface {
     values: [string]
   ): string;
 
-  decodeFunctionResult(
-    functionFragment: "DEAD_ADDRESS",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "TOTAL_SUPPLY",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "afterPreSale",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "allowance", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(
@@ -275,20 +238,24 @@ export interface MafaCoinV2Interface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "blacklistAccount",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(functionFragment: "burnBuyFee", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "burnSellFee",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "decimals", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "decreaseAllowance",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "developmentAddress",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "developmentBuyFee",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "developmentSellFee",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "dexFactory", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "dexPair", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "dexRouter", data: BytesLike): Result;
   decodeFunctionResult(
@@ -296,15 +263,19 @@ export interface MafaCoinV2Interface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "includeInFees",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "increaseAllowance",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "isBlacklisted",
+    functionFragment: "isExcludedFromFees",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "isExcludedFromFees",
+    functionFragment: "liquidityAddress",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -316,19 +287,23 @@ export interface MafaCoinV2Interface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "lotteryBuyFee",
+    functionFragment: "marketingAddress",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "lotterySellFee",
+    functionFragment: "marketingBuyFee",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "lotteryWallet",
+    functionFragment: "marketingSellFee",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "lpRecipient",
+    functionFragment: "maxSellAmount",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "maxWalletAmount",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
@@ -342,74 +317,60 @@ export interface MafaCoinV2Interface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "setBurnBuyFee",
+    functionFragment: "setDevelopmentAddress",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "setBurnSellFee",
+    functionFragment: "setDevelopmentBuyFee",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "setLiquidyBuyFee",
+    functionFragment: "setDevelopmentSellFee",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "setLiquidySellFee",
+    functionFragment: "setLiquidityAddress",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "setLotteryBuyFee",
+    functionFragment: "setLiquidityBuyFee",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "setLotterySellFee",
+    functionFragment: "setLiquiditySellFee",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "setLotteryWallet",
+    functionFragment: "setMarketingAddress",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "setLpRecipient",
+    functionFragment: "setMarketingBuyFee",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "setTeamBuyFee",
+    functionFragment: "setMarketingSellFee",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "setTeamSellFee",
+    functionFragment: "setMaxSellAmount",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "setTeamWallet",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "startLiquidity",
+    functionFragment: "setMaxWalletAmount",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "teamBuyFee", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "teamSellFee",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(functionFragment: "teamWallet", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "totalBuyFee",
+    functionFragment: "totalBuyFees",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "totalSellFee",
+    functionFragment: "totalSellFees",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "totalSupply",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "tradingIsEnabled",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "transfer", data: BytesLike): Result;
@@ -423,45 +384,41 @@ export interface MafaCoinV2Interface extends utils.Interface {
   ): Result;
 
   events: {
-    "AccountBlacklisted(address,bool)": EventFragment;
     "Approval(address,address,uint256)": EventFragment;
-    "BurnFeeStopped(uint256,uint256,uint256)": EventFragment;
-    "ExcludeFromFees(address,bool)": EventFragment;
-    "FeeUpdated(uint256,bytes32)": EventFragment;
-    "LiquidityStarted(address,address)": EventFragment;
-    "LotteryWalletUpdated(address)": EventFragment;
-    "LpRecipientUpdated(address)": EventFragment;
+    "DevelopmentAddressUpdated(address)": EventFragment;
+    "DevelopmentFeeUpdated(uint256)": EventFragment;
+    "ExcludeFromFees(address)": EventFragment;
+    "IncludeInFees(address)": EventFragment;
+    "LiquidityAddressUpdated(address)": EventFragment;
+    "LiquidityFeeUpdated(uint256)": EventFragment;
+    "MarketingAddressUpdated(address)": EventFragment;
+    "MarketingFeeUpdated(uint256)": EventFragment;
+    "MaxSellAmountUpdated(uint256)": EventFragment;
+    "MaxWalletAmountUpdated(uint256)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
     "SetAutomatedMarketMakerPair(address,bool)": EventFragment;
     "SwapAndLiquify(uint256,uint256,uint256)": EventFragment;
-    "TeamWalletUpdated(address)": EventFragment;
     "Transfer(address,address,uint256)": EventFragment;
   };
 
-  getEvent(nameOrSignatureOrTopic: "AccountBlacklisted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Approval"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "BurnFeeStopped"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "DevelopmentAddressUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "DevelopmentFeeUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ExcludeFromFees"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "FeeUpdated"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "LiquidityStarted"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "LotteryWalletUpdated"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "LpRecipientUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "IncludeInFees"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "LiquidityAddressUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "LiquidityFeeUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MarketingAddressUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MarketingFeeUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MaxSellAmountUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MaxWalletAmountUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(
     nameOrSignatureOrTopic: "SetAutomatedMarketMakerPair"
   ): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SwapAndLiquify"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "TeamWalletUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
 }
-
-export type AccountBlacklistedEvent = TypedEvent<
-  [string, boolean],
-  { account: string; isBlacklisted: boolean }
->;
-
-export type AccountBlacklistedEventFilter =
-  TypedEventFilter<AccountBlacklistedEvent>;
 
 export type ApprovalEvent = TypedEvent<
   [string, string, BigNumber],
@@ -470,50 +427,77 @@ export type ApprovalEvent = TypedEvent<
 
 export type ApprovalEventFilter = TypedEventFilter<ApprovalEvent>;
 
-export type BurnFeeStoppedEvent = TypedEvent<
-  [BigNumber, BigNumber, BigNumber],
-  { burnedTokens: BigNumber; burnBuyFee: BigNumber; burnSellFee: BigNumber }
+export type DevelopmentAddressUpdatedEvent = TypedEvent<
+  [string],
+  { developmentAddress: string }
 >;
 
-export type BurnFeeStoppedEventFilter = TypedEventFilter<BurnFeeStoppedEvent>;
+export type DevelopmentAddressUpdatedEventFilter =
+  TypedEventFilter<DevelopmentAddressUpdatedEvent>;
 
-export type ExcludeFromFeesEvent = TypedEvent<
-  [string, boolean],
-  { account: string; isExcluded: boolean }
+export type DevelopmentFeeUpdatedEvent = TypedEvent<
+  [BigNumber],
+  { fee: BigNumber }
 >;
+
+export type DevelopmentFeeUpdatedEventFilter =
+  TypedEventFilter<DevelopmentFeeUpdatedEvent>;
+
+export type ExcludeFromFeesEvent = TypedEvent<[string], { account: string }>;
 
 export type ExcludeFromFeesEventFilter = TypedEventFilter<ExcludeFromFeesEvent>;
 
-export type FeeUpdatedEvent = TypedEvent<
-  [BigNumber, string],
-  { fee: BigNumber; feeType: string }
->;
+export type IncludeInFeesEvent = TypedEvent<[string], { account: string }>;
 
-export type FeeUpdatedEventFilter = TypedEventFilter<FeeUpdatedEvent>;
+export type IncludeInFeesEventFilter = TypedEventFilter<IncludeInFeesEvent>;
 
-export type LiquidityStartedEvent = TypedEvent<
-  [string, string],
-  { routerAddress: string; pairAddress: string }
->;
-
-export type LiquidityStartedEventFilter =
-  TypedEventFilter<LiquidityStartedEvent>;
-
-export type LotteryWalletUpdatedEvent = TypedEvent<
+export type LiquidityAddressUpdatedEvent = TypedEvent<
   [string],
-  { newWallet: string }
+  { liquidityAddress: string }
 >;
 
-export type LotteryWalletUpdatedEventFilter =
-  TypedEventFilter<LotteryWalletUpdatedEvent>;
+export type LiquidityAddressUpdatedEventFilter =
+  TypedEventFilter<LiquidityAddressUpdatedEvent>;
 
-export type LpRecipientUpdatedEvent = TypedEvent<
+export type LiquidityFeeUpdatedEvent = TypedEvent<
+  [BigNumber],
+  { fee: BigNumber }
+>;
+
+export type LiquidityFeeUpdatedEventFilter =
+  TypedEventFilter<LiquidityFeeUpdatedEvent>;
+
+export type MarketingAddressUpdatedEvent = TypedEvent<
   [string],
-  { lpRecipient: string }
+  { marketingAddress: string }
 >;
 
-export type LpRecipientUpdatedEventFilter =
-  TypedEventFilter<LpRecipientUpdatedEvent>;
+export type MarketingAddressUpdatedEventFilter =
+  TypedEventFilter<MarketingAddressUpdatedEvent>;
+
+export type MarketingFeeUpdatedEvent = TypedEvent<
+  [BigNumber],
+  { fee: BigNumber }
+>;
+
+export type MarketingFeeUpdatedEventFilter =
+  TypedEventFilter<MarketingFeeUpdatedEvent>;
+
+export type MaxSellAmountUpdatedEvent = TypedEvent<
+  [BigNumber],
+  { amount: BigNumber }
+>;
+
+export type MaxSellAmountUpdatedEventFilter =
+  TypedEventFilter<MaxSellAmountUpdatedEvent>;
+
+export type MaxWalletAmountUpdatedEvent = TypedEvent<
+  [BigNumber],
+  { amount: BigNumber }
+>;
+
+export type MaxWalletAmountUpdatedEventFilter =
+  TypedEventFilter<MaxWalletAmountUpdatedEvent>;
 
 export type OwnershipTransferredEvent = TypedEvent<
   [string, string],
@@ -541,14 +525,6 @@ export type SwapAndLiquifyEvent = TypedEvent<
 >;
 
 export type SwapAndLiquifyEventFilter = TypedEventFilter<SwapAndLiquifyEvent>;
-
-export type TeamWalletUpdatedEvent = TypedEvent<
-  [string],
-  { newWallet: string }
->;
-
-export type TeamWalletUpdatedEventFilter =
-  TypedEventFilter<TeamWalletUpdatedEvent>;
 
 export type TransferEvent = TypedEvent<
   [string, string, BigNumber],
@@ -584,14 +560,6 @@ export interface MafaCoinV2 extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
-    DEAD_ADDRESS(overrides?: CallOverrides): Promise<[string]>;
-
-    TOTAL_SUPPLY(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    afterPreSale(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     allowance(
       owner: string,
       spender: string,
@@ -611,16 +579,6 @@ export interface MafaCoinV2 extends BaseContract {
 
     balanceOf(account: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    blacklistAccount(
-      account: string,
-      blacklisted: boolean,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    burnBuyFee(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    burnSellFee(overrides?: CallOverrides): Promise<[BigNumber]>;
-
     decimals(overrides?: CallOverrides): Promise<[number]>;
 
     decreaseAllowance(
@@ -629,13 +587,25 @@ export interface MafaCoinV2 extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    developmentAddress(overrides?: CallOverrides): Promise<[string]>;
+
+    developmentBuyFee(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    developmentSellFee(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    dexFactory(overrides?: CallOverrides): Promise<[string]>;
+
     dexPair(overrides?: CallOverrides): Promise<[string]>;
 
     dexRouter(overrides?: CallOverrides): Promise<[string]>;
 
     excludeFromFees(
       account: string,
-      excluded: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    includeInFees(
+      account: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -645,24 +615,26 @@ export interface MafaCoinV2 extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    isBlacklisted(arg0: string, overrides?: CallOverrides): Promise<[boolean]>;
-
     isExcludedFromFees(
       arg0: string,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
+    liquidityAddress(overrides?: CallOverrides): Promise<[string]>;
+
     liquidityBuyFee(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     liquiditySellFee(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    lotteryBuyFee(overrides?: CallOverrides): Promise<[BigNumber]>;
+    marketingAddress(overrides?: CallOverrides): Promise<[string]>;
 
-    lotterySellFee(overrides?: CallOverrides): Promise<[BigNumber]>;
+    marketingBuyFee(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    lotteryWallet(overrides?: CallOverrides): Promise<[string]>;
+    marketingSellFee(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    lpRecipient(overrides?: CallOverrides): Promise<[string]>;
+    maxSellAmount(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    maxWalletAmount(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     name(overrides?: CallOverrides): Promise<[string]>;
 
@@ -678,81 +650,68 @@ export interface MafaCoinV2 extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    setBurnBuyFee(
+    setDevelopmentAddress(
+      newAddress: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setDevelopmentBuyFee(
       newFee: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    setBurnSellFee(
+    setDevelopmentSellFee(
       newFee: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    setLiquidyBuyFee(
+    setLiquidityAddress(
+      newAddress: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setLiquidityBuyFee(
       newFee: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    setLiquidySellFee(
+    setLiquiditySellFee(
       newFee: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    setLotteryBuyFee(
+    setMarketingAddress(
+      newAddress: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setMarketingBuyFee(
       newFee: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    setLotterySellFee(
+    setMarketingSellFee(
       newFee: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    setLotteryWallet(
-      _newWallet: string,
+    setMaxSellAmount(
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    setLpRecipient(
-      recipient: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    setTeamBuyFee(
-      newFee: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    setTeamSellFee(
-      newFee: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    setTeamWallet(
-      _newWallet: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    startLiquidity(
-      router: string,
+    setMaxWalletAmount(
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     symbol(overrides?: CallOverrides): Promise<[string]>;
 
-    teamBuyFee(overrides?: CallOverrides): Promise<[BigNumber]>;
+    totalBuyFees(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    teamSellFee(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    teamWallet(overrides?: CallOverrides): Promise<[string]>;
-
-    totalBuyFee(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    totalSellFee(overrides?: CallOverrides): Promise<[BigNumber]>;
+    totalSellFees(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     totalSupply(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    tradingIsEnabled(overrides?: CallOverrides): Promise<[boolean]>;
 
     transfer(
       recipient: string,
@@ -773,14 +732,6 @@ export interface MafaCoinV2 extends BaseContract {
     ): Promise<ContractTransaction>;
   };
 
-  DEAD_ADDRESS(overrides?: CallOverrides): Promise<string>;
-
-  TOTAL_SUPPLY(overrides?: CallOverrides): Promise<BigNumber>;
-
-  afterPreSale(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   allowance(
     owner: string,
     spender: string,
@@ -800,16 +751,6 @@ export interface MafaCoinV2 extends BaseContract {
 
   balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-  blacklistAccount(
-    account: string,
-    blacklisted: boolean,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  burnBuyFee(overrides?: CallOverrides): Promise<BigNumber>;
-
-  burnSellFee(overrides?: CallOverrides): Promise<BigNumber>;
-
   decimals(overrides?: CallOverrides): Promise<number>;
 
   decreaseAllowance(
@@ -818,13 +759,25 @@ export interface MafaCoinV2 extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  developmentAddress(overrides?: CallOverrides): Promise<string>;
+
+  developmentBuyFee(overrides?: CallOverrides): Promise<BigNumber>;
+
+  developmentSellFee(overrides?: CallOverrides): Promise<BigNumber>;
+
+  dexFactory(overrides?: CallOverrides): Promise<string>;
+
   dexPair(overrides?: CallOverrides): Promise<string>;
 
   dexRouter(overrides?: CallOverrides): Promise<string>;
 
   excludeFromFees(
     account: string,
-    excluded: boolean,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  includeInFees(
+    account: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -834,21 +787,23 @@ export interface MafaCoinV2 extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  isBlacklisted(arg0: string, overrides?: CallOverrides): Promise<boolean>;
-
   isExcludedFromFees(arg0: string, overrides?: CallOverrides): Promise<boolean>;
+
+  liquidityAddress(overrides?: CallOverrides): Promise<string>;
 
   liquidityBuyFee(overrides?: CallOverrides): Promise<BigNumber>;
 
   liquiditySellFee(overrides?: CallOverrides): Promise<BigNumber>;
 
-  lotteryBuyFee(overrides?: CallOverrides): Promise<BigNumber>;
+  marketingAddress(overrides?: CallOverrides): Promise<string>;
 
-  lotterySellFee(overrides?: CallOverrides): Promise<BigNumber>;
+  marketingBuyFee(overrides?: CallOverrides): Promise<BigNumber>;
 
-  lotteryWallet(overrides?: CallOverrides): Promise<string>;
+  marketingSellFee(overrides?: CallOverrides): Promise<BigNumber>;
 
-  lpRecipient(overrides?: CallOverrides): Promise<string>;
+  maxSellAmount(overrides?: CallOverrides): Promise<BigNumber>;
+
+  maxWalletAmount(overrides?: CallOverrides): Promise<BigNumber>;
 
   name(overrides?: CallOverrides): Promise<string>;
 
@@ -864,81 +819,68 @@ export interface MafaCoinV2 extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  setBurnBuyFee(
+  setDevelopmentAddress(
+    newAddress: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setDevelopmentBuyFee(
     newFee: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  setBurnSellFee(
+  setDevelopmentSellFee(
     newFee: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  setLiquidyBuyFee(
+  setLiquidityAddress(
+    newAddress: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setLiquidityBuyFee(
     newFee: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  setLiquidySellFee(
+  setLiquiditySellFee(
     newFee: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  setLotteryBuyFee(
+  setMarketingAddress(
+    newAddress: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setMarketingBuyFee(
     newFee: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  setLotterySellFee(
+  setMarketingSellFee(
     newFee: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  setLotteryWallet(
-    _newWallet: string,
+  setMaxSellAmount(
+    amount: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  setLpRecipient(
-    recipient: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  setTeamBuyFee(
-    newFee: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  setTeamSellFee(
-    newFee: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  setTeamWallet(
-    _newWallet: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  startLiquidity(
-    router: string,
+  setMaxWalletAmount(
+    amount: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   symbol(overrides?: CallOverrides): Promise<string>;
 
-  teamBuyFee(overrides?: CallOverrides): Promise<BigNumber>;
+  totalBuyFees(overrides?: CallOverrides): Promise<BigNumber>;
 
-  teamSellFee(overrides?: CallOverrides): Promise<BigNumber>;
-
-  teamWallet(overrides?: CallOverrides): Promise<string>;
-
-  totalBuyFee(overrides?: CallOverrides): Promise<BigNumber>;
-
-  totalSellFee(overrides?: CallOverrides): Promise<BigNumber>;
+  totalSellFees(overrides?: CallOverrides): Promise<BigNumber>;
 
   totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
-
-  tradingIsEnabled(overrides?: CallOverrides): Promise<boolean>;
 
   transfer(
     recipient: string,
@@ -959,12 +901,6 @@ export interface MafaCoinV2 extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
-    DEAD_ADDRESS(overrides?: CallOverrides): Promise<string>;
-
-    TOTAL_SUPPLY(overrides?: CallOverrides): Promise<BigNumber>;
-
-    afterPreSale(overrides?: CallOverrides): Promise<void>;
-
     allowance(
       owner: string,
       spender: string,
@@ -984,16 +920,6 @@ export interface MafaCoinV2 extends BaseContract {
 
     balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    blacklistAccount(
-      account: string,
-      blacklisted: boolean,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    burnBuyFee(overrides?: CallOverrides): Promise<BigNumber>;
-
-    burnSellFee(overrides?: CallOverrides): Promise<BigNumber>;
-
     decimals(overrides?: CallOverrides): Promise<number>;
 
     decreaseAllowance(
@@ -1002,15 +928,21 @@ export interface MafaCoinV2 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
+    developmentAddress(overrides?: CallOverrides): Promise<string>;
+
+    developmentBuyFee(overrides?: CallOverrides): Promise<BigNumber>;
+
+    developmentSellFee(overrides?: CallOverrides): Promise<BigNumber>;
+
+    dexFactory(overrides?: CallOverrides): Promise<string>;
+
     dexPair(overrides?: CallOverrides): Promise<string>;
 
     dexRouter(overrides?: CallOverrides): Promise<string>;
 
-    excludeFromFees(
-      account: string,
-      excluded: boolean,
-      overrides?: CallOverrides
-    ): Promise<void>;
+    excludeFromFees(account: string, overrides?: CallOverrides): Promise<void>;
+
+    includeInFees(account: string, overrides?: CallOverrides): Promise<void>;
 
     increaseAllowance(
       spender: string,
@@ -1018,24 +950,26 @@ export interface MafaCoinV2 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    isBlacklisted(arg0: string, overrides?: CallOverrides): Promise<boolean>;
-
     isExcludedFromFees(
       arg0: string,
       overrides?: CallOverrides
     ): Promise<boolean>;
 
+    liquidityAddress(overrides?: CallOverrides): Promise<string>;
+
     liquidityBuyFee(overrides?: CallOverrides): Promise<BigNumber>;
 
     liquiditySellFee(overrides?: CallOverrides): Promise<BigNumber>;
 
-    lotteryBuyFee(overrides?: CallOverrides): Promise<BigNumber>;
+    marketingAddress(overrides?: CallOverrides): Promise<string>;
 
-    lotterySellFee(overrides?: CallOverrides): Promise<BigNumber>;
+    marketingBuyFee(overrides?: CallOverrides): Promise<BigNumber>;
 
-    lotteryWallet(overrides?: CallOverrides): Promise<string>;
+    marketingSellFee(overrides?: CallOverrides): Promise<BigNumber>;
 
-    lpRecipient(overrides?: CallOverrides): Promise<string>;
+    maxSellAmount(overrides?: CallOverrides): Promise<BigNumber>;
+
+    maxWalletAmount(overrides?: CallOverrides): Promise<BigNumber>;
 
     name(overrides?: CallOverrides): Promise<string>;
 
@@ -1049,72 +983,68 @@ export interface MafaCoinV2 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    setBurnBuyFee(
+    setDevelopmentAddress(
+      newAddress: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setDevelopmentBuyFee(
       newFee: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    setBurnSellFee(
+    setDevelopmentSellFee(
       newFee: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    setLiquidyBuyFee(
+    setLiquidityAddress(
+      newAddress: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setLiquidityBuyFee(
       newFee: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    setLiquidySellFee(
+    setLiquiditySellFee(
       newFee: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    setLotteryBuyFee(
+    setMarketingAddress(
+      newAddress: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setMarketingBuyFee(
       newFee: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    setLotterySellFee(
+    setMarketingSellFee(
       newFee: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    setLotteryWallet(
-      _newWallet: string,
+    setMaxSellAmount(
+      amount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    setLpRecipient(recipient: string, overrides?: CallOverrides): Promise<void>;
-
-    setTeamBuyFee(
-      newFee: BigNumberish,
+    setMaxWalletAmount(
+      amount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
-
-    setTeamSellFee(
-      newFee: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setTeamWallet(_newWallet: string, overrides?: CallOverrides): Promise<void>;
-
-    startLiquidity(router: string, overrides?: CallOverrides): Promise<void>;
 
     symbol(overrides?: CallOverrides): Promise<string>;
 
-    teamBuyFee(overrides?: CallOverrides): Promise<BigNumber>;
+    totalBuyFees(overrides?: CallOverrides): Promise<BigNumber>;
 
-    teamSellFee(overrides?: CallOverrides): Promise<BigNumber>;
-
-    teamWallet(overrides?: CallOverrides): Promise<string>;
-
-    totalBuyFee(overrides?: CallOverrides): Promise<BigNumber>;
-
-    totalSellFee(overrides?: CallOverrides): Promise<BigNumber>;
+    totalSellFees(overrides?: CallOverrides): Promise<BigNumber>;
 
     totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
-
-    tradingIsEnabled(overrides?: CallOverrides): Promise<boolean>;
 
     transfer(
       recipient: string,
@@ -1136,15 +1066,6 @@ export interface MafaCoinV2 extends BaseContract {
   };
 
   filters: {
-    "AccountBlacklisted(address,bool)"(
-      account?: string | null,
-      isBlacklisted?: null
-    ): AccountBlacklistedEventFilter;
-    AccountBlacklisted(
-      account?: string | null,
-      isBlacklisted?: null
-    ): AccountBlacklistedEventFilter;
-
     "Approval(address,address,uint256)"(
       owner?: string | null,
       spender?: string | null,
@@ -1156,57 +1077,69 @@ export interface MafaCoinV2 extends BaseContract {
       value?: null
     ): ApprovalEventFilter;
 
-    "BurnFeeStopped(uint256,uint256,uint256)"(
-      burnedTokens?: BigNumberish | null,
-      burnBuyFee?: BigNumberish | null,
-      burnSellFee?: BigNumberish | null
-    ): BurnFeeStoppedEventFilter;
-    BurnFeeStopped(
-      burnedTokens?: BigNumberish | null,
-      burnBuyFee?: BigNumberish | null,
-      burnSellFee?: BigNumberish | null
-    ): BurnFeeStoppedEventFilter;
+    "DevelopmentAddressUpdated(address)"(
+      developmentAddress?: string | null
+    ): DevelopmentAddressUpdatedEventFilter;
+    DevelopmentAddressUpdated(
+      developmentAddress?: string | null
+    ): DevelopmentAddressUpdatedEventFilter;
 
-    "ExcludeFromFees(address,bool)"(
-      account?: string | null,
-      isExcluded?: null
+    "DevelopmentFeeUpdated(uint256)"(
+      fee?: BigNumberish | null
+    ): DevelopmentFeeUpdatedEventFilter;
+    DevelopmentFeeUpdated(
+      fee?: BigNumberish | null
+    ): DevelopmentFeeUpdatedEventFilter;
+
+    "ExcludeFromFees(address)"(
+      account?: string | null
     ): ExcludeFromFeesEventFilter;
-    ExcludeFromFees(
-      account?: string | null,
-      isExcluded?: null
-    ): ExcludeFromFeesEventFilter;
+    ExcludeFromFees(account?: string | null): ExcludeFromFeesEventFilter;
 
-    "FeeUpdated(uint256,bytes32)"(
-      fee?: BigNumberish | null,
-      feeType?: BytesLike | null
-    ): FeeUpdatedEventFilter;
-    FeeUpdated(
-      fee?: BigNumberish | null,
-      feeType?: BytesLike | null
-    ): FeeUpdatedEventFilter;
+    "IncludeInFees(address)"(account?: string | null): IncludeInFeesEventFilter;
+    IncludeInFees(account?: string | null): IncludeInFeesEventFilter;
 
-    "LiquidityStarted(address,address)"(
-      routerAddress?: string | null,
-      pairAddress?: string | null
-    ): LiquidityStartedEventFilter;
-    LiquidityStarted(
-      routerAddress?: string | null,
-      pairAddress?: string | null
-    ): LiquidityStartedEventFilter;
+    "LiquidityAddressUpdated(address)"(
+      liquidityAddress?: string | null
+    ): LiquidityAddressUpdatedEventFilter;
+    LiquidityAddressUpdated(
+      liquidityAddress?: string | null
+    ): LiquidityAddressUpdatedEventFilter;
 
-    "LotteryWalletUpdated(address)"(
-      newWallet?: string | null
-    ): LotteryWalletUpdatedEventFilter;
-    LotteryWalletUpdated(
-      newWallet?: string | null
-    ): LotteryWalletUpdatedEventFilter;
+    "LiquidityFeeUpdated(uint256)"(
+      fee?: BigNumberish | null
+    ): LiquidityFeeUpdatedEventFilter;
+    LiquidityFeeUpdated(
+      fee?: BigNumberish | null
+    ): LiquidityFeeUpdatedEventFilter;
 
-    "LpRecipientUpdated(address)"(
-      lpRecipient?: string | null
-    ): LpRecipientUpdatedEventFilter;
-    LpRecipientUpdated(
-      lpRecipient?: string | null
-    ): LpRecipientUpdatedEventFilter;
+    "MarketingAddressUpdated(address)"(
+      marketingAddress?: string | null
+    ): MarketingAddressUpdatedEventFilter;
+    MarketingAddressUpdated(
+      marketingAddress?: string | null
+    ): MarketingAddressUpdatedEventFilter;
+
+    "MarketingFeeUpdated(uint256)"(
+      fee?: BigNumberish | null
+    ): MarketingFeeUpdatedEventFilter;
+    MarketingFeeUpdated(
+      fee?: BigNumberish | null
+    ): MarketingFeeUpdatedEventFilter;
+
+    "MaxSellAmountUpdated(uint256)"(
+      amount?: BigNumberish | null
+    ): MaxSellAmountUpdatedEventFilter;
+    MaxSellAmountUpdated(
+      amount?: BigNumberish | null
+    ): MaxSellAmountUpdatedEventFilter;
+
+    "MaxWalletAmountUpdated(uint256)"(
+      amount?: BigNumberish | null
+    ): MaxWalletAmountUpdatedEventFilter;
+    MaxWalletAmountUpdated(
+      amount?: BigNumberish | null
+    ): MaxWalletAmountUpdatedEventFilter;
 
     "OwnershipTransferred(address,address)"(
       previousOwner?: string | null,
@@ -1237,11 +1170,6 @@ export interface MafaCoinV2 extends BaseContract {
       tokensIntoLiqudity?: BigNumberish | null
     ): SwapAndLiquifyEventFilter;
 
-    "TeamWalletUpdated(address)"(
-      newWallet?: string | null
-    ): TeamWalletUpdatedEventFilter;
-    TeamWalletUpdated(newWallet?: string | null): TeamWalletUpdatedEventFilter;
-
     "Transfer(address,address,uint256)"(
       from?: string | null,
       to?: string | null,
@@ -1255,14 +1183,6 @@ export interface MafaCoinV2 extends BaseContract {
   };
 
   estimateGas: {
-    DEAD_ADDRESS(overrides?: CallOverrides): Promise<BigNumber>;
-
-    TOTAL_SUPPLY(overrides?: CallOverrides): Promise<BigNumber>;
-
-    afterPreSale(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     allowance(
       owner: string,
       spender: string,
@@ -1282,16 +1202,6 @@ export interface MafaCoinV2 extends BaseContract {
 
     balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    blacklistAccount(
-      account: string,
-      blacklisted: boolean,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    burnBuyFee(overrides?: CallOverrides): Promise<BigNumber>;
-
-    burnSellFee(overrides?: CallOverrides): Promise<BigNumber>;
-
     decimals(overrides?: CallOverrides): Promise<BigNumber>;
 
     decreaseAllowance(
@@ -1300,13 +1210,25 @@ export interface MafaCoinV2 extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    developmentAddress(overrides?: CallOverrides): Promise<BigNumber>;
+
+    developmentBuyFee(overrides?: CallOverrides): Promise<BigNumber>;
+
+    developmentSellFee(overrides?: CallOverrides): Promise<BigNumber>;
+
+    dexFactory(overrides?: CallOverrides): Promise<BigNumber>;
+
     dexPair(overrides?: CallOverrides): Promise<BigNumber>;
 
     dexRouter(overrides?: CallOverrides): Promise<BigNumber>;
 
     excludeFromFees(
       account: string,
-      excluded: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    includeInFees(
+      account: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1316,24 +1238,26 @@ export interface MafaCoinV2 extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    isBlacklisted(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
-
     isExcludedFromFees(
       arg0: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    liquidityAddress(overrides?: CallOverrides): Promise<BigNumber>;
+
     liquidityBuyFee(overrides?: CallOverrides): Promise<BigNumber>;
 
     liquiditySellFee(overrides?: CallOverrides): Promise<BigNumber>;
 
-    lotteryBuyFee(overrides?: CallOverrides): Promise<BigNumber>;
+    marketingAddress(overrides?: CallOverrides): Promise<BigNumber>;
 
-    lotterySellFee(overrides?: CallOverrides): Promise<BigNumber>;
+    marketingBuyFee(overrides?: CallOverrides): Promise<BigNumber>;
 
-    lotteryWallet(overrides?: CallOverrides): Promise<BigNumber>;
+    marketingSellFee(overrides?: CallOverrides): Promise<BigNumber>;
 
-    lpRecipient(overrides?: CallOverrides): Promise<BigNumber>;
+    maxSellAmount(overrides?: CallOverrides): Promise<BigNumber>;
+
+    maxWalletAmount(overrides?: CallOverrides): Promise<BigNumber>;
 
     name(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1349,81 +1273,68 @@ export interface MafaCoinV2 extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    setBurnBuyFee(
+    setDevelopmentAddress(
+      newAddress: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setDevelopmentBuyFee(
       newFee: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    setBurnSellFee(
+    setDevelopmentSellFee(
       newFee: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    setLiquidyBuyFee(
+    setLiquidityAddress(
+      newAddress: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setLiquidityBuyFee(
       newFee: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    setLiquidySellFee(
+    setLiquiditySellFee(
       newFee: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    setLotteryBuyFee(
+    setMarketingAddress(
+      newAddress: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setMarketingBuyFee(
       newFee: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    setLotterySellFee(
+    setMarketingSellFee(
       newFee: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    setLotteryWallet(
-      _newWallet: string,
+    setMaxSellAmount(
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    setLpRecipient(
-      recipient: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    setTeamBuyFee(
-      newFee: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    setTeamSellFee(
-      newFee: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    setTeamWallet(
-      _newWallet: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    startLiquidity(
-      router: string,
+    setMaxWalletAmount(
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     symbol(overrides?: CallOverrides): Promise<BigNumber>;
 
-    teamBuyFee(overrides?: CallOverrides): Promise<BigNumber>;
+    totalBuyFees(overrides?: CallOverrides): Promise<BigNumber>;
 
-    teamSellFee(overrides?: CallOverrides): Promise<BigNumber>;
-
-    teamWallet(overrides?: CallOverrides): Promise<BigNumber>;
-
-    totalBuyFee(overrides?: CallOverrides): Promise<BigNumber>;
-
-    totalSellFee(overrides?: CallOverrides): Promise<BigNumber>;
+    totalSellFees(overrides?: CallOverrides): Promise<BigNumber>;
 
     totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
-
-    tradingIsEnabled(overrides?: CallOverrides): Promise<BigNumber>;
 
     transfer(
       recipient: string,
@@ -1445,14 +1356,6 @@ export interface MafaCoinV2 extends BaseContract {
   };
 
   populateTransaction: {
-    DEAD_ADDRESS(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    TOTAL_SUPPLY(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    afterPreSale(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
     allowance(
       owner: string,
       spender: string,
@@ -1475,16 +1378,6 @@ export interface MafaCoinV2 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    blacklistAccount(
-      account: string,
-      blacklisted: boolean,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    burnBuyFee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    burnSellFee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     decimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     decreaseAllowance(
@@ -1493,13 +1386,29 @@ export interface MafaCoinV2 extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    developmentAddress(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    developmentBuyFee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    developmentSellFee(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    dexFactory(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     dexPair(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     dexRouter(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     excludeFromFees(
       account: string,
-      excluded: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    includeInFees(
+      account: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1509,27 +1418,26 @@ export interface MafaCoinV2 extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    isBlacklisted(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     isExcludedFromFees(
       arg0: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    liquidityAddress(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     liquidityBuyFee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     liquiditySellFee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    lotteryBuyFee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    marketingAddress(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    lotterySellFee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    marketingBuyFee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    lotteryWallet(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    marketingSellFee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    lpRecipient(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    maxSellAmount(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    maxWalletAmount(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -1545,81 +1453,68 @@ export interface MafaCoinV2 extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    setBurnBuyFee(
+    setDevelopmentAddress(
+      newAddress: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setDevelopmentBuyFee(
       newFee: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    setBurnSellFee(
+    setDevelopmentSellFee(
       newFee: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    setLiquidyBuyFee(
+    setLiquidityAddress(
+      newAddress: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setLiquidityBuyFee(
       newFee: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    setLiquidySellFee(
+    setLiquiditySellFee(
       newFee: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    setLotteryBuyFee(
+    setMarketingAddress(
+      newAddress: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setMarketingBuyFee(
       newFee: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    setLotterySellFee(
+    setMarketingSellFee(
       newFee: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    setLotteryWallet(
-      _newWallet: string,
+    setMaxSellAmount(
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    setLpRecipient(
-      recipient: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setTeamBuyFee(
-      newFee: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setTeamSellFee(
-      newFee: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setTeamWallet(
-      _newWallet: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    startLiquidity(
-      router: string,
+    setMaxWalletAmount(
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    teamBuyFee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    totalBuyFees(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    teamSellFee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    teamWallet(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    totalBuyFee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    totalSellFee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    totalSellFees(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     totalSupply(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    tradingIsEnabled(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     transfer(
       recipient: string,
