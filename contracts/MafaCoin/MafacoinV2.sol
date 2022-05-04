@@ -298,19 +298,22 @@ contract MafaCoinV2 is ERC20, Ownable {
             if (automatedMarketMakerPairs[to]) {
                 if (amount > maxSellAmount) revert MaxSellAmountExceeded(amount);
 
-                if (developmentSellFee > 0) {
-                    tokensToDevelopment = (amount * developmentSellFee) / 10**decimals();
+                uint256 developmentFee = developmentSellFee;
+                if (developmentFee > 0) {
+                    tokensToDevelopment = (amount * developmentFee) / 10**decimals();
                     _takeFee(from, developmentAddress, tokensToDevelopment);
                 }
 
-                if (liquiditySellFee > 0) {
-                    tokensToLiquidity = (amount * liquiditySellFee) / 10**decimals();
+                uint256 liquidityFee = liquiditySellFee;
+                if (liquidityFee > 0) {
+                    tokensToLiquidity = (amount * liquidityFee) / 10**decimals();
                     super._transfer(from, address(this), tokensToLiquidity);
                     _swapAndLiquify(balanceOf(address(this)), liquidityAddress);
                 }
 
-                if (marketingSellFee > 0) {
-                    tokensToMarketing = (amount * marketingSellFee) / 10**decimals();
+                uint256 marketingFee = marketingSellFee;
+                if (marketingFee > 0) {
+                    tokensToMarketing = (amount * marketingFee) / 10**decimals();
                     _takeFee(from, marketingAddress, tokensToMarketing);
                 }
             } else {
@@ -319,18 +322,21 @@ contract MafaCoinV2 is ERC20, Ownable {
                     revert MaxWalletAmountExceeded(balancePlusAmount);
                 } 
 
-                if (developmentBuyFee > 0) {
-                    tokensToDevelopment = (amount * developmentBuyFee) / 10**decimals();
+                uint256 developmentFee = developmentBuyFee;
+                if (developmentFee > 0) {
+                    tokensToDevelopment = (amount * developmentFee) / 10**decimals();
                     super._transfer(from, developmentAddress, tokensToDevelopment);
                 }
 
-                if (liquidityBuyFee > 0) {
-                    tokensToLiquidity = (amount * liquidityBuyFee) / 10**decimals();
+                uint256 liquidityFee = liquidityBuyFee;
+                if (liquidityFee > 0) {
+                    tokensToLiquidity = (amount * liquidityFee) / 10**decimals();
                     super._transfer(from, address(this), tokensToLiquidity);
                 }
 
-                if (marketingBuyFee > 0) {
-                    tokensToMarketing = (amount * marketingBuyFee) / 10**decimals();
+                uint256 marketingFee = marketingBuyFee;
+                if (marketingFee > 0) {
+                    tokensToMarketing = (amount * marketingFee) / 10**decimals();
                     super._transfer(from, marketingAddress, tokensToMarketing);
                 }
             }
