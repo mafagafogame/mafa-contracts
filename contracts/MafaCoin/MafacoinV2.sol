@@ -8,7 +8,17 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
 
-import "hardhat/console.sol";
+// @dev Custom errors
+error DefaultPairUpdated();
+error AccountAlreadyExcluded();
+error AccountAlreadyIncluded();
+error SettingZeroAddress();
+error AddressAlreadySet();
+error TransferFromZeroAddress();
+error TransferToZeroAddress();
+error NoAmount();
+error MaxSellAmountExceeded(uint256 amount);
+error MaxWalletAmountExceeded(uint256 amount);
 
 contract MafaCoinV2 is ERC20, Ownable {
     // @dev the fee the development takes on buy txs.
@@ -64,8 +74,8 @@ contract MafaCoinV2 is ERC20, Ownable {
         string memory symbol,
         uint256 tSupply // totalSupply
     ) ERC20(name, symbol) {
-        excludeFromFees(address(this), true);
-        excludeFromFees(owner(), true);
+        excludeFromFees(address(this));
+        excludeFromFees(owner());
 
         developmentAddress = owner();
         marketingAddress = owner();
@@ -98,7 +108,8 @@ contract MafaCoinV2 is ERC20, Ownable {
 
     // @dev sets an AMM pair to check fees upon
     function setAutomatedMarketMakerPair(address pair, bool value) external onlyOwner {
-        require(pair != dexPair, "Default pair cannot be changed");
+        if (pair == dexPair) revert DefaultPairUpdated();
+
         _setAutomatedMarketMakerPair(pair, value);
     }
 
@@ -108,19 +119,27 @@ contract MafaCoinV2 is ERC20, Ownable {
         emit SetAutomatedMarketMakerPair(pair, value);
     }
 
-    // @dev exclude/include an account on fees
-    function excludeFromFees(address account, bool excluded) public onlyOwner {
-        require(isExcludedFromFees[account] != excluded, "Already set");
-        isExcludedFromFees[account] = excluded;
+    // @dev exclude an account from fees
+    function excludeFromFees(address account) public onlyOwner {
+        if (isExcludedFromFees[account]) revert AccountAlreadyExcluded();
 
-        emit ExcludeFromFees(account, excluded);
+        isExcludedFromFees[account] = true;
+        emit ExcludeFromFees(account);
+    }
+
+    // @dev include an account in fees
+    function includeInFees(address account) public onlyOwner {
+        if (!isExcludedFromFees[account]) revert AccountAlreadyIncluded();
+
+        isExcludedFromFees[account] = false;
+        emit IncludeInFees(account);
     }
 
     function setDevelopmentAddress(address newAddress) external onlyOwner {
-        require(newAddress != address(0), "Development address cannot be zero address");
-        require(developmentAddress != newAddress, "Development address already set");
-        developmentAddress = newAddress;
+        if (newAddress == address(0)) revert SettingZeroAddress();
+        if (developmentAddress == newAddress) revert AddressAlreadySet();
 
+        developmentAddress = newAddress;
         emit DevelopmentAddressUpdated(newAddress);
     }
 
@@ -137,10 +156,10 @@ contract MafaCoinV2 is ERC20, Ownable {
     }
 
     function setMarketingAddress(address newAddress) external onlyOwner {
-        require(newAddress != address(0), "Marketing address cannot be zero address");
-        require(marketingAddress != newAddress, "Marketing address already set");
-        marketingAddress = newAddress;
+        if (newAddress == address(0)) revert SettingZeroAddress();
+        if (marketingAddress == newAddress) revert AddressAlreadySet();
 
+        marketingAddress = newAddress;
         emit MarketingAddressUpdated(newAddress);
     }
 
@@ -157,10 +176,10 @@ contract MafaCoinV2 is ERC20, Ownable {
     }
 
     function setLiquidityAddress(address newAddress) external onlyOwner {
-        require(newAddress != address(0), "Liquidity address cannot be zero address");
-        require(liquidityAddress != newAddress, "Liquidity address already set");
-        liquidityAddress = newAddress;
+        if (newAddress == address(0)) revert SettingZeroAddress();
+        if (liquidityAddress == newAddress) revert AddressAlreadySet();
 
+        liquidityAddress = newAddress;
         emit LiquidityAddressUpdated(newAddress);
     }
 
@@ -262,9 +281,9 @@ contract MafaCoinV2 is ERC20, Ownable {
         address to,
         uint256 amount
     ) internal override {
-        require(from != address(0), "ERC20: transfer from the zero address");
-        require(to != address(0), "ERC20: transfer to the zero address");
-        require(amount > 0, "Transfer amount must be greater than zero");
+        if (from == address(0)) revert TransferFromZeroAddress();
+        if (to == address(0)) revert TransferToZeroAddress();
+        if (amount == 0) revert NoAmount();
 
         if (isExcludedFromFees[from] || isExcludedFromFees[to]) {
             super._transfer(from, to, amount);
@@ -277,7 +296,7 @@ contract MafaCoinV2 is ERC20, Ownable {
             // automatedMarketMakerPairs[from] -> buy tokens on dex
             // automatedMarketMakerPairs[to]   -> sell tokens on dex
             if (automatedMarketMakerPairs[to]) {
-                require(amount <= maxSellAmount, "Amount being sold exceeds the maximum allowed amount");
+                if (amount > maxSellAmount) revert MaxSellAmountExceeded(amount);
 
                 if (developmentSellFee > 0) {
                     tokensToDevelopment = (amount * developmentSellFee) / 10**decimals();
@@ -295,12 +314,10 @@ contract MafaCoinV2 is ERC20, Ownable {
                     _takeFee(from, marketingAddress, tokensToMarketing);
                 }
             } else {
-                if (automatedMarketMakerPairs[from]) {
-                    require(
-                        balanceOf(to) + amount <= maxWalletAmount,
-                        "New balance exceeds the maximum allowed amount"
-                    );
-                }
+                uint256 balancePlusAmount = balanceOf(to) + amount;
+                if (automatedMarketMakerPairs[from] && balancePlusAmount > maxWalletAmount) {
+                    revert MaxWalletAmountExceeded(balancePlusAmount);
+                } 
 
                 if (developmentBuyFee > 0) {
                     tokensToDevelopment = (amount * developmentBuyFee) / 10**decimals();
@@ -323,7 +340,8 @@ contract MafaCoinV2 is ERC20, Ownable {
         }
     }
 
-    event ExcludeFromFees(address indexed account, bool indexed value);
+    event ExcludeFromFees(address indexed account);
+    event IncludeInFees(address indexed account);
     event SetAutomatedMarketMakerPair(address indexed pair, bool indexed value);
     event DevelopmentAddressUpdated(address indexed developmentAddress);
     event DevelopmentFeeUpdated(uint256 indexed fee);

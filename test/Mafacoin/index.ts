@@ -58,10 +58,10 @@ describe.only("MafaCoinV2", function () {
   });
 
   it("Owner should be able to include in fees an excluded from fees account", async function () {
-    await contract.excludeFromFees(address4.address, true);
+    await contract.excludeFromFees(address4.address);
     expect(await contract.isExcludedFromFees(address4.address)).to.equal(true);
 
-    await contract.excludeFromFees(address4.address, false);
+    await contract.includeInFees(address4.address);
     expect(await contract.isExcludedFromFees(address4.address)).to.equal(false);
   });
 
@@ -86,7 +86,7 @@ describe.only("MafaCoinV2", function () {
       expect(await contract.totalSellFees()).to.equal(utils.parseEther("0.1"));
     });
 
-    it("should charge buy fees on basic transfer", async function () {
+    it("Should charge buy fees on basic transfer", async function () {
       await contract.setDevelopmentBuyFee(utils.parseEther("0.1"));
       await contract.setMarketingBuyFee(utils.parseEther("0.1"));
       await contract.setLiquidityBuyFee(utils.parseEther("0.1"));
@@ -97,7 +97,7 @@ describe.only("MafaCoinV2", function () {
       expect(await contract.balanceOf(address2.address)).to.equal(utils.parseEther("35000"));
     });
 
-    it("should not charge sell fees on basic transfer", async function () {
+    it("Should not charge sell fees on basic transfer", async function () {
       await contract.setDevelopmentSellFee(utils.parseEther("0.1"));
       await contract.setMarketingSellFee(utils.parseEther("0.1"));
       await contract.setLiquiditySellFee(utils.parseEther("0.1"));

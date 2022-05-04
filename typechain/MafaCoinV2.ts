@@ -31,7 +31,8 @@ export interface MafaCoinV2Interface extends utils.Interface {
     "dexFactory()": FunctionFragment;
     "dexPair()": FunctionFragment;
     "dexRouter()": FunctionFragment;
-    "excludeFromFees(address,bool)": FunctionFragment;
+    "excludeFromFees(address)": FunctionFragment;
+    "includeInFees(address)": FunctionFragment;
     "increaseAllowance(address,uint256)": FunctionFragment;
     "isExcludedFromFees(address)": FunctionFragment;
     "liquidityAddress()": FunctionFragment;
@@ -104,7 +105,11 @@ export interface MafaCoinV2Interface extends utils.Interface {
   encodeFunctionData(functionFragment: "dexRouter", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "excludeFromFees",
-    values: [string, boolean]
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "includeInFees",
+    values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "increaseAllowance",
@@ -258,6 +263,10 @@ export interface MafaCoinV2Interface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "includeInFees",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "increaseAllowance",
     data: BytesLike
   ): Result;
@@ -378,7 +387,8 @@ export interface MafaCoinV2Interface extends utils.Interface {
     "Approval(address,address,uint256)": EventFragment;
     "DevelopmentAddressUpdated(address)": EventFragment;
     "DevelopmentFeeUpdated(uint256)": EventFragment;
-    "ExcludeFromFees(address,bool)": EventFragment;
+    "ExcludeFromFees(address)": EventFragment;
+    "IncludeInFees(address)": EventFragment;
     "LiquidityAddressUpdated(address)": EventFragment;
     "LiquidityFeeUpdated(uint256)": EventFragment;
     "MarketingAddressUpdated(address)": EventFragment;
@@ -395,6 +405,7 @@ export interface MafaCoinV2Interface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "DevelopmentAddressUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "DevelopmentFeeUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ExcludeFromFees"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "IncludeInFees"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "LiquidityAddressUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "LiquidityFeeUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "MarketingAddressUpdated"): EventFragment;
@@ -432,12 +443,13 @@ export type DevelopmentFeeUpdatedEvent = TypedEvent<
 export type DevelopmentFeeUpdatedEventFilter =
   TypedEventFilter<DevelopmentFeeUpdatedEvent>;
 
-export type ExcludeFromFeesEvent = TypedEvent<
-  [string, boolean],
-  { account: string; value: boolean }
->;
+export type ExcludeFromFeesEvent = TypedEvent<[string], { account: string }>;
 
 export type ExcludeFromFeesEventFilter = TypedEventFilter<ExcludeFromFeesEvent>;
+
+export type IncludeInFeesEvent = TypedEvent<[string], { account: string }>;
+
+export type IncludeInFeesEventFilter = TypedEventFilter<IncludeInFeesEvent>;
 
 export type LiquidityAddressUpdatedEvent = TypedEvent<
   [string],
@@ -589,7 +601,11 @@ export interface MafaCoinV2 extends BaseContract {
 
     excludeFromFees(
       account: string,
-      excluded: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    includeInFees(
+      account: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -757,7 +773,11 @@ export interface MafaCoinV2 extends BaseContract {
 
   excludeFromFees(
     account: string,
-    excluded: boolean,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  includeInFees(
+    account: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -920,11 +940,9 @@ export interface MafaCoinV2 extends BaseContract {
 
     dexRouter(overrides?: CallOverrides): Promise<string>;
 
-    excludeFromFees(
-      account: string,
-      excluded: boolean,
-      overrides?: CallOverrides
-    ): Promise<void>;
+    excludeFromFees(account: string, overrides?: CallOverrides): Promise<void>;
+
+    includeInFees(account: string, overrides?: CallOverrides): Promise<void>;
 
     increaseAllowance(
       spender: string,
@@ -1073,14 +1091,13 @@ export interface MafaCoinV2 extends BaseContract {
       fee?: BigNumberish | null
     ): DevelopmentFeeUpdatedEventFilter;
 
-    "ExcludeFromFees(address,bool)"(
-      account?: string | null,
-      value?: boolean | null
+    "ExcludeFromFees(address)"(
+      account?: string | null
     ): ExcludeFromFeesEventFilter;
-    ExcludeFromFees(
-      account?: string | null,
-      value?: boolean | null
-    ): ExcludeFromFeesEventFilter;
+    ExcludeFromFees(account?: string | null): ExcludeFromFeesEventFilter;
+
+    "IncludeInFees(address)"(account?: string | null): IncludeInFeesEventFilter;
+    IncludeInFees(account?: string | null): IncludeInFeesEventFilter;
 
     "LiquidityAddressUpdated(address)"(
       liquidityAddress?: string | null
@@ -1207,7 +1224,11 @@ export interface MafaCoinV2 extends BaseContract {
 
     excludeFromFees(
       account: string,
-      excluded: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    includeInFees(
+      account: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1383,7 +1404,11 @@ export interface MafaCoinV2 extends BaseContract {
 
     excludeFromFees(
       account: string,
-      excluded: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    includeInFees(
+      account: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
