@@ -77,30 +77,38 @@ describe.only("MafaCoinV2", function () {
       await contract.transfer(address1.address, utils.parseEther("100000"));
     });
 
+    it("Should not be able to set more fees than MAX_FEE value", async function () {
+      await contract.setDevelopmentBuyFee(utils.parseEther("0.05"));
+      await contract.setDevelopmentSellFee(utils.parseEther("0.05"));
+      await expect(contract.setMarketingBuyFee(utils.parseEther("0.05"))).to.be.revertedWith(
+        "MaxFeeExceeded(150000000000000000)",
+      );
+    });
+
     it("Should calculate total fees correctly", async function () {
       expect(await contract.totalBuyFees()).to.equal(0);
       expect(await contract.totalSellFees()).to.equal(0);
-      await contract.setDevelopmentBuyFee(utils.parseEther("0.1"));
-      await contract.setDevelopmentSellFee(utils.parseEther("0.1"));
-      expect(await contract.totalBuyFees()).to.equal(utils.parseEther("0.1"));
-      expect(await contract.totalSellFees()).to.equal(utils.parseEther("0.1"));
+      await contract.setDevelopmentBuyFee(utils.parseEther("0.05"));
+      await contract.setDevelopmentSellFee(utils.parseEther("0.05"));
+      expect(await contract.totalBuyFees()).to.equal(utils.parseEther("0.05"));
+      expect(await contract.totalSellFees()).to.equal(utils.parseEther("0.05"));
     });
 
     it("Should charge buy fees on basic transfer", async function () {
-      await contract.setDevelopmentBuyFee(utils.parseEther("0.1"));
-      await contract.setMarketingBuyFee(utils.parseEther("0.1"));
-      await contract.setLiquidityBuyFee(utils.parseEther("0.1"));
+      await contract.setDevelopmentBuyFee(utils.parseEther("0.04"));
+      await contract.setMarketingBuyFee(utils.parseEther("0.04"));
+      await contract.setLiquidityBuyFee(utils.parseEther("0.04"));
 
       await contract.connect(address1).transfer(address2.address, utils.parseEther("50000"));
 
       expect(await contract.balanceOf(address1.address)).to.equal(utils.parseEther("50000"));
-      expect(await contract.balanceOf(address2.address)).to.equal(utils.parseEther("35000"));
+      expect(await contract.balanceOf(address2.address)).to.equal(utils.parseEther("44000"));
     });
 
     it("Should not charge sell fees on basic transfer", async function () {
-      await contract.setDevelopmentSellFee(utils.parseEther("0.1"));
-      await contract.setMarketingSellFee(utils.parseEther("0.1"));
-      await contract.setLiquiditySellFee(utils.parseEther("0.1"));
+      await contract.setDevelopmentSellFee(utils.parseEther("0.04"));
+      await contract.setMarketingSellFee(utils.parseEther("0.04"));
+      await contract.setLiquiditySellFee(utils.parseEther("0.04"));
 
       await contract.connect(address1).transfer(address2.address, utils.parseEther("50000"));
 

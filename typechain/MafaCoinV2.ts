@@ -19,6 +19,7 @@ import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
 
 export interface MafaCoinV2Interface extends utils.Interface {
   functions: {
+    "MAX_FEE()": FunctionFragment;
     "allowance(address,address)": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
     "automatedMarketMakerPairs(address)": FunctionFragment;
@@ -67,6 +68,7 @@ export interface MafaCoinV2Interface extends utils.Interface {
     "transferOwnership(address)": FunctionFragment;
   };
 
+  encodeFunctionData(functionFragment: "MAX_FEE", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "allowance",
     values: [string, string]
@@ -231,6 +233,7 @@ export interface MafaCoinV2Interface extends utils.Interface {
     values: [string]
   ): string;
 
+  decodeFunctionResult(functionFragment: "MAX_FEE", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "allowance", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(
@@ -560,6 +563,8 @@ export interface MafaCoinV2 extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    MAX_FEE(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     allowance(
       owner: string,
       spender: string,
@@ -732,6 +737,8 @@ export interface MafaCoinV2 extends BaseContract {
     ): Promise<ContractTransaction>;
   };
 
+  MAX_FEE(overrides?: CallOverrides): Promise<BigNumber>;
+
   allowance(
     owner: string,
     spender: string,
@@ -901,6 +908,8 @@ export interface MafaCoinV2 extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    MAX_FEE(overrides?: CallOverrides): Promise<BigNumber>;
+
     allowance(
       owner: string,
       spender: string,
@@ -1183,6 +1192,8 @@ export interface MafaCoinV2 extends BaseContract {
   };
 
   estimateGas: {
+    MAX_FEE(overrides?: CallOverrides): Promise<BigNumber>;
+
     allowance(
       owner: string,
       spender: string,
@@ -1356,6 +1367,8 @@ export interface MafaCoinV2 extends BaseContract {
   };
 
   populateTransaction: {
+    MAX_FEE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     allowance(
       owner: string,
       spender: string,
