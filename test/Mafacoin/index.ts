@@ -160,24 +160,17 @@ describe.only("MafaCoinV2", function () {
       });
 
       it("Should be able to transfer tokens between accounts", async function () {
-        const initialCakeBalance = await pairContract.balanceOf(address4.address);
-
         await contract.connect(address1).transfer(address5.address, utils.parseEther("1000"));
-
-        const finalCakeBalance = await pairContract.balanceOf(address4.address);
 
         expect(await contract.balanceOf(address1.address)).to.equal(utils.parseEther("99000"));
         expect(await contract.balanceOf(address5.address)).to.equal(utils.parseEther("970"));
         expect(await contract.balanceOf(address2.address)).to.equal(utils.parseEther("10")); // development fee
         expect(await contract.balanceOf(address3.address)).to.equal(utils.parseEther("10")); // marketing fee
-        expect(await contract.balanceOf(contract.address)).to.equal(utils.parseEther("10")); // liquidity fee (contract holding them)
-        expect(initialCakeBalance).to.be.equal(finalCakeBalance);
+        expect(await contract.balanceOf(address4.address)).to.equal(utils.parseEther("10")); // liquidity fee 
       });
 
       // buy
       it("Should swap ETH for Tokens supporting fees on transfer", async function () {
-        const initialCakeBalance = await pairContract.balanceOf(address4.address);
-
         await expect(
           router
             .connect(address1)
@@ -190,13 +183,11 @@ describe.only("MafaCoinV2", function () {
             ),
         ).to.emit(contract, "Transfer");
 
-        const finalCakeBalance = await pairContract.balanceOf(address4.address);
 
         expect(await contract.balanceOf(address1.address)).to.be.gt(utils.parseEther("99000")); // tokens received
         expect(await contract.balanceOf(address2.address)).to.be.gt(utils.parseEther("9.8")); // development fee
         expect(await contract.balanceOf(address3.address)).to.be.gt(utils.parseEther("9.8")); // marketing fee
-        expect(await contract.balanceOf(contract.address)).to.be.gt(utils.parseEther("9.8")); // liquidity fee (contract holding them)
-        expect(initialCakeBalance).to.be.equal(finalCakeBalance);
+        expect(await contract.balanceOf(address4.address)).to.be.gt(utils.parseEther("9.8")); // liquidity fee
       });
 
       // sell
@@ -205,7 +196,7 @@ describe.only("MafaCoinV2", function () {
 
         const initialDevelopmentBalance = await contract.provider.getBalance(address2.address); // development address
         const initialMarketingBalance = await contract.provider.getBalance(address3.address); // marketing address
-        const initialCakeBalance = await pairContract.balanceOf(address4.address); // liquidity address
+        const initialLiquidityBalance = await contract.provider.getBalance(address4.address); // liquidity address
 
         await expect(
           router
@@ -221,15 +212,15 @@ describe.only("MafaCoinV2", function () {
 
         const finalDevelopmentBalance = await contract.provider.getBalance(address2.address);
         const finalMarketingBalance = await contract.provider.getBalance(address3.address);
-        const finalCakeBalance = await pairContract.balanceOf(address4.address);
+        const finalLiquidityBalance = await contract.provider.getBalance(address4.address);
 
         expect(await contract.balanceOf(address1.address)).to.equal(utils.parseEther("99000"));
-        expect(await contract.balanceOf(pairContract.address)).to.equal(utils.parseEther("100999.987749350064993413"));
+        expect(await contract.balanceOf(pairContract.address)).to.equal(utils.parseEther("101000"));
         expect(await contract.balanceOf(address2.address)).to.equal(0);
         expect(await contract.balanceOf(address3.address)).to.equal(0);
         expect(initialDevelopmentBalance).to.be.lt(finalDevelopmentBalance); // development fee
         expect(initialMarketingBalance).to.be.lt(finalMarketingBalance); // marketing fee
-        expect(initialCakeBalance).to.be.lt(finalCakeBalance); // liquidity fee
+        expect(initialLiquidityBalance).to.be.lt(finalLiquidityBalance); // liquidity fee
       });
 
       describe("Max Sell amount", function () {
