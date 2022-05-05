@@ -313,6 +313,38 @@ describe.only("MafaCoinV2", function () {
           ).to.be.revertedWith("Pancake: TRANSFER_FAILED");
         });
       });
+
+      // it("Should report gas costs of transfers", async function () {
+      //   console.log("P2P TRANSFER GAS: ");
+      //   console.log(await contract.connect(address1).estimateGas.transfer(address5.address, utils.parseEther("1000")));
+
+      //   console.log("BUY TOKENS GAS:");
+      //   console.log(
+      //     await router
+      //       .connect(address1)
+      //       .estimateGas.swapExactETHForTokensSupportingFeeOnTransferTokens(
+      //         0,
+      //         [WETH, contract.address],
+      //         address1.address,
+      //         ethers.constants.MaxUint256,
+      //         { value: utils.parseEther("10") },
+      //       ),
+      //   );
+
+      //   await contract.connect(address1).approve(router.address, ethers.constants.MaxUint256);
+      //   console.log("SELL TOKENS GAS:");
+      //   console.log(
+      //     await router
+      //       .connect(address1)
+      //       .estimateGas.swapExactTokensForETHSupportingFeeOnTransferTokens(
+      //         utils.parseEther("1000"),
+      //         0,
+      //         [contract.address, WETH],
+      //         address1.address,
+      //         ethers.constants.MaxUint256,
+      //       ),
+      //   );
+      // });
     });
   });
 
