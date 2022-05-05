@@ -19,6 +19,7 @@ error TransferToZeroAddress();
 error NoAmount();
 error MaxSellAmountExceeded(uint256 amount);
 error MaxWalletAmountExceeded(uint256 amount);
+error MaxFeeExceeded(uint256 amount);
 
 contract MafaCoinV2 is ERC20, Ownable {
     // @dev the fee the development takes on buy txs.
@@ -54,17 +55,20 @@ contract MafaCoinV2 is ERC20, Ownable {
     // @dev max amount of tokens a user can sell on a single transaction
     uint256 public maxSellAmount;
 
+    // @dev max amount that all fees added together can be
+    uint256 public constant MAX_FEE = 14 * 10**16; // 14%;
+
     // @dev the defauld dex router
     IUniswapV2Router02 public immutable dexRouter;
 
     // @dev the dex factory address
     address public immutable dexFactory;
 
-    // @dev mapping of excluded from fees elements
-    mapping(address => bool) public isExcludedFromFees;
-
     // @dev the default dex pair
     address public immutable dexPair;
+
+    // @dev mapping of excluded from fees elements
+    mapping(address => bool) public isExcludedFromFees;
 
     // @dev what pairs are allowed to work in the token
     mapping(address => bool) public automatedMarketMakerPairs;
@@ -91,13 +95,13 @@ contract MafaCoinV2 is ERC20, Ownable {
         _setAutomatedMarketMakerPair(dexPair, true);
 
         // 5% buy fee
-        marketingBuyFee = 1 * 10**16; // 1%
         developmentBuyFee = 3 * 10**16; // 3%
+        marketingBuyFee = 1 * 10**16; // 1%
         liquidityBuyFee = 1 * 10**16; // 1%
 
         // 5% sell fee
-        marketingSellFee = 2 * 10**16; // 2%
         developmentSellFee = 2 * 10**16; // 2%
+        marketingSellFee = 2 * 10**16; // 2%
         liquiditySellFee = 1 * 10**16; // 1%
 
         maxWalletAmount = (tSupply * 3) / 10**3; // 0.3% of total supply
@@ -144,14 +148,16 @@ contract MafaCoinV2 is ERC20, Ownable {
     }
 
     function setDevelopmentBuyFee(uint256 newFee) external onlyOwner {
-        developmentBuyFee = newFee;
+        checkFeesChanged(newFee, developmentBuyFee);
 
+        developmentBuyFee = newFee;
         emit DevelopmentFeeUpdated(newFee);
     }
 
     function setDevelopmentSellFee(uint256 newFee) external onlyOwner {
-        developmentSellFee = newFee;
+        checkFeesChanged(newFee, developmentSellFee);
 
+        developmentSellFee = newFee;
         emit DevelopmentFeeUpdated(newFee);
     }
 
@@ -164,14 +170,16 @@ contract MafaCoinV2 is ERC20, Ownable {
     }
 
     function setMarketingBuyFee(uint256 newFee) external onlyOwner {
-        marketingBuyFee = newFee;
+        checkFeesChanged(newFee, marketingBuyFee);
 
+        marketingBuyFee = newFee;
         emit MarketingFeeUpdated(newFee);
     }
 
     function setMarketingSellFee(uint256 newFee) external onlyOwner {
-        marketingSellFee = newFee;
+        checkFeesChanged(newFee, marketingSellFee);
 
+        marketingSellFee = newFee;
         emit MarketingFeeUpdated(newFee);
     }
 
@@ -184,24 +192,32 @@ contract MafaCoinV2 is ERC20, Ownable {
     }
 
     function setLiquidityBuyFee(uint256 newFee) external onlyOwner {
-        liquidityBuyFee = newFee;
+        checkFeesChanged(newFee, liquidityBuyFee);
 
+        liquidityBuyFee = newFee;
         emit LiquidityFeeUpdated(newFee);
     }
 
     function setLiquiditySellFee(uint256 newFee) external onlyOwner {
-        liquiditySellFee = newFee;
+        checkFeesChanged(newFee, liquiditySellFee);
 
+        liquiditySellFee = newFee;
         emit LiquidityFeeUpdated(newFee);
     }
 
+    function checkFeesChanged(uint256 newFee, uint256 oldFee) internal view {
+        uint256 fees = totalBuyFees() + totalSellFees() + newFee - oldFee;
+
+        if (fees > MAX_FEE) revert MaxFeeExceeded(fees);
+    }
+
     // @dev just to simplify to the user, the total fees on buy
-    function totalBuyFees() external view returns (uint256) {
+    function totalBuyFees() public view returns (uint256) {
         return developmentBuyFee + liquidityBuyFee + marketingBuyFee;
     }
 
     // @dev just to simplify to the user, the total fees on sell
-    function totalSellFees() external view returns (uint256) {
+    function totalSellFees() public view returns (uint256) {
         return developmentSellFee + liquiditySellFee + marketingSellFee;
     }
 
@@ -217,48 +233,7 @@ contract MafaCoinV2 is ERC20, Ownable {
         emit MaxSellAmountUpdated(amount);
     }
 
-    function _swapAndLiquify(uint256 amount, address cakeReceiver) private {
-        uint256 half = amount / 2; // this token
-        uint256 otherHalf = amount - half;
-
-        uint256 initialAmount = address(this).balance;
-
-        _swapTokensForBNB(half);
-
-        uint256 newAmount = address(this).balance - initialAmount; // chain token
-
-        _addLiquidity(otherHalf, newAmount, cakeReceiver);
-
-        emit SwapAndLiquify(half, newAmount, otherHalf);
-    }
-
-    function _swapTokensForBNB(uint256 tokenAmount) private {
-        address[] memory path = new address[](2);
-        path[0] = address(this);
-        path[1] = dexRouter.WETH();
-
-        _approve(address(this), address(dexRouter), tokenAmount);
-
-        dexRouter.swapExactTokensForETHSupportingFeeOnTransferTokens(
-            tokenAmount,
-            0,
-            path,
-            address(this),
-            block.timestamp
-        );
-    }
-
-    function _addLiquidity(
-        uint256 tokenAmount,
-        uint256 bnbAmount,
-        address cakeReceiver
-    ) private {
-        _approve(address(this), address(dexRouter), tokenAmount);
-
-        dexRouter.addLiquidityETH{ value: bnbAmount }(address(this), tokenAmount, 0, 0, cakeReceiver, block.timestamp);
-    }
-
-    function _takeFee(
+    function _takeFeeInBNB(
         address from,
         address to,
         uint256 amount
@@ -301,26 +276,25 @@ contract MafaCoinV2 is ERC20, Ownable {
                 uint256 developmentFee = developmentSellFee;
                 if (developmentFee > 0) {
                     tokensToDevelopment = (amount * developmentFee) / 10**decimals();
-                    _takeFee(from, developmentAddress, tokensToDevelopment);
+                    _takeFeeInBNB(from, developmentAddress, tokensToDevelopment);
                 }
 
                 uint256 liquidityFee = liquiditySellFee;
                 if (liquidityFee > 0) {
                     tokensToLiquidity = (amount * liquidityFee) / 10**decimals();
-                    super._transfer(from, address(this), tokensToLiquidity);
-                    _swapAndLiquify(balanceOf(address(this)), liquidityAddress);
+                    _takeFeeInBNB(from, liquidityAddress, tokensToLiquidity);
                 }
 
                 uint256 marketingFee = marketingSellFee;
                 if (marketingFee > 0) {
                     tokensToMarketing = (amount * marketingFee) / 10**decimals();
-                    _takeFee(from, marketingAddress, tokensToMarketing);
+                    _takeFeeInBNB(from, marketingAddress, tokensToMarketing);
                 }
             } else {
                 uint256 balancePlusAmount = balanceOf(to) + amount;
                 if (automatedMarketMakerPairs[from] && balancePlusAmount > maxWalletAmount) {
                     revert MaxWalletAmountExceeded(balancePlusAmount);
-                } 
+                }
 
                 uint256 developmentFee = developmentBuyFee;
                 if (developmentFee > 0) {
@@ -331,7 +305,7 @@ contract MafaCoinV2 is ERC20, Ownable {
                 uint256 liquidityFee = liquidityBuyFee;
                 if (liquidityFee > 0) {
                     tokensToLiquidity = (amount * liquidityFee) / 10**decimals();
-                    super._transfer(from, address(this), tokensToLiquidity);
+                    super._transfer(from, liquidityAddress, tokensToLiquidity);
                 }
 
                 uint256 marketingFee = marketingBuyFee;
