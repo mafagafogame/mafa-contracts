@@ -91,6 +91,7 @@ export interface EggNftInterface extends utils.Interface {
     "ownerOf(uint256)": FunctionFragment;
     "pause()": FunctionFragment;
     "paused()": FunctionFragment;
+    "proxiableUUID()": FunctionFragment;
     "renounceRole(bytes32,address)": FunctionFragment;
     "revokeRole(bytes32,address)": FunctionFragment;
     "royaltyInfo(uint256,uint256)": FunctionFragment;
@@ -226,6 +227,10 @@ export interface EggNftInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "pause", values?: undefined): string;
   encodeFunctionData(functionFragment: "paused", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "proxiableUUID",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "renounceRole",
     values: [BytesLike, string]
@@ -375,6 +380,10 @@ export interface EggNftInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "pause", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "paused", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "proxiableUUID",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "renounceRole",
     data: BytesLike
   ): Result;
@@ -447,6 +456,7 @@ export interface EggNftInterface extends utils.Interface {
     "EggBreeded(uint256,uint256,uint256)": EventFragment;
     "EggHatched(uint256,uint256,uint16,bytes32,uint32,uint256[2])": EventFragment;
     "HatchTimeChanged(uint256)": EventFragment;
+    "Initialized(uint8)": EventFragment;
     "Layed(address,uint256,uint16,bytes32,uint32,uint256[2],uint256)": EventFragment;
     "MafagafoAddressChanged(address)": EventFragment;
     "Paused(address)": EventFragment;
@@ -468,6 +478,7 @@ export interface EggNftInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "EggBreeded"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "EggHatched"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "HatchTimeChanged"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Layed"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "MafagafoAddressChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Paused"): EventFragment;
@@ -539,6 +550,10 @@ export type HatchTimeChangedEvent = TypedEvent<
 
 export type HatchTimeChangedEventFilter =
   TypedEventFilter<HatchTimeChangedEvent>;
+
+export type InitializedEvent = TypedEvent<[number], { version: number }>;
+
+export type InitializedEventFilter = TypedEventFilter<InitializedEvent>;
 
 export type LayedEvent = TypedEvent<
   [
@@ -847,6 +862,8 @@ export interface EggNft extends BaseContract {
     ): Promise<ContractTransaction>;
 
     paused(overrides?: CallOverrides): Promise<[boolean]>;
+
+    proxiableUUID(overrides?: CallOverrides): Promise<[string]>;
 
     renounceRole(
       role: BytesLike,
@@ -1161,6 +1178,8 @@ export interface EggNft extends BaseContract {
 
   paused(overrides?: CallOverrides): Promise<boolean>;
 
+  proxiableUUID(overrides?: CallOverrides): Promise<string>;
+
   renounceRole(
     role: BytesLike,
     account: string,
@@ -1463,6 +1482,8 @@ export interface EggNft extends BaseContract {
 
     paused(overrides?: CallOverrides): Promise<boolean>;
 
+    proxiableUUID(overrides?: CallOverrides): Promise<string>;
+
     renounceRole(
       role: BytesLike,
       account: string,
@@ -1641,6 +1662,9 @@ export interface EggNft extends BaseContract {
 
     "HatchTimeChanged(uint256)"(hatchTime?: null): HatchTimeChangedEventFilter;
     HatchTimeChanged(hatchTime?: null): HatchTimeChangedEventFilter;
+
+    "Initialized(uint8)"(version?: null): InitializedEventFilter;
+    Initialized(version?: null): InitializedEventFilter;
 
     "Layed(address,uint256,uint16,bytes32,uint32,uint256[2],uint256)"(
       to?: string | null,
@@ -1883,6 +1907,8 @@ export interface EggNft extends BaseContract {
     ): Promise<BigNumber>;
 
     paused(overrides?: CallOverrides): Promise<BigNumber>;
+
+    proxiableUUID(overrides?: CallOverrides): Promise<BigNumber>;
 
     renounceRole(
       role: BytesLike,
@@ -2166,6 +2192,8 @@ export interface EggNft extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     paused(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    proxiableUUID(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     renounceRole(
       role: BytesLike,

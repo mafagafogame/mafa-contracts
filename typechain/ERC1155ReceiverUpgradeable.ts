@@ -13,7 +13,7 @@ import {
   Signer,
   utils,
 } from "ethers";
-import { FunctionFragment, Result } from "@ethersproject/abi";
+import { FunctionFragment, Result, EventFragment } from "@ethersproject/abi";
 import { Listener, Provider } from "@ethersproject/providers";
 import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
 
@@ -50,8 +50,16 @@ export interface ERC1155ReceiverUpgradeableInterface extends utils.Interface {
     data: BytesLike
   ): Result;
 
-  events: {};
+  events: {
+    "Initialized(uint8)": EventFragment;
+  };
+
+  getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
 }
+
+export type InitializedEvent = TypedEvent<[number], { version: number }>;
+
+export type InitializedEventFilter = TypedEventFilter<InitializedEvent>;
 
 export interface ERC1155ReceiverUpgradeable extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -152,7 +160,10 @@ export interface ERC1155ReceiverUpgradeable extends BaseContract {
     ): Promise<boolean>;
   };
 
-  filters: {};
+  filters: {
+    "Initialized(uint8)"(version?: null): InitializedEventFilter;
+    Initialized(version?: null): InitializedEventFilter;
+  };
 
   estimateGas: {
     onERC1155BatchReceived(

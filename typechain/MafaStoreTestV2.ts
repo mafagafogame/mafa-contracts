@@ -53,6 +53,7 @@ export interface MafaStoreTestV2Interface extends utils.Interface {
     "owner()": FunctionFragment;
     "pause()": FunctionFragment;
     "paused()": FunctionFragment;
+    "proxiableUUID()": FunctionFragment;
     "removeItemFromStore(uint256)": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
     "sellAvatar(uint256[])": FunctionFragment;
@@ -139,6 +140,10 @@ export interface MafaStoreTestV2Interface extends utils.Interface {
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(functionFragment: "pause", values?: undefined): string;
   encodeFunctionData(functionFragment: "paused", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "proxiableUUID",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "removeItemFromStore",
     values: [BigNumberish]
@@ -276,6 +281,10 @@ export interface MafaStoreTestV2Interface extends utils.Interface {
   decodeFunctionResult(functionFragment: "pause", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "paused", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "proxiableUUID",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "removeItemFromStore",
     data: BytesLike
   ): Result;
@@ -362,6 +371,7 @@ export interface MafaStoreTestV2Interface extends utils.Interface {
     "BeaconUpgraded(address)": EventFragment;
     "BnbBusdPairChanged(address)": EventFragment;
     "DailySellPercentageChanged(uint256)": EventFragment;
+    "Initialized(uint8)": EventFragment;
     "ItemAdded(address,uint256,uint256,bytes32,uint256)": EventFragment;
     "ItemBought(address,uint256,uint256,address,address,uint256,uint256)": EventFragment;
     "ItemDeleted(uint256,address,uint256,uint256)": EventFragment;
@@ -383,6 +393,7 @@ export interface MafaStoreTestV2Interface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "BeaconUpgraded"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "BnbBusdPairChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "DailySellPercentageChanged"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ItemAdded"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ItemBought"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ItemDeleted"): EventFragment;
@@ -444,6 +455,10 @@ export type DailySellPercentageChangedEvent = TypedEvent<
 
 export type DailySellPercentageChangedEventFilter =
   TypedEventFilter<DailySellPercentageChangedEvent>;
+
+export type InitializedEvent = TypedEvent<[number], { version: number }>;
+
+export type InitializedEventFilter = TypedEventFilter<InitializedEvent>;
 
 export type ItemAddedEvent = TypedEvent<
   [string, BigNumber, BigNumber, string, BigNumber],
@@ -660,6 +675,8 @@ export interface MafaStoreTestV2 extends BaseContract {
     ): Promise<ContractTransaction>;
 
     paused(overrides?: CallOverrides): Promise<[boolean]>;
+
+    proxiableUUID(overrides?: CallOverrides): Promise<[string]>;
 
     removeItemFromStore(
       toDeleteIndex: BigNumberish,
@@ -880,6 +897,8 @@ export interface MafaStoreTestV2 extends BaseContract {
 
   paused(overrides?: CallOverrides): Promise<boolean>;
 
+  proxiableUUID(overrides?: CallOverrides): Promise<string>;
+
   removeItemFromStore(
     toDeleteIndex: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -1097,6 +1116,8 @@ export interface MafaStoreTestV2 extends BaseContract {
 
     paused(overrides?: CallOverrides): Promise<boolean>;
 
+    proxiableUUID(overrides?: CallOverrides): Promise<string>;
+
     removeItemFromStore(
       toDeleteIndex: BigNumberish,
       overrides?: CallOverrides
@@ -1257,6 +1278,9 @@ export interface MafaStoreTestV2 extends BaseContract {
     DailySellPercentageChanged(
       percentage?: BigNumberish | null
     ): DailySellPercentageChangedEventFilter;
+
+    "Initialized(uint8)"(version?: null): InitializedEventFilter;
+    Initialized(version?: null): InitializedEventFilter;
 
     "ItemAdded(address,uint256,uint256,bytes32,uint256)"(
       tokenContract?: string | null,
@@ -1444,6 +1468,8 @@ export interface MafaStoreTestV2 extends BaseContract {
     ): Promise<BigNumber>;
 
     paused(overrides?: CallOverrides): Promise<BigNumber>;
+
+    proxiableUUID(overrides?: CallOverrides): Promise<BigNumber>;
 
     removeItemFromStore(
       toDeleteIndex: BigNumberish,
@@ -1661,6 +1687,8 @@ export interface MafaStoreTestV2 extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     paused(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    proxiableUUID(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     removeItemFromStore(
       toDeleteIndex: BigNumberish,

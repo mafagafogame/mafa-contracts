@@ -95,6 +95,7 @@ export interface MafagafoAvatarNftInterface extends utils.Interface {
     "ownerOf(uint256)": FunctionFragment;
     "pause()": FunctionFragment;
     "paused()": FunctionFragment;
+    "proxiableUUID()": FunctionFragment;
     "renounceRole(bytes32,address)": FunctionFragment;
     "revokeRole(bytes32,address)": FunctionFragment;
     "royaltyInfo(uint256,uint256)": FunctionFragment;
@@ -238,6 +239,10 @@ export interface MafagafoAvatarNftInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "pause", values?: undefined): string;
   encodeFunctionData(functionFragment: "paused", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "proxiableUUID",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "renounceRole",
     values: [BytesLike, string]
@@ -393,6 +398,10 @@ export interface MafagafoAvatarNftInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "pause", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "paused", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "proxiableUUID",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "renounceRole",
     data: BytesLike
   ): Result;
@@ -459,6 +468,7 @@ export interface MafagafoAvatarNftInterface extends utils.Interface {
     "BeaconUpgraded(address)": EventFragment;
     "Birth(address,uint256,uint16,bytes32,uint32,uint256[2],uint64,uint32)": EventFragment;
     "EggAddressChanged(address)": EventFragment;
+    "Initialized(uint8)": EventFragment;
     "MafaVersionChanged(uint16)": EventFragment;
     "Mate(address,uint256,uint256,uint16,bytes32,uint32)": EventFragment;
     "Paused(address)": EventFragment;
@@ -478,6 +488,7 @@ export interface MafagafoAvatarNftInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "BeaconUpgraded"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Birth"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "EggAddressChanged"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "MafaVersionChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Mate"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Paused"): EventFragment;
@@ -545,6 +556,10 @@ export type EggAddressChangedEvent = TypedEvent<[string], { addr: string }>;
 
 export type EggAddressChangedEventFilter =
   TypedEventFilter<EggAddressChangedEvent>;
+
+export type InitializedEvent = TypedEvent<[number], { version: number }>;
+
+export type InitializedEventFilter = TypedEventFilter<InitializedEvent>;
 
 export type MafaVersionChangedEvent = TypedEvent<
   [number],
@@ -856,6 +871,8 @@ export interface MafagafoAvatarNft extends BaseContract {
     ): Promise<ContractTransaction>;
 
     paused(overrides?: CallOverrides): Promise<[boolean]>;
+
+    proxiableUUID(overrides?: CallOverrides): Promise<[string]>;
 
     renounceRole(
       role: BytesLike,
@@ -1177,6 +1194,8 @@ export interface MafagafoAvatarNft extends BaseContract {
 
   paused(overrides?: CallOverrides): Promise<boolean>;
 
+  proxiableUUID(overrides?: CallOverrides): Promise<string>;
+
   renounceRole(
     role: BytesLike,
     account: string,
@@ -1483,6 +1502,8 @@ export interface MafagafoAvatarNft extends BaseContract {
 
     paused(overrides?: CallOverrides): Promise<boolean>;
 
+    proxiableUUID(overrides?: CallOverrides): Promise<string>;
+
     renounceRole(
       role: BytesLike,
       account: string,
@@ -1647,6 +1668,9 @@ export interface MafagafoAvatarNft extends BaseContract {
       addr?: string | null
     ): EggAddressChangedEventFilter;
     EggAddressChanged(addr?: string | null): EggAddressChangedEventFilter;
+
+    "Initialized(uint8)"(version?: null): InitializedEventFilter;
+    Initialized(version?: null): InitializedEventFilter;
 
     "MafaVersionChanged(uint16)"(
       newVersion?: null
@@ -1896,6 +1920,8 @@ export interface MafagafoAvatarNft extends BaseContract {
     ): Promise<BigNumber>;
 
     paused(overrides?: CallOverrides): Promise<BigNumber>;
+
+    proxiableUUID(overrides?: CallOverrides): Promise<BigNumber>;
 
     renounceRole(
       role: BytesLike,
@@ -2184,6 +2210,8 @@ export interface MafagafoAvatarNft extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     paused(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    proxiableUUID(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     renounceRole(
       role: BytesLike,
