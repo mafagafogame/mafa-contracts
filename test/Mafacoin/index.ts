@@ -56,6 +56,14 @@ describe.only("MafaCoin", function () {
     expect(await contract.isExcludedFromFees(contract.address)).to.equal(true);
   });
 
+  it("Owner should be able to include in fees an excluded from fees account", async function () {
+    await contract.excludeFromFees(address4.address);
+    expect(await contract.isExcludedFromFees(address4.address)).to.equal(true);
+
+    await contract.includeInFees(address4.address);
+    expect(await contract.isExcludedFromFees(address4.address)).to.equal(false);
+  });
+
   it("Owner should no be able to set AMM pair with default pair", async function () {
     await expect(contract.setAutomatedMarketMakerPair(await contract.dexPair(), false)).to.be.revertedWith(
       "DefaultPairUpdated()",

@@ -33,6 +33,8 @@ export interface MafaCoinInterface extends utils.Interface {
     "developmentSellFee()": FunctionFragment;
     "dexPair()": FunctionFragment;
     "dexRouter()": FunctionFragment;
+    "excludeFromFees(address)": FunctionFragment;
+    "includeInFees(address)": FunctionFragment;
     "increaseAllowance(address,uint256)": FunctionFragment;
     "isExcludedFromFees(address)": FunctionFragment;
     "liquidityAddress()": FunctionFragment;
@@ -113,6 +115,14 @@ export interface MafaCoinInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "dexPair", values?: undefined): string;
   encodeFunctionData(functionFragment: "dexRouter", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "excludeFromFees",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "includeInFees",
+    values: [string]
+  ): string;
   encodeFunctionData(
     functionFragment: "increaseAllowance",
     values: [string, BigNumberish]
@@ -280,6 +290,14 @@ export interface MafaCoinInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "dexPair", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "dexRouter", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "excludeFromFees",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "includeInFees",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "increaseAllowance",
     data: BytesLike
   ): Result;
@@ -405,6 +423,8 @@ export interface MafaCoinInterface extends utils.Interface {
     "Approval(address,address,uint256)": EventFragment;
     "DevelopmentAddressUpdated(address)": EventFragment;
     "DevelopmentFeeUpdated(uint256)": EventFragment;
+    "ExcludeFromFees(address)": EventFragment;
+    "IncludeInFees(address)": EventFragment;
     "LiquidityAddressUpdated(address)": EventFragment;
     "LiquidityFeeUpdated(uint256)": EventFragment;
     "MarketingAddressUpdated(address)": EventFragment;
@@ -422,6 +442,8 @@ export interface MafaCoinInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "Approval"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "DevelopmentAddressUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "DevelopmentFeeUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ExcludeFromFees"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "IncludeInFees"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "LiquidityAddressUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "LiquidityFeeUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "MarketingAddressUpdated"): EventFragment;
@@ -460,6 +482,14 @@ export type DevelopmentFeeUpdatedEvent = TypedEvent<
 
 export type DevelopmentFeeUpdatedEventFilter =
   TypedEventFilter<DevelopmentFeeUpdatedEvent>;
+
+export type ExcludeFromFeesEvent = TypedEvent<[string], { account: string }>;
+
+export type ExcludeFromFeesEventFilter = TypedEventFilter<ExcludeFromFeesEvent>;
+
+export type IncludeInFeesEvent = TypedEvent<[string], { account: string }>;
+
+export type IncludeInFeesEventFilter = TypedEventFilter<IncludeInFeesEvent>;
 
 export type LiquidityAddressUpdatedEvent = TypedEvent<
   [string],
@@ -621,6 +651,16 @@ export interface MafaCoin extends BaseContract {
     dexPair(overrides?: CallOverrides): Promise<[string]>;
 
     dexRouter(overrides?: CallOverrides): Promise<[string]>;
+
+    excludeFromFees(
+      account: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    includeInFees(
+      account: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     increaseAllowance(
       spender: string,
@@ -805,6 +845,16 @@ export interface MafaCoin extends BaseContract {
 
   dexRouter(overrides?: CallOverrides): Promise<string>;
 
+  excludeFromFees(
+    account: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  includeInFees(
+    account: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   increaseAllowance(
     spender: string,
     addedValue: BigNumberish,
@@ -985,6 +1035,10 @@ export interface MafaCoin extends BaseContract {
 
     dexRouter(overrides?: CallOverrides): Promise<string>;
 
+    excludeFromFees(account: string, overrides?: CallOverrides): Promise<void>;
+
+    includeInFees(account: string, overrides?: CallOverrides): Promise<void>;
+
     increaseAllowance(
       spender: string,
       addedValue: BigNumberish,
@@ -1146,6 +1200,14 @@ export interface MafaCoin extends BaseContract {
       fee?: BigNumberish | null
     ): DevelopmentFeeUpdatedEventFilter;
 
+    "ExcludeFromFees(address)"(
+      account?: string | null
+    ): ExcludeFromFeesEventFilter;
+    ExcludeFromFees(account?: string | null): ExcludeFromFeesEventFilter;
+
+    "IncludeInFees(address)"(account?: string | null): IncludeInFeesEventFilter;
+    IncludeInFees(account?: string | null): IncludeInFeesEventFilter;
+
     "LiquidityAddressUpdated(address)"(
       liquidityAddress?: string | null
     ): LiquidityAddressUpdatedEventFilter;
@@ -1291,6 +1353,16 @@ export interface MafaCoin extends BaseContract {
     dexPair(overrides?: CallOverrides): Promise<BigNumber>;
 
     dexRouter(overrides?: CallOverrides): Promise<BigNumber>;
+
+    excludeFromFees(
+      account: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    includeInFees(
+      account: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     increaseAllowance(
       spender: string,
@@ -1484,6 +1556,16 @@ export interface MafaCoin extends BaseContract {
     dexPair(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     dexRouter(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    excludeFromFees(
+      account: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    includeInFees(
+      account: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
 
     increaseAllowance(
       spender: string,
