@@ -47,11 +47,10 @@ describe.only("MafaCoin", function () {
     expect(await contract.marketingSellFee()).to.equal(utils.parseEther("0.03"));
     expect(await contract.liquiditySellFee()).to.equal(utils.parseEther("0.01"));
 
-    expect(await contract.MAX_BUY_FEE()).to.equal(utils.parseEther("0.14"));
-    expect(await contract.MAX_SELL_FEE()).to.equal(utils.parseEther("0.14"));
+    expect(await contract.MAX_BUY_FEE()).to.equal(utils.parseEther("0.10"));
+    expect(await contract.MAX_SELL_FEE()).to.equal(utils.parseEther("0.10"));
     expect(await contract.maxSellAmount()).to.equal(utils.parseEther("100000"));
     expect(await contract.MIN_ANTI_DUMP_LIMIT()).to.equal(utils.parseEther("10000"));
-    expect(await contract.minTokensToTakeFeeInBNB()).to.equal(utils.parseEther("1000"));
 
     expect(await contract.isExcludedFromFees(owner.address)).to.equal(true);
     expect(await contract.isExcludedFromFees(contract.address)).to.equal(true);
@@ -65,15 +64,6 @@ describe.only("MafaCoin", function () {
 
   it("Automated Market Maker Pair", async function () {
     expect(await contract.setAutomatedMarketMakerPair(DEAD_ADDRESS, true));
-  });
-
-  it("Owner should be able to set minTokensToTakeFeeInBNB to any value", async function () {
-    expect(await contract.setMinTokensToTakeFeeInBNB(0))
-      .to.emit(contract, "MinTokensToTakeFeeInBNBUpdated")
-      .withArgs(0);
-    expect(await contract.setMinTokensToTakeFeeInBNB(ethers.constants.MaxUint256))
-      .to.emit(contract, "MinTokensToTakeFeeInBNBUpdated")
-      .withArgs(ethers.constants.MaxUint256);
   });
 
   describe("Fees", function () {
@@ -134,16 +124,16 @@ describe.only("MafaCoin", function () {
     it("Should calculate total fees correctly", async function () {
       expect(await contract.totalBuyFees()).to.equal(0);
       expect(await contract.totalSellFees()).to.equal(0);
-      await contract.setDevelopmentBuyFee(utils.parseEther("0.14"));
-      await contract.setDevelopmentSellFee(utils.parseEther("0.14"));
-      expect(await contract.totalBuyFees()).to.equal(utils.parseEther("0.14"));
-      expect(await contract.totalSellFees()).to.equal(utils.parseEther("0.14"));
+      await contract.setDevelopmentBuyFee(utils.parseEther("0.10"));
+      await contract.setDevelopmentSellFee(utils.parseEther("0.10"));
+      expect(await contract.totalBuyFees()).to.equal(utils.parseEther("0.10"));
+      expect(await contract.totalSellFees()).to.equal(utils.parseEther("0.10"));
     });
 
     it("Should not charge buy fees on basic transfer", async function () {
-      await contract.setDevelopmentBuyFee(utils.parseEther("0.04"));
-      await contract.setMarketingBuyFee(utils.parseEther("0.04"));
-      await contract.setLiquidityBuyFee(utils.parseEther("0.04"));
+      await contract.setDevelopmentBuyFee(utils.parseEther("0.03"));
+      await contract.setMarketingBuyFee(utils.parseEther("0.03"));
+      await contract.setLiquidityBuyFee(utils.parseEther("0.03"));
 
       await contract.connect(address1).transfer(address2.address, utils.parseEther("50000"));
 
@@ -152,9 +142,9 @@ describe.only("MafaCoin", function () {
     });
 
     it("Should not charge sell fees on basic transfer", async function () {
-      await contract.setDevelopmentSellFee(utils.parseEther("0.04"));
-      await contract.setMarketingSellFee(utils.parseEther("0.04"));
-      await contract.setLiquiditySellFee(utils.parseEther("0.04"));
+      await contract.setDevelopmentSellFee(utils.parseEther("0.03"));
+      await contract.setMarketingSellFee(utils.parseEther("0.03"));
+      await contract.setLiquiditySellFee(utils.parseEther("0.03"));
 
       await contract.connect(address1).transfer(address2.address, utils.parseEther("50000"));
 

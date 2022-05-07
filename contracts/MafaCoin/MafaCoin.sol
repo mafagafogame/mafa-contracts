@@ -49,10 +49,10 @@ contract MafaCoin is ERC20, WithdrawableOwnable {
     address public marketingAddress = 0x272C14981F2Ff4fF06F5EF326940E7F067b4b5D6;
 
     // @dev maximum amount that buy fees added together can be raised to
-    uint256 public constant MAX_BUY_FEE = 14 * 10**16; // 14%;
+    uint256 public constant MAX_BUY_FEE = 10 * 10**16; // 10%;
 
     // @dev maximum amount that sell fees added together can be raised to
-    uint256 public constant MAX_SELL_FEE = 14 * 10**16; // 14%;
+    uint256 public constant MAX_SELL_FEE = 10 * 10**16; // 10%;
 
     // @dev maximum amount of tokens a user can sell on a single transaction (antidump mechanism)
     uint256 public maxSellAmount = 100000 * 10**18;
@@ -60,14 +60,8 @@ contract MafaCoin is ERC20, WithdrawableOwnable {
     // @dev minimum value that can be set for antidump mechanism
     uint256 public constant MIN_ANTI_DUMP_LIMIT = 10000 * 10**18;
 
-    // @dev minumum amount of tokens the contract can hold to send fees in BNB to the fee recipient
-    uint256 public minTokensToTakeFeeInBNB = 1000 * 10**18;
-
     // @dev the defauld dex router
     IUniswapV2Router02 public immutable dexRouter;
-
-    // @dev the dex factory address
-    address public immutable dexFactory;
 
     // @dev the default dex pair
     address public immutable dexPair;
@@ -90,7 +84,6 @@ contract MafaCoin is ERC20, WithdrawableOwnable {
 
         // Create a uniswap pair for this new token
         dexRouter = IUniswapV2Router02(0x10ED43C718714eb63d5aA57B78B54704E256024E);
-        dexFactory = address(0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73);
 
         dexPair = IUniswapV2Factory(dexRouter.factory()).createPair(address(this), dexRouter.WETH());
         _setAutomatedMarketMakerPair(dexPair, true);
@@ -206,11 +199,6 @@ contract MafaCoin is ERC20, WithdrawableOwnable {
         emit MaxSellAmountUpdated(amount);
     }
 
-    function setMinTokensToTakeFeeInBNB(uint256 amount) external onlyOwner {
-        minTokensToTakeFeeInBNB = amount;
-        emit MinTokensToTakeFeeInBNBUpdated(amount);
-    }
-
     function _takeFeeInBNB(
         address from,
         address to,
@@ -301,5 +289,4 @@ contract MafaCoin is ERC20, WithdrawableOwnable {
     event MarketingAddressUpdated(address indexed marketingAddress);
     event MarketingFeeUpdated(uint256 indexed fee);
     event MaxSellAmountUpdated(uint256 indexed amount);
-    event MinTokensToTakeFeeInBNBUpdated(uint256 indexed amount);
 }

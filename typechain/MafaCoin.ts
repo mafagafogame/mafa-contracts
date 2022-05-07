@@ -31,7 +31,6 @@ export interface MafaCoinInterface extends utils.Interface {
     "developmentAddress()": FunctionFragment;
     "developmentBuyFee()": FunctionFragment;
     "developmentSellFee()": FunctionFragment;
-    "dexFactory()": FunctionFragment;
     "dexPair()": FunctionFragment;
     "dexRouter()": FunctionFragment;
     "increaseAllowance(address,uint256)": FunctionFragment;
@@ -43,7 +42,6 @@ export interface MafaCoinInterface extends utils.Interface {
     "marketingBuyFee()": FunctionFragment;
     "marketingSellFee()": FunctionFragment;
     "maxSellAmount()": FunctionFragment;
-    "minTokensToTakeFeeInBNB()": FunctionFragment;
     "name()": FunctionFragment;
     "owner()": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
@@ -58,7 +56,6 @@ export interface MafaCoinInterface extends utils.Interface {
     "setMarketingBuyFee(uint256)": FunctionFragment;
     "setMarketingSellFee(uint256)": FunctionFragment;
     "setMaxSellAmount(uint256)": FunctionFragment;
-    "setMinTokensToTakeFeeInBNB(uint256)": FunctionFragment;
     "symbol()": FunctionFragment;
     "totalBuyFees()": FunctionFragment;
     "totalSellFees()": FunctionFragment;
@@ -114,10 +111,6 @@ export interface MafaCoinInterface extends utils.Interface {
     functionFragment: "developmentSellFee",
     values?: undefined
   ): string;
-  encodeFunctionData(
-    functionFragment: "dexFactory",
-    values?: undefined
-  ): string;
   encodeFunctionData(functionFragment: "dexPair", values?: undefined): string;
   encodeFunctionData(functionFragment: "dexRouter", values?: undefined): string;
   encodeFunctionData(
@@ -154,10 +147,6 @@ export interface MafaCoinInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "maxSellAmount",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "minTokensToTakeFeeInBNB",
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
@@ -208,10 +197,6 @@ export interface MafaCoinInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "setMaxSellAmount",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setMinTokensToTakeFeeInBNB",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
@@ -292,7 +277,6 @@ export interface MafaCoinInterface extends utils.Interface {
     functionFragment: "developmentSellFee",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "dexFactory", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "dexPair", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "dexRouter", data: BytesLike): Result;
   decodeFunctionResult(
@@ -329,10 +313,6 @@ export interface MafaCoinInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "maxSellAmount",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "minTokensToTakeFeeInBNB",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
@@ -385,10 +365,6 @@ export interface MafaCoinInterface extends utils.Interface {
     functionFragment: "setMaxSellAmount",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "setMinTokensToTakeFeeInBNB",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "totalBuyFees",
@@ -434,7 +410,6 @@ export interface MafaCoinInterface extends utils.Interface {
     "MarketingAddressUpdated(address)": EventFragment;
     "MarketingFeeUpdated(uint256)": EventFragment;
     "MaxSellAmountUpdated(uint256)": EventFragment;
-    "MinTokensToTakeFeeInBNBUpdated(uint256)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
     "SetAutomatedMarketMakerPair(address,bool)": EventFragment;
     "Transfer(address,address,uint256)": EventFragment;
@@ -452,9 +427,6 @@ export interface MafaCoinInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "MarketingAddressUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "MarketingFeeUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "MaxSellAmountUpdated"): EventFragment;
-  getEvent(
-    nameOrSignatureOrTopic: "MinTokensToTakeFeeInBNBUpdated"
-  ): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(
     nameOrSignatureOrTopic: "SetAutomatedMarketMakerPair"
@@ -528,14 +500,6 @@ export type MaxSellAmountUpdatedEvent = TypedEvent<
 
 export type MaxSellAmountUpdatedEventFilter =
   TypedEventFilter<MaxSellAmountUpdatedEvent>;
-
-export type MinTokensToTakeFeeInBNBUpdatedEvent = TypedEvent<
-  [BigNumber],
-  { amount: BigNumber }
->;
-
-export type MinTokensToTakeFeeInBNBUpdatedEventFilter =
-  TypedEventFilter<MinTokensToTakeFeeInBNBUpdatedEvent>;
 
 export type OwnershipTransferredEvent = TypedEvent<
   [string, string],
@@ -654,8 +618,6 @@ export interface MafaCoin extends BaseContract {
 
     developmentSellFee(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    dexFactory(overrides?: CallOverrides): Promise<[string]>;
-
     dexPair(overrides?: CallOverrides): Promise<[string]>;
 
     dexRouter(overrides?: CallOverrides): Promise<[string]>;
@@ -684,8 +646,6 @@ export interface MafaCoin extends BaseContract {
     marketingSellFee(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     maxSellAmount(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    minTokensToTakeFeeInBNB(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     name(overrides?: CallOverrides): Promise<[string]>;
 
@@ -747,11 +707,6 @@ export interface MafaCoin extends BaseContract {
     ): Promise<ContractTransaction>;
 
     setMaxSellAmount(
-      amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    setMinTokensToTakeFeeInBNB(
       amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -846,8 +801,6 @@ export interface MafaCoin extends BaseContract {
 
   developmentSellFee(overrides?: CallOverrides): Promise<BigNumber>;
 
-  dexFactory(overrides?: CallOverrides): Promise<string>;
-
   dexPair(overrides?: CallOverrides): Promise<string>;
 
   dexRouter(overrides?: CallOverrides): Promise<string>;
@@ -873,8 +826,6 @@ export interface MafaCoin extends BaseContract {
   marketingSellFee(overrides?: CallOverrides): Promise<BigNumber>;
 
   maxSellAmount(overrides?: CallOverrides): Promise<BigNumber>;
-
-  minTokensToTakeFeeInBNB(overrides?: CallOverrides): Promise<BigNumber>;
 
   name(overrides?: CallOverrides): Promise<string>;
 
@@ -936,11 +887,6 @@ export interface MafaCoin extends BaseContract {
   ): Promise<ContractTransaction>;
 
   setMaxSellAmount(
-    amount: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  setMinTokensToTakeFeeInBNB(
     amount: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -1035,8 +981,6 @@ export interface MafaCoin extends BaseContract {
 
     developmentSellFee(overrides?: CallOverrides): Promise<BigNumber>;
 
-    dexFactory(overrides?: CallOverrides): Promise<string>;
-
     dexPair(overrides?: CallOverrides): Promise<string>;
 
     dexRouter(overrides?: CallOverrides): Promise<string>;
@@ -1065,8 +1009,6 @@ export interface MafaCoin extends BaseContract {
     marketingSellFee(overrides?: CallOverrides): Promise<BigNumber>;
 
     maxSellAmount(overrides?: CallOverrides): Promise<BigNumber>;
-
-    minTokensToTakeFeeInBNB(overrides?: CallOverrides): Promise<BigNumber>;
 
     name(overrides?: CallOverrides): Promise<string>;
 
@@ -1126,11 +1068,6 @@ export interface MafaCoin extends BaseContract {
     ): Promise<void>;
 
     setMaxSellAmount(
-      amount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setMinTokensToTakeFeeInBNB(
       amount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -1244,13 +1181,6 @@ export interface MafaCoin extends BaseContract {
       amount?: BigNumberish | null
     ): MaxSellAmountUpdatedEventFilter;
 
-    "MinTokensToTakeFeeInBNBUpdated(uint256)"(
-      amount?: BigNumberish | null
-    ): MinTokensToTakeFeeInBNBUpdatedEventFilter;
-    MinTokensToTakeFeeInBNBUpdated(
-      amount?: BigNumberish | null
-    ): MinTokensToTakeFeeInBNBUpdatedEventFilter;
-
     "OwnershipTransferred(address,address)"(
       previousOwner?: string | null,
       newOwner?: string | null
@@ -1358,8 +1288,6 @@ export interface MafaCoin extends BaseContract {
 
     developmentSellFee(overrides?: CallOverrides): Promise<BigNumber>;
 
-    dexFactory(overrides?: CallOverrides): Promise<BigNumber>;
-
     dexPair(overrides?: CallOverrides): Promise<BigNumber>;
 
     dexRouter(overrides?: CallOverrides): Promise<BigNumber>;
@@ -1388,8 +1316,6 @@ export interface MafaCoin extends BaseContract {
     marketingSellFee(overrides?: CallOverrides): Promise<BigNumber>;
 
     maxSellAmount(overrides?: CallOverrides): Promise<BigNumber>;
-
-    minTokensToTakeFeeInBNB(overrides?: CallOverrides): Promise<BigNumber>;
 
     name(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1451,11 +1377,6 @@ export interface MafaCoin extends BaseContract {
     ): Promise<BigNumber>;
 
     setMaxSellAmount(
-      amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    setMinTokensToTakeFeeInBNB(
       amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -1560,8 +1481,6 @@ export interface MafaCoin extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    dexFactory(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     dexPair(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     dexRouter(overrides?: CallOverrides): Promise<PopulatedTransaction>;
@@ -1590,10 +1509,6 @@ export interface MafaCoin extends BaseContract {
     marketingSellFee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     maxSellAmount(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    minTokensToTakeFeeInBNB(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
 
     name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -1655,11 +1570,6 @@ export interface MafaCoin extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     setMaxSellAmount(
-      amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setMinTokensToTakeFeeInBNB(
       amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
