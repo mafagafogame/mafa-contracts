@@ -47,11 +47,17 @@ export interface RoyaltiesV2UpgradeableInterface extends utils.Interface {
   ): Result;
 
   events: {
+    "Initialized(uint8)": EventFragment;
     "RoyaltiesSet(uint256,tuple[])": EventFragment;
   };
 
+  getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoyaltiesSet"): EventFragment;
 }
+
+export type InitializedEvent = TypedEvent<[number], { version: number }>;
+
+export type InitializedEventFilter = TypedEventFilter<InitializedEvent>;
 
 export type RoyaltiesSetEvent = TypedEvent<
   [BigNumber, PartStructOutput[]],
@@ -121,6 +127,9 @@ export interface RoyaltiesV2Upgradeable extends BaseContract {
   };
 
   filters: {
+    "Initialized(uint8)"(version?: null): InitializedEventFilter;
+    Initialized(version?: null): InitializedEventFilter;
+
     "RoyaltiesSet(uint256,tuple[])"(
       tokenId?: null,
       royalties?: null

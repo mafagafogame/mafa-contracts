@@ -46,6 +46,7 @@ export interface MafaBoxInterface extends utils.Interface {
     "pause()": FunctionFragment;
     "paused()": FunctionFragment;
     "probabilities(uint256)": FunctionFragment;
+    "proxiableUUID()": FunctionFragment;
     "renounceRole(bytes32,address)": FunctionFragment;
     "revokeRole(bytes32,address)": FunctionFragment;
     "safeBatchTransferFrom(address,address,uint256[],uint256[],bytes)": FunctionFragment;
@@ -162,6 +163,10 @@ export interface MafaBoxInterface extends utils.Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "proxiableUUID",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "renounceRole",
     values: [BytesLike, string]
   ): string;
@@ -276,6 +281,10 @@ export interface MafaBoxInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "proxiableUUID",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "renounceRole",
     data: BytesLike
   ): Result;
@@ -326,6 +335,7 @@ export interface MafaBoxInterface extends utils.Interface {
     "ApprovalForAll(address,address,bool)": EventFragment;
     "BeaconUpgraded(address)": EventFragment;
     "BoxOpened(uint256,address,uint256[])": EventFragment;
+    "Initialized(uint8)": EventFragment;
     "MafagafoAddressChanged(address)": EventFragment;
     "Paused(address)": EventFragment;
     "ProbabilitiesChanged(uint256[])": EventFragment;
@@ -343,6 +353,7 @@ export interface MafaBoxInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "ApprovalForAll"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "BeaconUpgraded"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "BoxOpened"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "MafagafoAddressChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Paused"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ProbabilitiesChanged"): EventFragment;
@@ -380,6 +391,10 @@ export type BoxOpenedEvent = TypedEvent<
 >;
 
 export type BoxOpenedEventFilter = TypedEventFilter<BoxOpenedEvent>;
+
+export type InitializedEvent = TypedEvent<[number], { version: number }>;
+
+export type InitializedEventFilter = TypedEventFilter<InitializedEvent>;
 
 export type MafagafoAddressChangedEvent = TypedEvent<
   [string],
@@ -622,6 +637,8 @@ export interface MafaBox extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
+    proxiableUUID(overrides?: CallOverrides): Promise<[string]>;
+
     renounceRole(
       role: BytesLike,
       account: string,
@@ -835,6 +852,8 @@ export interface MafaBox extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
+  proxiableUUID(overrides?: CallOverrides): Promise<string>;
+
   renounceRole(
     role: BytesLike,
     account: string,
@@ -1043,6 +1062,8 @@ export interface MafaBox extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    proxiableUUID(overrides?: CallOverrides): Promise<string>;
+
     renounceRole(
       role: BytesLike,
       account: string,
@@ -1156,6 +1177,9 @@ export interface MafaBox extends BaseContract {
       sender?: null,
       mafagafoTypes?: null
     ): BoxOpenedEventFilter;
+
+    "Initialized(uint8)"(version?: null): InitializedEventFilter;
+    Initialized(version?: null): InitializedEventFilter;
 
     "MafagafoAddressChanged(address)"(
       addr?: string | null
@@ -1385,6 +1409,8 @@ export interface MafaBox extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    proxiableUUID(overrides?: CallOverrides): Promise<BigNumber>;
+
     renounceRole(
       role: BytesLike,
       account: string,
@@ -1606,6 +1632,8 @@ export interface MafaBox extends BaseContract {
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    proxiableUUID(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     renounceRole(
       role: BytesLike,
