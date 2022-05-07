@@ -10,6 +10,8 @@ import "./WithdrawableOwnable.sol";
 
 // @dev Custom errors
 error DefaultPairUpdated();
+error AccountAlreadyExcluded();
+error AccountAlreadyIncluded();
 error SettingZeroAddress();
 error AddressAlreadySet();
 error TransferFromZeroAddress();
@@ -102,6 +104,22 @@ contract MafaCoin is ERC20, WithdrawableOwnable {
         automatedMarketMakerPairs[pair] = value;
 
         emit SetAutomatedMarketMakerPair(pair, value);
+    }
+
+    // @dev exclude an account from fees
+    function excludeFromFees(address account) public onlyOwner {
+        if (isExcludedFromFees[account]) revert AccountAlreadyExcluded();
+
+        isExcludedFromFees[account] = true;
+        emit ExcludeFromFees(account);
+    }
+
+    // @dev include an account in fees
+    function includeInFees(address account) public onlyOwner {
+        if (!isExcludedFromFees[account]) revert AccountAlreadyIncluded();
+
+        isExcludedFromFees[account] = false;
+        emit IncludeInFees(account);
     }
 
     function setDevelopmentAddress(address newAddress) external onlyOwner {
@@ -281,6 +299,8 @@ contract MafaCoin is ERC20, WithdrawableOwnable {
         }
     }
 
+    event ExcludeFromFees(address indexed account);
+    event IncludeInFees(address indexed account);
     event SetAutomatedMarketMakerPair(address indexed pair, bool indexed value);
     event DevelopmentAddressUpdated(address indexed developmentAddress);
     event DevelopmentFeeUpdated(uint256 indexed fee);
