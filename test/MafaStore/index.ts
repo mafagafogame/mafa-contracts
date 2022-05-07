@@ -14,7 +14,7 @@ import {
   MafaStore__factory,
   MafaStoreTestV2,
   MafaStoreTestV2__factory,
-  MafaCoinV2,
+  MafaCoin,
 } from "../../typechain";
 import {
   bigNumberToFloat,
@@ -26,7 +26,7 @@ import {
 
 describe("MafaStore", function () {
   let mafastore: MafaStore;
-  let mafacoin: MafaCoinV2;
+  let mafacoin: MafaCoin;
   let brooder: BrooderNft;
   let egg: EggNft;
   let mafagafoAvatar: MafagafoAvatarNft;

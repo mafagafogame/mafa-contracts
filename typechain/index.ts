@@ -50,6 +50,7 @@ export type { IUniswapV2Router02 } from "./IUniswapV2Router02";
 export type { MafaStore } from "./MafaStore";
 export type { MafaStoreTestV2 } from "./MafaStoreTestV2";
 export type { MafaCoin } from "./MafaCoin";
+export type { MafaCoinV1 } from "./MafaCoinV1";
 export type { MafaCoinV2 } from "./MafaCoinV2";
 export type { WithdrawableOwnable } from "./WithdrawableOwnable";
 export type { BaseERC1155 } from "./BaseERC1155";
@@ -119,6 +120,7 @@ export { IUniswapV2Router02__factory } from "./factories/IUniswapV2Router02__fac
 export { MafaStore__factory } from "./factories/MafaStore__factory";
 export { MafaStoreTestV2__factory } from "./factories/MafaStoreTestV2__factory";
 export { MafaCoin__factory } from "./factories/MafaCoin__factory";
+export { MafaCoinV1__factory } from "./factories/MafaCoinV1__factory";
 export { MafaCoinV2__factory } from "./factories/MafaCoinV2__factory";
 export { WithdrawableOwnable__factory } from "./factories/WithdrawableOwnable__factory";
 export { BaseERC1155__factory } from "./factories/BaseERC1155__factory";

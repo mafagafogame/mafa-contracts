@@ -7,17 +7,11 @@ import { expect } from "chai";
 import { utils } from "ethers";
 import { ethers } from "hardhat";
 
-import {
-  IUniswapV2Factory,
-  IUniswapV2Pair,
-  IUniswapV2Router02,
-  MafaCoinV2,
-  MafaCoinV2__factory,
-} from "../../typechain";
+import { IUniswapV2Factory, IUniswapV2Pair, IUniswapV2Router02, MafaCoin, MafaCoin__factory } from "../../typechain";
 
 describe.only("MafaCoin", function () {
   const DEAD_ADDRESS = "0x000000000000000000000000000000000000dEaD";
-  let contract: MafaCoinV2;
+  let contract: MafaCoin;
   let owner: SignerWithAddress;
   let address1: SignerWithAddress;
   let address2: SignerWithAddress;
@@ -30,7 +24,7 @@ describe.only("MafaCoin", function () {
   });
 
   beforeEach(async function () {
-    const mafacoinFactory = <MafaCoinV2__factory>await ethers.getContractFactory("MafaCoinV2");
+    const mafacoinFactory = <MafaCoin__factory>await ethers.getContractFactory("MafaCoin");
     contract = await mafacoinFactory.deploy("Mafacoin", "MAFA", utils.parseEther("1000000000"));
     contract = await contract.deployed();
   });
