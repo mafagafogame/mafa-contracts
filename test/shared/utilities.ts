@@ -23,8 +23,12 @@ export async function deployMafaCoin(owner: SignerWithAddress) {
     await waffle.deployContract(owner, mafacoinArtifact, ["Mafacoin", "MAFA", utils.parseEther("1000000000")])
   );
 
-  await mafacoin.setBuyFee(0);
-  await mafacoin.setSellFee(0);
+  await mafacoin.setDevelopmentBuyFee(0);
+  await mafacoin.setDevelopmentSellFee(0);
+  await mafacoin.setMarketingBuyFee(0);
+  await mafacoin.setMarketingSellFee(0);
+  await mafacoin.setLiquidityBuyFee(0);
+  await mafacoin.setLiquiditySellFee(0);
   return mafacoin;
 }
 

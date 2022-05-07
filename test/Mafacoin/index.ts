@@ -15,16 +15,18 @@ import {
   MafaCoinV2__factory,
 } from "../../typechain";
 
-describe.only("MafaCoinV2", function () {
+describe.only("MafaCoin", function () {
   const DEAD_ADDRESS = "0x000000000000000000000000000000000000dEaD";
   let contract: MafaCoinV2;
   let owner: SignerWithAddress;
   let address1: SignerWithAddress;
   let address2: SignerWithAddress;
   let address3: SignerWithAddress;
+  let address4: SignerWithAddress;
+  let address5: SignerWithAddress;
 
   before(async function () {
-    [owner, address1, address2, address3] = await ethers.getSigners();
+    [owner, address1, address2, address3, address4, address5] = await ethers.getSigners();
   });
 
   beforeEach(async function () {
@@ -40,10 +42,17 @@ describe.only("MafaCoinV2", function () {
     expect(await contract.decimals()).to.equal(18);
     expect(await contract.balanceOf(owner.address)).to.equal(await contract.totalSupply());
 
-    expect(await contract.feeRecipient()).to.equal(owner.address);
+    expect(await contract.developmentAddress()).to.equal("0x056f3E1B30797a122447581d0F34CD69E9A26690");
+    expect(await contract.marketingAddress()).to.equal("0x272C14981F2Ff4fF06F5EF326940E7F067b4b5D6");
+    expect(await contract.liquidityAddress()).to.equal("0xc76280a36743E1266dC73F114bB1c9950ee37E7c");
 
-    expect(await contract.buyFee()).to.equal(utils.parseEther("0.05"));
-    expect(await contract.sellFee()).to.equal(utils.parseEther("0.05"));
+    expect(await contract.developmentBuyFee()).to.equal(0);
+    expect(await contract.marketingBuyFee()).to.equal(0);
+    expect(await contract.liquidityBuyFee()).to.equal(utils.parseEther("0.01"));
+    expect(await contract.developmentSellFee()).to.equal(utils.parseEther("0.03"));
+    expect(await contract.marketingSellFee()).to.equal(utils.parseEther("0.03"));
+    expect(await contract.liquiditySellFee()).to.equal(utils.parseEther("0.01"));
+
     expect(await contract.MAX_BUY_FEE()).to.equal(utils.parseEther("0.14"));
     expect(await contract.MAX_SELL_FEE()).to.equal(utils.parseEther("0.14"));
     expect(await contract.maxSellAmount()).to.equal(utils.parseEther("100000"));
@@ -54,26 +63,14 @@ describe.only("MafaCoinV2", function () {
     expect(await contract.isExcludedFromFees(contract.address)).to.equal(true);
   });
 
-  it("Owner should be able to include/exclude in fees an excluded/included from fees account", async function () {
-    await contract.excludeFromFees(address2.address);
-    expect(await contract.isExcludedFromFees(address2.address)).to.equal(true);
-
-    await contract.includeInFees(address2.address);
-    expect(await contract.isExcludedFromFees(address2.address)).to.equal(false);
-  });
-
-  it("Owner should not be able to include/exclude in fees an include/exclude from fees account", async function () {
-    await contract.excludeFromFees(address2.address);
-    await expect(contract.excludeFromFees(address2.address)).to.be.reverted;
-
-    await contract.includeInFees(address2.address);
-    await expect(contract.includeInFees(address2.address)).to.be.reverted;
-  });
-
   it("Owner should no be able to set AMM pair with default pair", async function () {
     await expect(contract.setAutomatedMarketMakerPair(await contract.dexPair(), false)).to.be.revertedWith(
       "DefaultPairUpdated()",
     );
+  });
+
+  it("Automated Market Maker Pair", async function () {
+    expect(await contract.setAutomatedMarketMakerPair(DEAD_ADDRESS, true));
   });
 
   it("Owner should be able to set minTokensToTakeFeeInBNB to any value", async function () {
@@ -87,50 +84,83 @@ describe.only("MafaCoinV2", function () {
 
   describe("Fees", function () {
     beforeEach(async function () {
-      await contract.transfer(address1.address, utils.parseEther("100000"));
+      await contract.setDevelopmentBuyFee(0);
+      await contract.setDevelopmentSellFee(0);
+      await contract.setMarketingBuyFee(0);
+      await contract.setMarketingSellFee(0);
+      await contract.setLiquidityBuyFee(0);
+      await contract.setLiquiditySellFee(0);
 
-      await contract.setFeeRecipientAddress(address3.address);
+      await contract.transfer(address1.address, utils.parseEther("100000"));
     });
 
-    it("Owner should not be able to set zero address as fee recipient", async function () {
-      await expect(contract.setFeeRecipientAddress(ethers.constants.AddressZero)).to.be.revertedWith(
+    it("Owner should not be able to set zero address as fee recipients", async function () {
+      await expect(contract.setDevelopmentAddress(ethers.constants.AddressZero)).to.be.revertedWith(
+        "SettingZeroAddress()",
+      );
+
+      await expect(contract.setMarketingAddress(ethers.constants.AddressZero)).to.be.revertedWith(
+        "SettingZeroAddress()",
+      );
+
+      await expect(contract.setLiquidityAddress(ethers.constants.AddressZero)).to.be.revertedWith(
         "SettingZeroAddress()",
       );
     });
 
-    it("Owner should not be able to set fee recipient address twice", async function () {
-      await expect(contract.setFeeRecipientAddress(address3.address)).to.be.revertedWith("AddressAlreadySet()");
+    it("Owner should not be able to set fee recipients address twice", async function () {
+      await contract.setDevelopmentAddress(address3.address);
+      await expect(contract.setDevelopmentAddress(address3.address)).to.be.revertedWith("AddressAlreadySet()");
+
+      await contract.setMarketingAddress(address3.address);
+      await expect(contract.setMarketingAddress(address3.address)).to.be.revertedWith("AddressAlreadySet()");
+
+      await contract.setLiquidityAddress(address3.address);
+      await expect(contract.setLiquidityAddress(address3.address)).to.be.revertedWith("AddressAlreadySet()");
     });
 
-    it("Should not be able to set buy fee greater than MAX_BUY_FEE value", async function () {
-      await expect(contract.setBuyFee(utils.parseEther("0.15"))).to.be.revertedWith(
+    it("Should not be able to set buy fees greater than MAX_BUY_FEE value", async function () {
+      await contract.setDevelopmentBuyFee(utils.parseEther("0.05"));
+      await contract.setMarketingBuyFee(utils.parseEther("0.05"));
+
+      await expect(contract.setLiquidityBuyFee(utils.parseEther("0.05"))).to.be.revertedWith(
         "MaxBuyFeeExceeded(150000000000000000)",
       );
     });
 
-    it("Should not be able to set buy fee greater than MAX_BUY_FEE value", async function () {
-      await expect(contract.setSellFee(utils.parseEther("0.15"))).to.be.revertedWith(
+    it("Should not be able to set sell fees greater than MAX_SELL_FEE value", async function () {
+      await contract.setDevelopmentSellFee(utils.parseEther("0.05"));
+      await contract.setMarketingSellFee(utils.parseEther("0.05"));
+
+      await expect(contract.setLiquiditySellFee(utils.parseEther("0.05"))).to.be.revertedWith(
         "MaxSellFeeExceeded(150000000000000000)",
       );
     });
 
-    it("Should set fees correctly", async function () {
-      await contract.setBuyFee(utils.parseEther("0.14"));
-      await contract.setSellFee(utils.parseEther("0.14"));
-
-      expect(await contract.buyFee()).to.equal(utils.parseEther("0.14"));
-      expect(await contract.sellFee()).to.equal(utils.parseEther("0.14"));
+    it("Should calculate total fees correctly", async function () {
+      expect(await contract.totalBuyFees()).to.equal(0);
+      expect(await contract.totalSellFees()).to.equal(0);
+      await contract.setDevelopmentBuyFee(utils.parseEther("0.14"));
+      await contract.setDevelopmentSellFee(utils.parseEther("0.14"));
+      expect(await contract.totalBuyFees()).to.equal(utils.parseEther("0.14"));
+      expect(await contract.totalSellFees()).to.equal(utils.parseEther("0.14"));
     });
 
-    it("Should charge buy fees on basic transfer", async function () {
+    it("Should not charge buy fees on basic transfer", async function () {
+      await contract.setDevelopmentBuyFee(utils.parseEther("0.04"));
+      await contract.setMarketingBuyFee(utils.parseEther("0.04"));
+      await contract.setLiquidityBuyFee(utils.parseEther("0.04"));
+
       await contract.connect(address1).transfer(address2.address, utils.parseEther("50000"));
 
       expect(await contract.balanceOf(address1.address)).to.equal(utils.parseEther("50000"));
-      expect(await contract.balanceOf(address2.address)).to.equal(utils.parseEther("47500"));
+      expect(await contract.balanceOf(address2.address)).to.equal(utils.parseEther("50000"));
     });
 
     it("Should not charge sell fees on basic transfer", async function () {
-      await contract.setBuyFee(0);
+      await contract.setDevelopmentSellFee(utils.parseEther("0.04"));
+      await contract.setMarketingSellFee(utils.parseEther("0.04"));
+      await contract.setLiquiditySellFee(utils.parseEther("0.04"));
 
       await contract.connect(address1).transfer(address2.address, utils.parseEther("50000"));
 
@@ -169,14 +199,26 @@ describe.only("MafaCoinV2", function () {
           .addLiquidityETH(contract.address, TokenAmount, 0, 0, owner.address, ethers.constants.MaxUint256, {
             value: BNBAmount,
           });
+
+        await contract.setDevelopmentBuyFee(utils.parseEther("0.01"));
+        await contract.setDevelopmentSellFee(utils.parseEther("0.01"));
+        await contract.setDevelopmentAddress(address2.address);
+        await contract.setMarketingBuyFee(utils.parseEther("0.01"));
+        await contract.setMarketingSellFee(utils.parseEther("0.01"));
+        await contract.setMarketingAddress(address3.address);
+        await contract.setLiquidityBuyFee(utils.parseEther("0.01"));
+        await contract.setLiquiditySellFee(utils.parseEther("0.01"));
+        await contract.setLiquidityAddress(address4.address);
       });
 
       it("Should be able to transfer tokens between accounts", async function () {
-        await contract.connect(address1).transfer(address2.address, utils.parseEther("100"));
+        await contract.connect(address1).transfer(address5.address, utils.parseEther("1000"));
 
-        expect(await contract.balanceOf(address1.address)).to.equal(utils.parseEther("99900"));
-        expect(await contract.balanceOf(address2.address)).to.equal(utils.parseEther("95"));
-        expect(await contract.balanceOf(address3.address)).to.equal(utils.parseEther("5")); // fee
+        expect(await contract.balanceOf(address1.address)).to.equal(utils.parseEther("99000"));
+        expect(await contract.balanceOf(address5.address)).to.equal(utils.parseEther("1000"));
+        expect(await contract.balanceOf(address2.address)).to.equal(0); // development fee is not charged
+        expect(await contract.balanceOf(address3.address)).to.equal(0); // marketing fee is not charged
+        expect(await contract.balanceOf(address4.address)).to.equal(0); // liquidity fee is not charged
       });
 
       // buy
@@ -189,25 +231,52 @@ describe.only("MafaCoinV2", function () {
               [WETH, contract.address],
               address1.address,
               ethers.constants.MaxUint256,
-              { value: utils.parseEther("1") },
+              { value: utils.parseEther("10") },
             ),
         ).to.emit(contract, "Transfer");
 
-        expect(await contract.balanceOf(address1.address)).to.be.gt(utils.parseEther("99900")); // tokens received
-        expect(await contract.balanceOf(address3.address)).to.be.gt(utils.parseEther("4.9")); // fee
+        expect(await contract.balanceOf(address1.address)).to.be.gt(utils.parseEther("100950")); // tokens received
+        expect(await contract.balanceOf(address2.address)).to.be.gt(utils.parseEther("9.8")); // development fee
+        expect(await contract.balanceOf(address3.address)).to.be.gt(utils.parseEther("9.8")); // marketing fee
+        expect(await contract.balanceOf(address4.address)).to.be.gt(utils.parseEther("9.8")); // liquidity fee
+      });
+
+      it("Should swap ETH for Tokens supporting fees on transfer if fees are removed", async function () {
+        await contract.setDevelopmentBuyFee(0);
+        await contract.setMarketingBuyFee(0);
+        await contract.setLiquidityBuyFee(0);
+
+        await expect(
+          router
+            .connect(address1)
+            .swapExactETHForTokensSupportingFeeOnTransferTokens(
+              0,
+              [WETH, contract.address],
+              address1.address,
+              ethers.constants.MaxUint256,
+              { value: utils.parseEther("10") },
+            ),
+        ).to.emit(contract, "Transfer");
+
+        expect(await contract.balanceOf(address1.address)).to.be.gt(utils.parseEther("100980")); // tokens received
+        expect(await contract.balanceOf(address2.address)).to.be.equal(0); // development fee is not charged
+        expect(await contract.balanceOf(address3.address)).to.be.equal(0); // marketing fee is not charged
+        expect(await contract.balanceOf(address4.address)).to.be.equal(0); // liquidity fee is not charged
       });
 
       // sell
       it("Should swap Tokens for ETH supporting fees on transfer", async function () {
         await contract.connect(address1).approve(router.address, ethers.constants.MaxUint256);
 
-        const initialFeeRecipientBalance = await contract.provider.getBalance(address2.address);
+        const initialDevelopmentBalance = await contract.provider.getBalance(address2.address); // development address
+        const initialMarketingBalance = await contract.provider.getBalance(address3.address); // marketing address
+        const initialLiquidityBalance = await contract.provider.getBalance(address4.address); // liquidity address
 
         await expect(
           router
             .connect(address1)
             .swapExactTokensForETHSupportingFeeOnTransferTokens(
-              utils.parseEther("100"),
+              utils.parseEther("1000"),
               0,
               [contract.address, WETH],
               address1.address,
@@ -215,61 +284,28 @@ describe.only("MafaCoinV2", function () {
             ),
         ).to.emit(contract, "Transfer");
 
-        const finalFeeRecipientBalance = await contract.provider.getBalance(address2.address);
+        const finalDevelopmentBalance = await contract.provider.getBalance(address2.address);
+        const finalMarketingBalance = await contract.provider.getBalance(address3.address);
+        const finalLiquidityBalance = await contract.provider.getBalance(address4.address);
 
-        expect(await contract.balanceOf(address1.address)).to.equal(utils.parseEther("99900"));
-        expect(await contract.balanceOf(pairContract.address)).to.equal(utils.parseEther("100095"));
+        expect(await contract.balanceOf(address1.address)).to.equal(utils.parseEther("99000"));
+        expect(await contract.balanceOf(pairContract.address)).to.equal(utils.parseEther("101000"));
         expect(await contract.balanceOf(address2.address)).to.equal(0);
-        expect(await contract.balanceOf(contract.address)).to.equal(utils.parseEther("5")); // fee
-        expect(initialFeeRecipientBalance).to.equal(finalFeeRecipientBalance);
-      });
-
-      it("Should take sell fees in BNB if minTokensToTakeFeeInBNB is achieved", async function () {
-        await contract.setSellFee(utils.parseEther("0.14"));
-
-        await contract.connect(address1).approve(router.address, ethers.constants.MaxUint256);
-
-        const initialFeeRecipientBalance = await contract.provider.getBalance(address3.address);
-
-        await expect(
-          router
-            .connect(address1)
-            .swapExactTokensForETHSupportingFeeOnTransferTokens(
-              utils.parseEther("500"),
-              0,
-              [contract.address, WETH],
-              address1.address,
-              ethers.constants.MaxUint256,
-            ),
-        ).to.emit(contract, "Transfer");
-
-        expect(await contract.balanceOf(contract.address)).to.equal(utils.parseEther("70"));
-        expect(await contract.provider.getBalance(address3.address)).to.equal(initialFeeRecipientBalance);
-
-        await expect(
-          router
-            .connect(address1)
-            .swapExactTokensForETHSupportingFeeOnTransferTokens(
-              utils.parseEther("7000"),
-              0,
-              [contract.address, WETH],
-              address1.address,
-              ethers.constants.MaxUint256,
-            ),
-        ).to.emit(contract, "Transfer");
-
-        const finalFeeRecipientBalance = await contract.provider.getBalance(address3.address);
-
-        expect(await contract.balanceOf(contract.address)).to.equal(0);
-        expect(initialFeeRecipientBalance).to.be.lt(finalFeeRecipientBalance);
+        expect(await contract.balanceOf(address3.address)).to.equal(0);
+        expect(initialDevelopmentBalance).to.be.lt(finalDevelopmentBalance); // development fee
+        expect(initialMarketingBalance).to.be.lt(finalMarketingBalance); // marketing fee
+        expect(initialLiquidityBalance).to.be.lt(finalLiquidityBalance); // liquidity fee
       });
 
       describe("Max Sell amount", function () {
         beforeEach(async function () {
-          await contract.setSellFee(0);
-          await contract.setMaxSellAmount(utils.parseEther("10000"));
+          await contract.setDevelopmentSellFee(0);
+          await contract.setMarketingSellFee(0);
+          await contract.setLiquiditySellFee(0);
 
-          await contract.connect(address1).approve(router.address, ethers.constants.MaxUint256);
+          await contract.setMaxSellAmount(utils.parseEther("10000"));
+          await contract.transfer(address5.address, utils.parseEther("10001"));
+          await contract.connect(address5).approve(router.address, ethers.constants.MaxUint256);
         });
 
         it("Should be able to set max sell amount greater than MIN_ANTI_DUMP_LIMIT", async function () {
@@ -287,12 +323,12 @@ describe.only("MafaCoinV2", function () {
         it("Should swap ETH for Tokens if sell amount is lower than maximum sell amount allowed", async function () {
           await expect(
             router
-              .connect(address1)
+              .connect(address5)
               .swapExactTokensForETHSupportingFeeOnTransferTokens(
                 utils.parseEther("10000"),
                 0,
                 [contract.address, WETH],
-                address1.address,
+                address5.address,
                 ethers.constants.MaxUint256,
               ),
           ).to.emit(contract, "Transfer");
@@ -301,19 +337,19 @@ describe.only("MafaCoinV2", function () {
         it("Should revert sell transaction if sell amount is greater than maximum sell amount allowed", async function () {
           await expect(
             router
-              .connect(address1)
+              .connect(address5)
               .swapExactTokensForETHSupportingFeeOnTransferTokens(
                 utils.parseEther("10001"),
                 0,
                 [contract.address, WETH],
-                address1.address,
+                address5.address,
                 ethers.constants.MaxUint256,
               ),
           ).to.be.revertedWith("TransferHelper: TRANSFER_FROM_FAILED");
         });
       });
 
-      // it("Should report gas costs of transfers", async function () {
+      // it.only("Should report gas costs of transfers", async function () {
       //   console.log("P2P TRANSFER GAS: ");
       //   console.log(await contract.connect(address1).estimateGas.transfer(address2.address, utils.parseEther("1000")));
 
@@ -343,26 +379,7 @@ describe.only("MafaCoinV2", function () {
       //         ethers.constants.MaxUint256,
       //       ),
       //   );
-
-      //   await contract.setSellFee(utils.parseEther("0.14"));
-
-      //   console.log("SELL TOKENS TAKING FEES IN BNB GAS:");
-      //   console.log(
-      //     await router
-      //       .connect(address1)
-      //       .estimateGas.swapExactTokensForETHSupportingFeeOnTransferTokens(
-      //         utils.parseEther("7500"),
-      //         0,
-      //         [contract.address, WETH],
-      //         address1.address,
-      //         ethers.constants.MaxUint256,
-      //       ),
-      //   );
       // });
     });
-  });
-
-  it("Automated Market Maker Pair", async function () {
-    expect(await contract.setAutomatedMarketMakerPair(DEAD_ADDRESS, true));
   });
 });

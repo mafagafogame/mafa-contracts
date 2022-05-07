@@ -10,34 +10,48 @@ import "./WithdrawableOwnable.sol";
 
 // @dev Custom errors
 error DefaultPairUpdated();
-error AccountAlreadyExcluded(address account);
-error AccountAlreadyIncluded(address account);
 error SettingZeroAddress();
 error AddressAlreadySet();
 error TransferFromZeroAddress();
 error TransferToZeroAddress();
 error NoAmount();
 error MaxSellAmountExceeded(uint256 amount);
-error MaxWalletAmountExceeded(uint256 amount);
 error MaxBuyFeeExceeded(uint256 amount);
 error MaxSellFeeExceeded(uint256 amount);
-error MaxFeeExceeded(uint256 amount);
 error MaxSellAmountTooLow(uint256 amount);
 
 contract MafaCoinV2 is ERC20, WithdrawableOwnable {
-    // @dev the fee the team takes on buy txs.
-    uint256 public buyFee = 5 * 10**16; // 5%
+    // @dev the fee the development takes on buy txs.
+    uint256 public developmentBuyFee = 0;
 
-    // @dev the fee the team takes on buy txs.
-    uint256 public sellFee = 5 * 10**16; // 5%
+    // @dev the fee the development takes on sell txs.
+    uint256 public developmentSellFee = 3 * 10**16; // 3%
 
-    // @dev which wallet will receive all the fees
-    address public feeRecipient;
+    // @dev which wallet will receive the development fee
+    address public developmentAddress = 0x056f3E1B30797a122447581d0F34CD69E9A26690;
 
-    // @dev maximum amount that buy fee can be raised to
+    // @dev the fee the liquidity takes on buy txs.
+    uint256 public liquidityBuyFee = 1 * 10**16; // 1%
+
+    // @dev the fee the liquidity takes on sell txs.
+    uint256 public liquiditySellFee = 1 * 10**16; // 1%
+
+    // @dev which wallet will receive the cake tokens from liquidity.
+    address public liquidityAddress = 0xc76280a36743E1266dC73F114bB1c9950ee37E7c;
+
+    // @dev the fee the marketing takes on buy txs.
+    uint256 public marketingBuyFee = 0;
+
+    // @dev the fee the marketing takes on sell txs.
+    uint256 public marketingSellFee = 3 * 10**16; // 3%
+
+    // @dev which wallet will receive the marketing fee
+    address public marketingAddress = 0x272C14981F2Ff4fF06F5EF326940E7F067b4b5D6;
+
+    // @dev maximum amount that buy fees added together can be raised to
     uint256 public constant MAX_BUY_FEE = 14 * 10**16; // 14%;
 
-    // @dev maximum amount that sell fee can be raised to
+    // @dev maximum amount that sell fees added together can be raised to
     uint256 public constant MAX_SELL_FEE = 14 * 10**16; // 14%;
 
     // @dev maximum amount of tokens a user can sell on a single transaction (antidump mechanism)
@@ -69,10 +83,8 @@ contract MafaCoinV2 is ERC20, WithdrawableOwnable {
         string memory symbol,
         uint256 tSupply // totalSupply
     ) ERC20(name, symbol) {
-        excludeFromFees(address(this));
-        excludeFromFees(owner());
-
-        feeRecipient = owner();
+        isExcludedFromFees[address(this)] = true;
+        isExcludedFromFees[owner()] = true;
 
         _mint(owner(), tSupply);
 
@@ -99,42 +111,92 @@ contract MafaCoinV2 is ERC20, WithdrawableOwnable {
         emit SetAutomatedMarketMakerPair(pair, value);
     }
 
-    // @dev exclude an account from fees
-    function excludeFromFees(address account) public onlyOwner {
-        if (isExcludedFromFees[account]) revert AccountAlreadyExcluded(account);
-
-        isExcludedFromFees[account] = true;
-        emit ExcludeFromFees(account);
-    }
-
-    // @dev include an account in fees
-    function includeInFees(address account) public onlyOwner {
-        if (!isExcludedFromFees[account]) revert AccountAlreadyIncluded(account);
-
-        isExcludedFromFees[account] = false;
-        emit IncludeInFees(account);
-    }
-
-    function setFeeRecipientAddress(address newAddress) external onlyOwner {
+    function setDevelopmentAddress(address newAddress) external onlyOwner {
         if (newAddress == address(0)) revert SettingZeroAddress();
-        if (feeRecipient == newAddress) revert AddressAlreadySet();
+        if (developmentAddress == newAddress) revert AddressAlreadySet();
 
-        feeRecipient = newAddress;
-        emit FeeRecipientAddressUpdated(newAddress);
+        developmentAddress = newAddress;
+        emit DevelopmentAddressUpdated(newAddress);
     }
 
-    function setBuyFee(uint256 newFee) external onlyOwner {
-        if (newFee > MAX_BUY_FEE) revert MaxBuyFeeExceeded(newFee);
+    function setDevelopmentBuyFee(uint256 newFee) external onlyOwner {
+        checkBuyFeesChanged(newFee, developmentBuyFee);
 
-        buyFee = newFee;
-        emit BuyFeeUpdated(newFee);
+        developmentBuyFee = newFee;
+        emit DevelopmentFeeUpdated(newFee);
     }
 
-    function setSellFee(uint256 newFee) external onlyOwner {
-        if (newFee > MAX_SELL_FEE) revert MaxSellFeeExceeded(newFee);
+    function setDevelopmentSellFee(uint256 newFee) external onlyOwner {
+        checkSellFeesChanged(newFee, developmentSellFee);
 
-        sellFee = newFee;
-        emit SellFeeUpdated(newFee);
+        developmentSellFee = newFee;
+        emit DevelopmentFeeUpdated(newFee);
+    }
+
+    function setMarketingAddress(address newAddress) external onlyOwner {
+        if (newAddress == address(0)) revert SettingZeroAddress();
+        if (marketingAddress == newAddress) revert AddressAlreadySet();
+
+        marketingAddress = newAddress;
+        emit MarketingAddressUpdated(newAddress);
+    }
+
+    function setMarketingBuyFee(uint256 newFee) external onlyOwner {
+        checkBuyFeesChanged(newFee, marketingBuyFee);
+
+        marketingBuyFee = newFee;
+        emit MarketingFeeUpdated(newFee);
+    }
+
+    function setMarketingSellFee(uint256 newFee) external onlyOwner {
+        checkSellFeesChanged(newFee, marketingSellFee);
+
+        marketingSellFee = newFee;
+        emit MarketingFeeUpdated(newFee);
+    }
+
+    function setLiquidityAddress(address newAddress) external onlyOwner {
+        if (newAddress == address(0)) revert SettingZeroAddress();
+        if (liquidityAddress == newAddress) revert AddressAlreadySet();
+
+        liquidityAddress = newAddress;
+        emit LiquidityAddressUpdated(newAddress);
+    }
+
+    function setLiquidityBuyFee(uint256 newFee) external onlyOwner {
+        checkBuyFeesChanged(newFee, liquidityBuyFee);
+
+        liquidityBuyFee = newFee;
+        emit LiquidityFeeUpdated(newFee);
+    }
+
+    function setLiquiditySellFee(uint256 newFee) external onlyOwner {
+        checkSellFeesChanged(newFee, liquiditySellFee);
+
+        liquiditySellFee = newFee;
+        emit LiquidityFeeUpdated(newFee);
+    }
+
+    function checkBuyFeesChanged(uint256 newFee, uint256 oldFee) internal view {
+        uint256 fees = totalBuyFees() + newFee - oldFee;
+
+        if (fees > MAX_BUY_FEE) revert MaxBuyFeeExceeded(fees);
+    }
+
+    function checkSellFeesChanged(uint256 newFee, uint256 oldFee) internal view {
+        uint256 fees = totalSellFees() + newFee - oldFee;
+
+        if (fees > MAX_SELL_FEE) revert MaxSellFeeExceeded(fees);
+    }
+
+    // @dev just to simplify to the user, the total fees on buy
+    function totalBuyFees() public view returns (uint256) {
+        return developmentBuyFee + liquidityBuyFee + marketingBuyFee;
+    }
+
+    // @dev just to simplify to the user, the total fees on sell
+    function totalSellFees() public view returns (uint256) {
+        return developmentSellFee + liquiditySellFee + marketingSellFee;
     }
 
     function setMaxSellAmount(uint256 amount) external onlyOwner {
@@ -149,8 +211,14 @@ contract MafaCoinV2 is ERC20, WithdrawableOwnable {
         emit MinTokensToTakeFeeInBNBUpdated(amount);
     }
 
-    function _takeFeeInBNB(address to, uint256 amount) private {
+    function _takeFeeInBNB(
+        address from,
+        address to,
+        uint256 amount
+    ) private {
         if (amount == 0) return;
+
+        super._transfer(from, address(this), amount);
 
         address[] memory path = new address[](2);
         path[0] = address(this);
@@ -173,39 +241,65 @@ contract MafaCoinV2 is ERC20, WithdrawableOwnable {
         if (isExcludedFromFees[from] || isExcludedFromFees[to]) {
             super._transfer(from, to, amount);
         } else {
-            uint256 feeAmount = 0;
+            uint256 tokensToDevelopment = 0;
+            uint256 tokensToLiquidity = 0;
+            uint256 tokensToMarketing = 0;
+            uint256 finalAmount = 0;
 
             // automatedMarketMakerPairs[from] -> buy tokens on dex
             // automatedMarketMakerPairs[to]   -> sell tokens on dex
             if (automatedMarketMakerPairs[to]) {
                 if (amount > maxSellAmount) revert MaxSellAmountExceeded(amount);
 
-                uint256 fee = sellFee;
-                if (fee > 0) {
-                    feeAmount = (amount * fee) / 10**decimals();
-                    super._transfer(from, address(this), feeAmount);
-
-                    uint256 contractBalance = balanceOf(address(this));
-                    if (contractBalance > minTokensToTakeFeeInBNB) _takeFeeInBNB(feeRecipient, contractBalance);
+                uint256 developmentFee = developmentSellFee;
+                if (developmentFee > 0) {
+                    tokensToDevelopment = (amount * developmentFee) / 10**decimals();
+                    _takeFeeInBNB(from, developmentAddress, tokensToDevelopment);
                 }
-            } else {
-                uint256 fee = buyFee;
-                if (fee > 0) {
-                    feeAmount = (amount * fee) / 10**decimals();
-                    super._transfer(from, feeRecipient, feeAmount);
+
+                uint256 liquidityFee = liquiditySellFee;
+                if (liquidityFee > 0) {
+                    tokensToLiquidity = (amount * liquidityFee) / 10**decimals();
+                    _takeFeeInBNB(from, liquidityAddress, tokensToLiquidity);
+                }
+
+                uint256 marketingFee = marketingSellFee;
+                if (marketingFee > 0) {
+                    tokensToMarketing = (amount * marketingFee) / 10**decimals();
+                    _takeFeeInBNB(from, marketingAddress, tokensToMarketing);
+                }
+            } else if (automatedMarketMakerPairs[from]) {
+                uint256 developmentFee = developmentBuyFee;
+                if (developmentFee > 0) {
+                    tokensToDevelopment = (amount * developmentFee) / 10**decimals();
+                    super._transfer(from, developmentAddress, tokensToDevelopment);
+                }
+
+                uint256 liquidityFee = liquidityBuyFee;
+                if (liquidityFee > 0) {
+                    tokensToLiquidity = (amount * liquidityFee) / 10**decimals();
+                    super._transfer(from, liquidityAddress, tokensToLiquidity);
+                }
+
+                uint256 marketingFee = marketingBuyFee;
+                if (marketingFee > 0) {
+                    tokensToMarketing = (amount * marketingFee) / 10**decimals();
+                    super._transfer(from, marketingAddress, tokensToMarketing);
                 }
             }
 
-            super._transfer(from, to, amount - feeAmount);
+            finalAmount = amount - tokensToDevelopment - tokensToLiquidity - tokensToMarketing;
+            super._transfer(from, to, finalAmount);
         }
     }
 
-    event ExcludeFromFees(address indexed account);
-    event IncludeInFees(address indexed account);
     event SetAutomatedMarketMakerPair(address indexed pair, bool indexed value);
-    event FeeRecipientAddressUpdated(address indexed feeRecipientAddress);
-    event BuyFeeUpdated(uint256 indexed fee);
-    event SellFeeUpdated(uint256 indexed fee);
+    event DevelopmentAddressUpdated(address indexed developmentAddress);
+    event DevelopmentFeeUpdated(uint256 indexed fee);
+    event LiquidityAddressUpdated(address indexed liquidityAddress);
+    event LiquidityFeeUpdated(uint256 indexed fee);
+    event MarketingAddressUpdated(address indexed marketingAddress);
+    event MarketingFeeUpdated(uint256 indexed fee);
     event MaxSellAmountUpdated(uint256 indexed amount);
     event MinTokensToTakeFeeInBNBUpdated(uint256 indexed amount);
 }
