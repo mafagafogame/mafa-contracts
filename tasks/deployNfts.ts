@@ -9,8 +9,8 @@ import {
   EggNft__factory,
   MafaBox,
   MafaBox__factory,
-  MafaCoinV2,
-  MafaCoinV2__factory,
+  MafaCoin,
+  MafaCoin__factory,
   MafagafoAvatarNft,
   MafagafoAvatarNft__factory,
   MafaStore,
@@ -45,8 +45,8 @@ task("deploy:nfts", "Deploy all contracts related to nfts")
 
     console.log("Deploying contracts with the account:", deployer.address);
 
-    const MafaCoinFactory: MafaCoinV2__factory = await ethers.getContractFactory("MafaCoinV2");
-    let mafacoin: MafaCoinV2;
+    const MafaCoinFactory: MafaCoin__factory = await ethers.getContractFactory("MafaCoin");
+    let mafacoin: MafaCoin;
 
     switch (chain) {
       case "mainnet":
@@ -59,8 +59,12 @@ task("deploy:nfts", "Deploy all contracts related to nfts")
         mafacoin = await MafaCoinFactory.deploy("Mafacoin", "MAFA", utils.parseEther("1000000000"));
         mafacoin = await mafacoin.deployed();
 
-        await (await mafacoin.setBuyFee(0)).wait(1);
-        await (await mafacoin.setSellFee(0)).wait(1);
+        await (await mafacoin.setDevelopmentBuyFee(0)).wait(1);
+        await (await mafacoin.setDevelopmentSellFee(0)).wait(1);
+        await (await mafacoin.setMarketingBuyFee(0)).wait(1);
+        await (await mafacoin.setMarketingSellFee(0)).wait(1);
+        await (await mafacoin.setLiquidityBuyFee(0)).wait(1);
+        await (await mafacoin.setLiquiditySellFee(0)).wait(1);
         break;
       default:
         throw Error("unknown chain");

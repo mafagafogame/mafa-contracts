@@ -4,13 +4,13 @@
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
 import { ethers, upgrades } from "hardhat";
-import { MafaCoinV2, MafaCoinV2__factory } from "../typechain";
+import { MafaCoin, MafaCoin__factory } from "../typechain";
 async function main() {
   const [deployer] = await ethers.getSigners();
 
   console.log("Deploying contracts with the account:", deployer.address);
 
-  const mafaFactory = (await ethers.getContractFactory("MafaCoinV2")) as MafaCoinV2__factory;
+  const mafaFactory = (await ethers.getContractFactory("MafaCoin")) as MafaCoin__factory;
   let mafa = await mafaFactory.deploy();
   mafa = await mafa.deployed();
   console.log("MafaFake deployed to:", mafa.address);

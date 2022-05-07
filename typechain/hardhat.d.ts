@@ -209,6 +209,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.MafaCoin__factory>;
     getContractFactory(
+      name: "MafaCoinV1",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.MafaCoinV1__factory>;
+    getContractFactory(
       name: "MafaCoinV2",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.MafaCoinV2__factory>;
@@ -530,6 +534,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.MafaCoin>;
+    getContractAt(
+      name: "MafaCoinV1",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.MafaCoinV1>;
     getContractAt(
       name: "MafaCoinV2",
       address: string,

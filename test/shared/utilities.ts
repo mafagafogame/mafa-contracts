@@ -2,7 +2,7 @@ import { BigNumber, utils } from "ethers";
 import { artifacts, ethers, waffle } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { Artifact } from "hardhat/types";
-import { MafaCoinV2 } from "../../typechain";
+import { MafaCoin } from "../../typechain";
 import axios from "axios";
 
 export function expandTo18Decimals(n: number): BigNumber {
@@ -18,13 +18,17 @@ export function daysToUnixDate(days: number): number {
 }
 
 export async function deployMafaCoin(owner: SignerWithAddress) {
-  const mafacoinArtifact: Artifact = await artifacts.readArtifact("MafaCoinV2");
-  const mafacoin = <MafaCoinV2>(
+  const mafacoinArtifact: Artifact = await artifacts.readArtifact("MafaCoin");
+  const mafacoin = <MafaCoin>(
     await waffle.deployContract(owner, mafacoinArtifact, ["Mafacoin", "MAFA", utils.parseEther("1000000000")])
   );
 
-  await mafacoin.setBuyFee(0);
-  await mafacoin.setSellFee(0);
+  await mafacoin.setDevelopmentBuyFee(0);
+  await mafacoin.setDevelopmentSellFee(0);
+  await mafacoin.setMarketingBuyFee(0);
+  await mafacoin.setMarketingSellFee(0);
+  await mafacoin.setLiquidityBuyFee(0);
+  await mafacoin.setLiquiditySellFee(0);
   return mafacoin;
 }
 
