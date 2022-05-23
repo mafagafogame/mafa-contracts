@@ -9,7 +9,7 @@ import { ethers } from "hardhat";
 
 import { IUniswapV2Factory, IUniswapV2Pair, IUniswapV2Router02, MafaCoin, MafaCoin__factory } from "../../typechain";
 
-describe.only("MafaCoin", function () {
+describe("MafaCoin", function () {
   const DEAD_ADDRESS = "0x000000000000000000000000000000000000dEaD";
   let contract: MafaCoin;
   let owner: SignerWithAddress;

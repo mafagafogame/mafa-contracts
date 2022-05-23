@@ -66,6 +66,7 @@ const config: HardhatUserConfig = {
         url: `${process.env.CHAINSTACK_PROVIDER}`,
       },
       accounts: { mnemonic },
+      allowUnlimitedContractSize: true,
     },
   },
   gasReporter: {
