@@ -217,6 +217,14 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.WithdrawableOwnable__factory>;
     getContractFactory(
+      name: "Burner",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Burner__factory>;
+    getContractFactory(
+      name: "BurnerMock",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.BurnerMock__factory>;
+    getContractFactory(
       name: "BaseERC1155",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.BaseERC1155__factory>;
@@ -281,9 +289,9 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.RoyaltiesV2UpgradeableImpl__factory>;
     getContractFactory(
-      name: "TimeLockedWallet",
+      name: "WithdrawableOwnableUpgradeable",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.TimeLockedWallet__factory>;
+    ): Promise<Contracts.WithdrawableOwnableUpgradeable__factory>;
 
     getContractAt(
       name: "AccessControlEnumerableUpgradeable",
@@ -541,6 +549,16 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.WithdrawableOwnable>;
     getContractAt(
+      name: "Burner",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.Burner>;
+    getContractAt(
+      name: "BurnerMock",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.BurnerMock>;
+    getContractAt(
       name: "BaseERC1155",
       address: string,
       signer?: ethers.Signer
@@ -621,10 +639,10 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.RoyaltiesV2UpgradeableImpl>;
     getContractAt(
-      name: "TimeLockedWallet",
+      name: "WithdrawableOwnableUpgradeable",
       address: string,
       signer?: ethers.Signer
-    ): Promise<Contracts.TimeLockedWallet>;
+    ): Promise<Contracts.WithdrawableOwnableUpgradeable>;
 
     // default types
     getContractFactory(

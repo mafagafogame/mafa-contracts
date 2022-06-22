@@ -470,6 +470,196 @@
       "address": "0xE5A18946c0B1d40cf8BcB486F05415E9D0Ebf34B",
       "txHash": "0x45c2f51f95e62e25f516ee3255609ff24e0e1e32ccac8934ba5c794add11ee38",
       "kind": "uups"
+    },
+    {
+      "address": "0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82",
+      "txHash": "0xa313dac0629f19413f3f4331234bb43e2b99bb861604fa6640b70a28923ac7dd",
+      "kind": "uups"
+    },
+    {
+      "address": "0x3Aa5ebB10DC797CAC828524e59A333d0A371443c",
+      "txHash": "0x81282b23956efa3f9d9b49b24420a397074183b122ce4f0764f5ae3e9b1d6622",
+      "kind": "uups"
+    },
+    {
+      "address": "0xc6e7DF5E7b4f2A278906862b61205850344D4e7d",
+      "txHash": "0x39db5d56a21b3f7cbf4bd6aef890b614e887640be466189051236313ac124081",
+      "kind": "uups"
+    },
+    {
+      "address": "0x7a2088a1bFc9d81c55368AE168C2C02570cB814F",
+      "txHash": "0xd96b817b87446e3b019d1fe674f7eafc5324141ad65887c7ba7860e3002a7760",
+      "kind": "uups"
+    },
+    {
+      "address": "0x4ed7c70F96B99c776995fB64377f0d4aB3B0e1C1",
+      "txHash": "0x9581a4d7c1a0a215d468d0a1fd39a6d637c29bd44255c6ed587f492c86d163d7",
+      "kind": "uups"
+    },
+    {
+      "address": "0x09635F643e140090A9A8Dcd712eD6285858ceBef",
+      "txHash": "0xeecbf8b0615be4a034bda484e53d0c6d156fac764c9a54ccdada7ef90d3fad83",
+      "kind": "uups"
+    },
+    {
+      "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+      "txHash": "0x47b98c01f81a61d8c101f6a06deb3601c079f2d4149a173b953a3a677bc62669",
+      "kind": "uups"
+    },
+    {
+      "address": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+      "txHash": "0x44445fbd9b4dd7647e43ea8225d97761caa3eeb84f9f78de9c578eaaeece0555",
+      "kind": "uups"
+    },
+    {
+      "address": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
+      "txHash": "0x84eaa3c8c2beb9d4333e379bcae514eef6a53050e2a27d392bda2f6ed89c7b6a",
+      "kind": "uups"
+    },
+    {
+      "address": "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318",
+      "txHash": "0x0e9ffd872e5a8e9c6414562607098e77966aef3770183f0505b59ff5c0f30e87",
+      "kind": "uups"
+    },
+    {
+      "address": "0x610178dA211FEF7D417bC0e6FeD39F05609AD788",
+      "txHash": "0xd5583c107473826f17a0591537cfa424c2ff965b208469d815bdc4a1a1a2d4f6",
+      "kind": "uups"
+    },
+    {
+      "address": "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e",
+      "txHash": "0x8d815e56f5408144d040790b2ecf487775769e0c9afb022861aeb4e607502455",
+      "kind": "uups"
+    },
+    {
+      "address": "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0",
+      "txHash": "0x76115b12894623c9dd6ace18ecd86bbee62c61a76418b550ebdfb2fd1378c1dc",
+      "kind": "uups"
+    },
+    {
+      "address": "0x0B306BF915C4d645ff596e518fAf3F9669b97016",
+      "txHash": "0xbb844d527ea85f050951a192e7b19e154e9cd6061c5beac6b2167024ead9e306",
+      "kind": "uups"
+    },
+    {
+      "address": "0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1",
+      "txHash": "0xe9f9f477fd07ca112f9689a8c27bf98354ad8d5c076f0ad4fa32cbedf40b99e1",
+      "kind": "uups"
+    },
+    {
+      "address": "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE",
+      "txHash": "0x9cc3ec119c0466b88a7073ebf02cbd8c0875879ca5e896380d323be6d62df32e",
+      "kind": "uups"
+    },
+    {
+      "address": "0x68B1D87F95878fE05B998F19b66F4baba5De1aed",
+      "txHash": "0x9cfa5888e810b71d042f9c43bada573b3560809f69cf7301644d6976f6fd9095",
+      "kind": "uups"
+    },
+    {
+      "address": "0x59b670e9fA9D0A427751Af201D676719a970857b",
+      "txHash": "0xa060d579b6483a83d8a659b46588dd7a7b19c9241d93387077ff938ead3c6f0b",
+      "kind": "uups"
+    },
+    {
+      "address": "0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44",
+      "txHash": "0x675298ad5b63c68f346e19823c6e44f84ed30dd1a56ec6a767ebfc8dbac94e7a",
+      "kind": "uups"
+    },
+    {
+      "address": "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f",
+      "txHash": "0x384fb7de6b2fe0c14864401c455da5127ac64e40ed0924ef4ce72e5266097e6d",
+      "kind": "uups"
+    },
+    {
+      "address": "0x4A679253410272dd5232B3Ff7cF5dbB88f295319",
+      "txHash": "0x60c04a71a1f300caf19c84a7bd4bcb36c6caba813229ccf9fa24f4718cde7371",
+      "kind": "uups"
+    },
+    {
+      "address": "0xc5a5C42992dECbae36851359345FE25997F5C42d",
+      "txHash": "0xbbdd2fa389c55616ee9a12e7412119ec2af89e6a0062ff86201b044371018a30",
+      "kind": "uups"
+    },
+    {
+      "address": "0xc3e53F4d16Ae77Db1c982e75a937B9f60FE63690",
+      "txHash": "0x0030d215878aac12f0ccb2f71c363757c4d99cb84e538a99b707f7712689e252",
+      "kind": "uups"
+    },
+    {
+      "address": "0x84eA74d481Ee0A5332c457a4d796187F6Ba67fEB",
+      "txHash": "0x4d900cac07258f17b4ff388d6ca880da544ee1cf707d32b20bf67c3791878346",
+      "kind": "uups"
+    },
+    {
+      "address": "0x9E545E3C0baAB3E08CdfD552C960A1050f373042",
+      "txHash": "0x3cf01c038aa0ba791ce89a62c78c3770dd4cb79812e41ef0bd0275471801e99c",
+      "kind": "uups"
+    },
+    {
+      "address": "0x851356ae760d987E095750cCeb3bC6014560891C",
+      "txHash": "0x8d7a532988286b318560fd93e4abe62e9f1a49fe79df3bb2ab92dc469edff572",
+      "kind": "uups"
+    },
+    {
+      "address": "0xf5059a5D33d5853360D16C683c16e67980206f36",
+      "txHash": "0x3968c4a887ed1843373c0c0359f3f2c0d3625f15c63d4aebda03e28e943bd432",
+      "kind": "uups"
+    },
+    {
+      "address": "0x95401dc811bb5740090279Ba06cfA8fcF6113778",
+      "txHash": "0xfd266d4c8ca3e448684cce1403f197b258a4042001c8ed4e606096cc983dd869",
+      "kind": "uups"
+    },
+    {
+      "address": "0x998abeb3E57409262aE5b751f60747921B33613E",
+      "txHash": "0xcc17ba5522f5882992e3db73b7d03e044dc9912b6c801537a92d43bae45a5533",
+      "kind": "uups"
+    },
+    {
+      "address": "0x99bbA657f2BbC93c02D617f8bA121cB8Fc104Acf",
+      "txHash": "0xfb19b570b7eac22472b963119aadc3c75f26862ce0ba7f08142f0ecd38ff1d40",
+      "kind": "uups"
+    },
+    {
+      "address": "0x0E801D84Fa97b50751Dbf25036d067dCf18858bF",
+      "txHash": "0x8c37b7c7644ad00775c1150116f1feb195b079e56a9529eb230368387c5eb8db",
+      "kind": "uups"
+    },
+    {
+      "address": "0x8f86403A4DE0BB5791fa46B8e795C547942fE4Cf",
+      "txHash": "0x7160d3cae9beb387e8cdb5579c313d46a8089296f27e1cf4536ce93b38afc247",
+      "kind": "uups"
+    },
+    {
+      "address": "0x9d4454B023096f34B160D6B654540c56A1F81688",
+      "txHash": "0xffd613394d56a974a908215c2d82964331d74553935ea1eb64d2b9d4ea223dc7",
+      "kind": "uups"
+    },
+    {
+      "address": "0x809d550fca64d94Bd9F66E60752A544199cfAC3D",
+      "txHash": "0x8111a2e7327ec1392539477b2b8a725f66057d60592188ce5bd2e477278fa777",
+      "kind": "uups"
+    },
+    {
+      "address": "0x4c5859f0F772848b2D91F1D83E2Fe57935348029",
+      "txHash": "0x2787cad8757ce9654dbd19768439bd019ea8250293dc96390f232cd550aaac89",
+      "kind": "uups"
+    },
+    {
+      "address": "0x1291Be112d480055DaFd8a610b7d1e203891C274",
+      "txHash": "0x88f3dcac822c88c9daa0ec2eae544aa9beb6d8512777d0598f4144815d8a7395",
+      "kind": "uups"
+    },
+    {
+      "address": "0x5f3f1dBD7B74C6B46e8c44f98792A1dAf8d69154",
+      "txHash": "0xa6db819320ec122a89fa10e542daa43875f6b39ae13a85150f2baf91681cb9b7",
+      "kind": "uups"
+    },
+    {
+      "address": "0x82e01223d51Eb87e16A03E24687EDF0F294da6f1",
+      "txHash": "0xf35d7a974b6bad1c7c63540a37d31e6bb9c05eca6aa4b5e3fa4f6f90658ad7bf",
+      "kind": "uups"
     }
   ],
   "impls": {
@@ -695,8 +885,8 @@
       }
     },
     "9b1ab2062f7ec65a78b14c613bd8b1c8ae5bd7d84ddbedc680467a7dca7ec561": {
-      "address": "0xB3BF80d17ED7Fc774591B531be8381d342BE5929",
-      "txHash": "0x9d976c4ad9b8764c50fe4d245ede16f3aa7332e81a249435158560c4a2d2f807",
+      "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "txHash": "0x03e7ab9f19c22b6992dd985f106f7a7abc9d5836e5b5ccbc7cffc7fb946b1a64",
       "layout": {
         "storage": [
           {
@@ -856,7 +1046,7 @@
             "label": "brooder",
             "offset": 0,
             "slot": "502",
-            "type": "t_mapping(t_uint256,t_struct(Brooder)15363_storage)",
+            "type": "t_mapping(t_uint256,t_struct(Brooder)15710_storage)",
             "contract": "BrooderNft",
             "src": "contracts/NFTs/BrooderNft.sol:20"
           },
@@ -918,7 +1108,7 @@
             "label": "mapping(uint256 => string)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_uint256,t_struct(Brooder)15363_storage)": {
+          "t_mapping(t_uint256,t_struct(Brooder)15710_storage)": {
             "label": "mapping(uint256 => struct BrooderNft.Brooder)",
             "numberOfBytes": "32"
           },
@@ -930,7 +1120,7 @@
             "label": "string",
             "numberOfBytes": "32"
           },
-          "t_struct(Brooder)15363_storage": {
+          "t_struct(Brooder)15710_storage": {
             "label": "struct BrooderNft.Brooder",
             "members": [
               {
@@ -972,15 +1162,15 @@
       }
     },
     "bffe2c132a8f3c2e3b641d363e14bc970b6dd768d7325f5fc47e484ba24419b8": {
-      "address": "0xde2aB74Ed084f87Ac9a2cC3bd37A0Abdf8de931C",
-      "txHash": "0x3aeb2c48108140546c996f40cdc1ac9e352adca2a0aeb860fc28581f0e331b1c",
+      "address": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+      "txHash": "0xc1cccd148c96f7c99965ddc681151cbc9ab443e129c21bf52c72bf64af260fe1",
       "layout": {
         "storage": [
           {
             "label": "royalties",
             "offset": 0,
             "slot": "0",
-            "type": "t_mapping(t_uint256,t_array(t_struct(Part)17906_storage)dyn_storage)",
+            "type": "t_mapping(t_uint256,t_array(t_struct(Part)18253_storage)dyn_storage)",
             "contract": "AbstractRoyalties",
             "src": "contracts/NFTs/rarible/AbstractRoyalties.sol:8"
           },
@@ -1245,7 +1435,7 @@
             "label": "egg",
             "offset": 0,
             "slot": "702",
-            "type": "t_mapping(t_uint256,t_struct(Egg)15718_storage)",
+            "type": "t_mapping(t_uint256,t_struct(Egg)16065_storage)",
             "contract": "EggBase",
             "src": "contracts/NFTs/EggBase.sol:8"
           },
@@ -1269,7 +1459,7 @@
             "label": "mafagafoContract",
             "offset": 0,
             "slot": "754",
-            "type": "t_contract(MafagafoAvatarNft)17741",
+            "type": "t_contract(MafagafoAvatarNft)18088",
             "contract": "EggNft",
             "src": "contracts/NFTs/EggNft.sol:18"
           },
@@ -1277,7 +1467,7 @@
             "label": "brooderContract",
             "offset": 0,
             "slot": "755",
-            "type": "t_contract(BrooderNft)15449",
+            "type": "t_contract(BrooderNft)15796",
             "contract": "EggNft",
             "src": "contracts/NFTs/EggNft.sol:19"
           },
@@ -1303,7 +1493,7 @@
             "label": "bytes32[]",
             "numberOfBytes": "32"
           },
-          "t_array(t_struct(Part)17906_storage)dyn_storage": {
+          "t_array(t_struct(Part)18253_storage)dyn_storage": {
             "label": "struct LibPart.Part[]",
             "numberOfBytes": "32"
           },
@@ -1339,11 +1529,11 @@
             "label": "bytes32",
             "numberOfBytes": "32"
           },
-          "t_contract(BrooderNft)15449": {
+          "t_contract(BrooderNft)15796": {
             "label": "contract BrooderNft",
             "numberOfBytes": "20"
           },
-          "t_contract(MafagafoAvatarNft)17741": {
+          "t_contract(MafagafoAvatarNft)18088": {
             "label": "contract MafagafoAvatarNft",
             "numberOfBytes": "20"
           },
@@ -1379,11 +1569,11 @@
             "label": "mapping(uint256 => address)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_uint256,t_array(t_struct(Part)17906_storage)dyn_storage)": {
+          "t_mapping(t_uint256,t_array(t_struct(Part)18253_storage)dyn_storage)": {
             "label": "mapping(uint256 => struct LibPart.Part[])",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_uint256,t_struct(Egg)15718_storage)": {
+          "t_mapping(t_uint256,t_struct(Egg)16065_storage)": {
             "label": "mapping(uint256 => struct EggBase.Egg)",
             "numberOfBytes": "32"
           },
@@ -1419,7 +1609,7 @@
             ],
             "numberOfBytes": "32"
           },
-          "t_struct(Egg)15718_storage": {
+          "t_struct(Egg)16065_storage": {
             "label": "struct EggBase.Egg",
             "members": [
               {
@@ -1473,7 +1663,7 @@
             ],
             "numberOfBytes": "256"
           },
-          "t_struct(Part)17906_storage": {
+          "t_struct(Part)18253_storage": {
             "label": "struct LibPart.Part",
             "members": [
               {
@@ -1551,15 +1741,15 @@
       }
     },
     "9e57b5e2b2a75cb813f1e23f6c4c459fc77e178338ab7d9d38f5b8ee44268f1c": {
-      "address": "0xe3c330f6416B22A123368B9EdC2303E2f9Ad7bE6",
-      "txHash": "0x5bab764d7028c2af19e580ffa12f19ed0d2c390b9fbce6da745e681911ff020b",
+      "address": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+      "txHash": "0xa67607133f6c415b6a254630671d8094bb77dec9da5a20a135d270dbbc99c10c",
       "layout": {
         "storage": [
           {
             "label": "royalties",
             "offset": 0,
             "slot": "0",
-            "type": "t_mapping(t_uint256,t_array(t_struct(Part)17906_storage)dyn_storage)",
+            "type": "t_mapping(t_uint256,t_array(t_struct(Part)18253_storage)dyn_storage)",
             "contract": "AbstractRoyalties",
             "src": "contracts/NFTs/rarible/AbstractRoyalties.sol:8"
           },
@@ -1824,7 +2014,7 @@
             "label": "mafagafo",
             "offset": 0,
             "slot": "702",
-            "type": "t_mapping(t_uint256,t_struct(Mafagafo)16711_storage)",
+            "type": "t_mapping(t_uint256,t_struct(Mafagafo)17058_storage)",
             "contract": "MafagafoAvatarBase",
             "src": "contracts/NFTs/MafagafoAvatarBase.sol:8"
           },
@@ -1840,7 +2030,7 @@
             "label": "eggContract",
             "offset": 0,
             "slot": "753",
-            "type": "t_contract(EggNft)16334",
+            "type": "t_contract(EggNft)16681",
             "contract": "MafagafoAvatarNft",
             "src": "contracts/NFTs/MafagafoAvatarNft.sol:21"
           },
@@ -1874,7 +2064,7 @@
             "label": "bytes32[]",
             "numberOfBytes": "32"
           },
-          "t_array(t_struct(Part)17906_storage)dyn_storage": {
+          "t_array(t_struct(Part)18253_storage)dyn_storage": {
             "label": "struct LibPart.Part[]",
             "numberOfBytes": "32"
           },
@@ -1910,7 +2100,7 @@
             "label": "bytes32",
             "numberOfBytes": "32"
           },
-          "t_contract(EggNft)16334": {
+          "t_contract(EggNft)16681": {
             "label": "contract EggNft",
             "numberOfBytes": "20"
           },
@@ -1946,11 +2136,11 @@
             "label": "mapping(uint256 => address)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_uint256,t_array(t_struct(Part)17906_storage)dyn_storage)": {
+          "t_mapping(t_uint256,t_array(t_struct(Part)18253_storage)dyn_storage)": {
             "label": "mapping(uint256 => struct LibPart.Part[])",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_uint256,t_struct(Mafagafo)16711_storage)": {
+          "t_mapping(t_uint256,t_struct(Mafagafo)17058_storage)": {
             "label": "mapping(uint256 => struct MafagafoAvatarBase.Mafagafo)",
             "numberOfBytes": "32"
           },
@@ -1986,7 +2176,7 @@
             ],
             "numberOfBytes": "32"
           },
-          "t_struct(Mafagafo)16711_storage": {
+          "t_struct(Mafagafo)17058_storage": {
             "label": "struct MafagafoAvatarBase.Mafagafo",
             "members": [
               {
@@ -2046,7 +2236,7 @@
             ],
             "numberOfBytes": "160"
           },
-          "t_struct(Part)17906_storage": {
+          "t_struct(Part)18253_storage": {
             "label": "struct LibPart.Part",
             "members": [
               {
@@ -2123,6 +2313,165 @@
           "t_uint96": {
             "label": "uint96",
             "numberOfBytes": "12"
+          }
+        }
+      }
+    },
+    "6ffae462b972dde01b98cb129aacd5dd94161b9f69e8aabd091d7e0b19d65973": {
+      "address": "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6",
+      "txHash": "0x36ed7ed0fe61ff257ca5484d524f628168c78a4ca13bed2a7205176b962e7eb3",
+      "layout": {
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:62",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:67"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol:211"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol:107"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_paused",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_bool",
+            "contract": "PausableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol:29"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "PausableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol:102"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:87"
+          },
+          {
+            "label": "_status",
+            "offset": 0,
+            "slot": "251",
+            "type": "t_uint256",
+            "contract": "ReentrancyGuardUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol:38"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "252",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "ReentrancyGuardUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol:74"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "301",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "WithdrawableOwnableUpgradeable",
+            "src": "contracts/utils/WithdrawableOwnableUpgradeable.sol:112"
+          },
+          {
+            "label": "avatarContract",
+            "offset": 0,
+            "slot": "351",
+            "type": "t_contract(MafagafoAvatarNft)18088",
+            "contract": "Burner",
+            "src": "contracts/MafagoldAction/Burner.sol:18"
+          },
+          {
+            "label": "totalBurned",
+            "offset": 0,
+            "slot": "352",
+            "type": "t_uint256",
+            "contract": "Burner",
+            "src": "contracts/MafagoldAction/Burner.sol:21"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "353",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "Burner",
+            "src": "contracts/MafagoldAction/Burner.sol:69"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_contract(MafagafoAvatarNft)18088": {
+            "label": "contract MafagafoAvatarNft",
+            "numberOfBytes": "20"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
           }
         }
       }
