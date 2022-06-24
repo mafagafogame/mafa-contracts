@@ -15,14 +15,14 @@ contract Burner is Initializable, UUPSUpgradeable, PausableUpgradeable, Withdraw
     using SafeMathUpgradeable for uint256;
     using AddressUpgradeable for address;
 
-    MafagafoAvatarNft public avatarContract;
+    MafagafoAvatarNft public mafagafoContract;
 
-    uint256 public constant BURN_LIMIT = 16000;
+    uint256 public constant BURN_LIMIT = 8000;
     uint256 public totalBurned;
 
-    function initialize(address _avatarContract) public initializer {
-        require(_avatarContract.isContract(), "Avatar NFT address must be a contract");
-        avatarContract = MafagafoAvatarNft(_avatarContract);
+    function initialize(address _mafagafoContract) public initializer {
+        require(_mafagafoContract.isContract(), "Avatar NFT address must be a contract");
+        mafagafoContract = MafagafoAvatarNft(_mafagafoContract);
         totalBurned = 0;
 
         __Pausable_init();
@@ -32,20 +32,24 @@ contract Burner is Initializable, UUPSUpgradeable, PausableUpgradeable, Withdraw
 
     function burnMafagolds(address wallet, uint256[] memory tokenIds) external virtual whenNotPaused {
         require(totalBurned + tokenIds.length <= BURN_LIMIT, "Burn limit exceeded");
-        require(tokenIds.length % 2 == 0, "Amount of mafagolfs must be even");
+        require(tokenIds.length > 0, "No mafagolds to burn");
+        require(tokenIds.length % 3 == 0, "Amount of mafagolds must be multiple of 3");
 
         address sender = _msgSender();
 
-        require(avatarContract.isApprovedForAll(sender, address(this)), "Check the approval of your avatars");
+        require(mafagafoContract.isApprovedForAll(sender, address(this)), "Check the approval of your avatars");
 
         for (uint256 i = 0; i < tokenIds.length; i++) {
-            require(avatarContract.ownerOf(tokenIds[i]) == sender, "You have to own this avatar to be able to burn it");
+            require(
+                mafagafoContract.ownerOf(tokenIds[i]) == sender,
+                "You have to own this avatar to be able to burn it"
+            );
 
-            (uint16 mafaVersion, , uint32 generation, , , , , , ) = avatarContract.getMafagafo(tokenIds[i]);
+            (uint16 mafaVersion, , uint32 generation, , , , , , ) = mafagafoContract.getMafagafo(tokenIds[i]);
             require(mafaVersion == 0, "You can only burn avatars from version 0");
             require(generation == 1, "You can only burn avatars from generation 1");
 
-            avatarContract.burn(tokenIds[i]);
+            mafagafoContract.burn(tokenIds[i]);
         }
 
         totalBurned += tokenIds.length;
@@ -71,21 +75,25 @@ contract Burner is Initializable, UUPSUpgradeable, PausableUpgradeable, Withdraw
 
 contract BurnerMock is Burner {
     function burnMafagolds(address wallet, uint256[] memory tokenIds) external override {
-        require(totalBurned + tokenIds.length <= 500, "Burn limit exceeded");
-        require(tokenIds.length % 2 == 0, "Amount of mafagolfs must be even");
+        require(totalBurned + tokenIds.length <= 510, "Burn limit exceeded");
+        require(tokenIds.length > 0, "No mafagolds to burn");
+        require(tokenIds.length % 3 == 0, "Amount of mafagolds must be multiple of 3");
 
         address sender = _msgSender();
 
-        require(avatarContract.isApprovedForAll(sender, address(this)), "Check the approval of your avatars");
+        require(mafagafoContract.isApprovedForAll(sender, address(this)), "Check the approval of your avatars");
 
         for (uint256 i = 0; i < tokenIds.length; i++) {
-            require(avatarContract.ownerOf(tokenIds[i]) == sender, "You have to own this avatar to be able to burn it");
+            require(
+                mafagafoContract.ownerOf(tokenIds[i]) == sender,
+                "You have to own this avatar to be able to burn it"
+            );
 
-            (uint16 mafaVersion, , uint32 generation, , , , , , ) = avatarContract.getMafagafo(tokenIds[i]);
+            (uint16 mafaVersion, , uint32 generation, , , , , , ) = mafagafoContract.getMafagafo(tokenIds[i]);
             require(mafaVersion == 0, "You can only burn avatars from version 0");
             require(generation == 1, "You can only burn avatars from generation 1");
 
-            avatarContract.burn(tokenIds[i]);
+            mafagafoContract.burn(tokenIds[i]);
         }
 
         totalBurned += tokenIds.length;
