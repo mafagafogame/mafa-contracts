@@ -5,35 +5,33 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 
 import "../NFTs/MafagafoAvatarNft.sol";
 import "../utils/WithdrawableOwnableUpgradeable.sol";
 
 contract Burner is Initializable, UUPSUpgradeable, PausableUpgradeable, WithdrawableOwnableUpgradeable {
-    using SafeMathUpgradeable for uint256;
     using AddressUpgradeable for address;
 
     MafagafoAvatarNft public mafagafoContract;
 
-    uint256 public constant BURN_LIMIT = 8000;
-    uint256 public totalBurned;
+    uint256 public constant MINT_LIMIT = 8000;
+    uint256 public totalMinted;
 
     function initialize(address _mafagafoContract) public initializer {
         require(_mafagafoContract.isContract(), "Avatar NFT address must be a contract");
         mafagafoContract = MafagafoAvatarNft(_mafagafoContract);
-        totalBurned = 0;
+        totalMinted = 0;
 
         __Pausable_init();
         __WithdrawableOwnable_init();
         __UUPSUpgradeable_init();
     }
 
-    function burnMafagolds(address wallet, uint256[] memory tokenIds) external virtual whenNotPaused {
-        require(totalBurned + tokenIds.length <= BURN_LIMIT, "Burn limit exceeded");
+    function burnMafagolds(uint256[] memory tokenIds) external virtual whenNotPaused {
         require(tokenIds.length > 0, "No mafagolds to burn");
         require(tokenIds.length % 3 == 0, "Amount of mafagolds must be multiple of 3");
+        require(totalMinted + tokenIds.length / 3 <= MINT_LIMIT, "Mint limit exceeded");
 
         address sender = _msgSender();
 
@@ -52,9 +50,30 @@ contract Burner is Initializable, UUPSUpgradeable, PausableUpgradeable, Withdraw
             mafagafoContract.burn(tokenIds[i]);
         }
 
-        totalBurned += tokenIds.length;
+        uint256 amountToMint = tokenIds.length / 3;
 
-        emit MafagoldsBurned(sender, wallet, tokenIds.length, totalBurned);
+        require(mintEgg(sender, amountToMint), "Failed to mint eggs");
+
+        emit MafagoldsBurned(sender, tokenIds.length, totalMinted);
+    }
+
+    function mintEgg(address sender, uint256 amount) internal virtual returns (bool) {
+        for (uint256 i = 0; i < amount; i++) {
+            mafagafoContract.mint(sender, mafagafoContract.mafaVersion(), bytes32(_random()), 2, 0, 0, 0x00000000);
+
+            totalMinted += 1;
+        }
+
+        return true;
+    }
+
+    /**
+     * @dev Generate a random number between 8 and 15
+     */
+    function _random() internal view virtual returns (uint256 randomNumber) {
+        randomNumber = uint256(keccak256(abi.encodePacked(block.difficulty, _msgSender(), totalMinted))) % 8;
+
+        randomNumber += 8;
     }
 
     function onERC721Received(
@@ -68,14 +87,14 @@ contract Burner is Initializable, UUPSUpgradeable, PausableUpgradeable, Withdraw
 
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
-    event MafagoldsBurned(address indexed burner, address indexed wallet, uint256 indexed amount, uint256 totalBurned);
+    event MafagoldsBurned(address indexed burner, uint256 indexed amount, uint256 indexed totalMinted);
 
     uint256[50] private __gap;
 }
 
 contract BurnerMock is Burner {
-    function burnMafagolds(address wallet, uint256[] memory tokenIds) external override {
-        require(totalBurned + tokenIds.length <= 510, "Burn limit exceeded");
+    function burnMafagolds(uint256[] memory tokenIds) external override {
+        require(totalMinted + tokenIds.length / 3 <= 100, "Mint limit exceeded");
         require(tokenIds.length > 0, "No mafagolds to burn");
         require(tokenIds.length % 3 == 0, "Amount of mafagolds must be multiple of 3");
 
@@ -96,8 +115,10 @@ contract BurnerMock is Burner {
             mafagafoContract.burn(tokenIds[i]);
         }
 
-        totalBurned += tokenIds.length;
+        uint256 amountToMint = tokenIds.length / 3;
 
-        emit MafagoldsBurned(sender, wallet, tokenIds.length, totalBurned);
+        require(mintEgg(sender, amountToMint), "Failed to mint eggs");
+
+        emit MafagoldsBurned(sender, tokenIds.length, totalMinted);
     }
 }

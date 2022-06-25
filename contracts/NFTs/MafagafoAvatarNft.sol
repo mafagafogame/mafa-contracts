@@ -11,8 +11,6 @@ import "./MafagafoAvatarBase.sol";
 import "./BaseNft.sol";
 import "./EggNft.sol";
 
-import "hardhat/console.sol";
-
 contract MafagafoAvatarNft is MafagafoAvatarBase {
     using SafeMathUpgradeable for uint256;
     using AddressUpgradeable for address;
