@@ -15,7 +15,7 @@ contract Burner is Initializable, UUPSUpgradeable, PausableUpgradeable, Withdraw
 
     MafagafoAvatarNft public mafagafoContract;
 
-    uint256 public constant MINT_LIMIT = 8000;
+    uint256 public constant MINT_LIMIT = 10000;
     uint256 public totalMinted;
 
     function initialize(address _mafagafoContract) public initializer {
