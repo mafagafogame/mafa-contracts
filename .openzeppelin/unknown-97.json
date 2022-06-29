@@ -135,6 +135,11 @@
       "address": "0x2041bC199Acd1ddd7c05b45e32Dff02DF518aD1D",
       "txHash": "0x33e3eeec63ff2e15419fdc042d5ab9864fc92de0b1e1e80e14d6819f66fafb68",
       "kind": "uups"
+    },
+    {
+      "address": "0xd5b3E562a750e15AD9847a3BDdcF6906A6939e69",
+      "txHash": "0xf22d30f13e5825f794e74d5c3bab840233cb6895d1c1d936d6232db7022eb835",
+      "kind": "uups"
     }
   ],
   "impls": {
@@ -15090,6 +15095,165 @@
     "4ee9731cf1bbf84bea06c3d06736389f2e56681d4cc2c7164a88ed721eafc830": {
       "address": "0x45F4c9F32882df60c8709B36b9AD77bb5663a79C",
       "txHash": "0x41d257dc8f1ed1d6ffc9a01c4672d7f1398206a7d0479cc8f5343d913cec2cde",
+      "layout": {
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:62",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:67"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol:211"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol:107"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_paused",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_bool",
+            "contract": "PausableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol:29"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "PausableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol:102"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:87"
+          },
+          {
+            "label": "_status",
+            "offset": 0,
+            "slot": "251",
+            "type": "t_uint256",
+            "contract": "ReentrancyGuardUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol:38"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "252",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "ReentrancyGuardUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol:74"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "301",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "WithdrawableOwnableUpgradeable",
+            "src": "contracts/utils/WithdrawableOwnableUpgradeable.sol:112"
+          },
+          {
+            "label": "mafagafoContract",
+            "offset": 0,
+            "slot": "351",
+            "type": "t_contract(MafagafoAvatarNft)18487",
+            "contract": "Burner",
+            "src": "contracts/MafagoldAction/Burner.sol:16"
+          },
+          {
+            "label": "totalMinted",
+            "offset": 0,
+            "slot": "352",
+            "type": "t_uint256",
+            "contract": "Burner",
+            "src": "contracts/MafagoldAction/Burner.sol:19"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "353",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "Burner",
+            "src": "contracts/MafagoldAction/Burner.sol:125"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_contract(MafagafoAvatarNft)18487": {
+            "label": "contract MafagafoAvatarNft",
+            "numberOfBytes": "20"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
+    },
+    "151bd95de90464048be5851de1ac962a23e6a70e55902f3d2c5b07749d04b6c9": {
+      "address": "0xd0BA6604A4312F8C0D58406f91E32CdB891156Ed",
+      "txHash": "0x4e5cccdf7f7a2138615c2c61c8e21498380f935712c62751cb10b36d029e423c",
       "layout": {
         "storage": [
           {

@@ -57,6 +57,72 @@ describe("Unit tests", function () {
       await mafagafoAvatar.grantRole(ethers.utils.id("MINTER_ROLE"), burner.address);
     });
 
+    describe("List Mafaegg", async function () {
+      it("should list all mafaeggs", async function () {
+        await mafagafoAvatar.multiMint(
+          accounts[1].address,
+          0,
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+          0,
+          0,
+          0,
+          0x00000000,
+          20,
+        );
+
+        await mafagafoAvatar.multiMint(
+          accounts[1].address,
+          0,
+          "0x0000000000000000000000000000000000000000000000000000000000000008",
+          2,
+          0,
+          0,
+          0x00000000,
+          20,
+        );
+
+        await mafagafoAvatar.multiMint(
+          accounts[1].address,
+          0,
+          "0x0000000000000000000000000000000000000000000000000000000000000007",
+          1,
+          0,
+          0,
+          0x10000000,
+          20,
+        );
+
+        const eggs = (await burner.connect(accounts[1]).listMafaEggs(accounts[1].address)).map(id =>
+          ethers.BigNumber.from(id).toNumber(),
+        );
+
+        expect(eggs).to.eql(range(21, 40));
+      });
+
+      it("should list mafaeggs that have been minted by burner contract", async function () {
+        await mafagafoAvatar.multiMint(
+          accounts[1].address,
+          0,
+          "0x0000000000000000000000000000000000000000000000000000000000000007",
+          1,
+          0,
+          0,
+          0x10000000,
+          30,
+        );
+
+        await mafagafoAvatar.connect(accounts[1]).setApprovalForAll(burner.address, true);
+
+        await expect(burner.connect(accounts[1]).burnMafagolds(range(1, 30))).to.emit(burner, "MafagoldsBurned");
+
+        const eggs = (await burner.connect(accounts[1]).listMafaEggs(accounts[1].address)).map(id =>
+          ethers.BigNumber.from(id).toNumber(),
+        );
+
+        expect(eggs).to.eql(range(31, 40));
+      });
+    });
+
     describe("Mafagold burn", async function () {
       beforeEach(async function () {
         await mafagafoAvatar.multiMint(

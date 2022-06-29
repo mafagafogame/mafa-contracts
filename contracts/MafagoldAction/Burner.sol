@@ -108,6 +108,27 @@ contract Burner is Initializable, UUPSUpgradeable, PausableUpgradeable, Withdraw
         randomNumber += 8;
     }
 
+    function listMafaEggs(address adr) external view returns (uint256[] memory) {
+        uint256[] memory mineIds = mafagafoContract.listNftsOwnedBy(adr);
+        uint256 count = 0;
+        for (uint256 i = 0; i < mineIds.length; i++) {
+            (, , uint32 generation, , , , , , ) = mafagafoContract.getMafagafo(mineIds[i]);
+            if (generation == 2) {
+                count++;
+            }
+        }
+        uint256[] memory ret = new uint256[](count);
+        count = 0;
+        for (uint256 i = 0; i < mineIds.length; i++) {
+            (, , uint32 generation, , , , , , ) = mafagafoContract.getMafagafo(mineIds[i]);
+            if (generation == 2) {
+                ret[count] = mineIds[i];
+                count++;
+            }
+        }
+        return ret;
+    }
+
     function onERC721Received(
         address,
         address,
