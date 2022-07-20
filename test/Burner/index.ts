@@ -26,7 +26,7 @@ describe("Unit tests", function () {
     accounts = await ethers.getSigners();
   });
 
-  describe.only("Burner", function () {
+  describe("Burner", function () {
     beforeEach(async function () {
       const brooderFactory = <BrooderNft__factory>await ethers.getContractFactory("BrooderNft");
       brooder = <BrooderNft>await upgrades.deployProxy(brooderFactory, [], {
