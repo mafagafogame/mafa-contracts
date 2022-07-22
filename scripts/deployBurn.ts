@@ -29,6 +29,10 @@ async function main() {
   burner = await burner.deployed();
 
   console.log("Deployed burner at:", burner.address);
+
+  await mafagafoAvatar.grantRole(ethers.utils.id("MINTER_ROLE"), burner.address);
+
+  console.log("Minter role granted to burner");
 }
 
 // We recommend this pattern to be able to use async/await everywhere
