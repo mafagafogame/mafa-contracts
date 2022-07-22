@@ -149,6 +149,14 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Ownable__factory>;
     getContractFactory(
+      name: "IERC2981",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC2981__factory>;
+    getContractFactory(
+      name: "ERC2981",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ERC2981__factory>;
+    getContractFactory(
       name: "IERC1155",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC1155__factory>;
@@ -233,6 +241,14 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.BurnerMock__factory>;
     getContractFactory(
+      name: "Mafagafo",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Mafagafo__factory>;
+    getContractFactory(
+      name: "Minter",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Minter__factory>;
+    getContractFactory(
       name: "BaseERC1155",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.BaseERC1155__factory>;
@@ -300,6 +316,18 @@ declare module "hardhat/types/runtime" {
       name: "WithdrawableOwnableUpgradeable",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.WithdrawableOwnableUpgradeable__factory>;
+    getContractFactory(
+      name: "ERC721AIERC721ReceiverUpgradeable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ERC721AIERC721ReceiverUpgradeable__factory>;
+    getContractFactory(
+      name: "ERC721AUpgradeable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ERC721AUpgradeable__factory>;
+    getContractFactory(
+      name: "IERC721AUpgradeable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC721AUpgradeable__factory>;
     getContractFactory(
       name: "ERC721AIERC721Receiver",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -484,6 +512,16 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.Ownable>;
     getContractAt(
+      name: "IERC2981",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC2981>;
+    getContractAt(
+      name: "ERC2981",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ERC2981>;
+    getContractAt(
       name: "IERC1155",
       address: string,
       signer?: ethers.Signer
@@ -589,6 +627,16 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.BurnerMock>;
     getContractAt(
+      name: "Mafagafo",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.Mafagafo>;
+    getContractAt(
+      name: "Minter",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.Minter>;
+    getContractAt(
       name: "BaseERC1155",
       address: string,
       signer?: ethers.Signer
@@ -673,6 +721,21 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.WithdrawableOwnableUpgradeable>;
+    getContractAt(
+      name: "ERC721AIERC721ReceiverUpgradeable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ERC721AIERC721ReceiverUpgradeable>;
+    getContractAt(
+      name: "ERC721AUpgradeable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ERC721AUpgradeable>;
+    getContractAt(
+      name: "IERC721AUpgradeable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC721AUpgradeable>;
     getContractAt(
       name: "ERC721AIERC721Receiver",
       address: string,
