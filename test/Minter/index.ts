@@ -86,11 +86,27 @@ describe.only("Unit tests", function () {
         const proof = merkleTree.getHexProof(leaf);
 
         // Attempt to claim and verify success
-        await expect(minter.claim1(users[3].address, users[3].amount, proof))
+        await expect(minter.claim1(users[3].address, users[3].amount, users[3].amount, proof))
           .to.emit(minter, "Claimed")
           .withArgs(users[3].address, users[3].amount);
 
         expect(await mafagafo.balanceOf(users[3].address)).to.equal(users[3].amount);
+      });
+
+      it("should be able to claim multiple times if totalClaimed is less than totalQuantity", async function () {
+        const leaf = elements[3];
+        const proof = merkleTree.getHexProof(leaf);
+
+        for (let i = 0; i < users[3].amount; i++) {
+          await expect(minter.claim1(users[3].address, 1, users[3].amount, proof))
+            .to.emit(minter, "Claimed")
+            .withArgs(users[3].address, 1);
+          expect(await mafagafo.balanceOf(users[3].address)).to.equal(i + 1);
+        }
+
+        await expect(minter.claim1(users[3].address, 1, users[3].amount, proof)).to.be.revertedWith(
+          `AlreadyClaimed("${users[3].address}")`,
+        );
       });
 
       it("should revert for invalid amount or address", async function () {
@@ -98,24 +114,31 @@ describe.only("Unit tests", function () {
         const proof = merkleTree.getHexProof(leaf);
 
         // random amount
-        await expect(minter.claim1(users[3].address, 5000, proof)).to.be.revertedWith("InvalidProof()");
+        await expect(minter.claim1(users[3].address, 5000, 5000, proof)).to.be.revertedWith("InvalidProof()");
+        await expect(minter.claim1(users[3].address, 100, users[3].amount, proof)).to.be.revertedWith(
+          `AlreadyClaimed("${users[3].address}")`,
+        );
 
         // random address
-        await expect(minter.claim1(users[2].address, users[3].amount, proof)).to.be.revertedWith("InvalidProof()");
+        await expect(minter.claim1(users[2].address, users[3].amount, users[3].amount, proof)).to.be.revertedWith(
+          "InvalidProof()",
+        );
       });
 
       it("should revert for invalid proof", async function () {
         // Attempt to claim and verify success
-        await expect(minter.claim1(users[3].address, users[3].amount, [])).to.be.revertedWith("InvalidProof()");
+        await expect(minter.claim1(users[3].address, users[3].amount, users[3].amount, [])).to.be.revertedWith(
+          "InvalidProof()",
+        );
       });
 
       it("should revert if user has already claimed", async function () {
         const leaf = elements[3];
         const proof = merkleTree.getHexProof(leaf);
 
-        await minter.claim1(users[3].address, users[3].amount, proof);
+        await minter.claim1(users[3].address, users[3].amount, users[3].amount, proof);
 
-        await expect(minter.claim1(users[3].address, users[3].amount, proof)).to.be.revertedWith(
+        await expect(minter.claim1(users[3].address, users[3].amount, users[3].amount, proof)).to.be.revertedWith(
           `AlreadyClaimed("${users[3].address}")`,
         );
       });

@@ -20,8 +20,8 @@ contract Minter is Initializable, OwnableUpgradeable, UUPSUpgradeable {
 
     Mafagafo public mafagafo;
 
-    mapping(address => bool) public claimed;
-    mapping(address => bool) public claimed2;
+    mapping(address => uint256) public totalClaimed;
+    mapping(address => uint256) public totalClaimed2;
 
     error AlreadyClaimed(address account);
     error InvalidProof();
@@ -84,16 +84,16 @@ contract Minter is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     function claim1(
         address account,
         uint256 quantity,
+        uint256 totalQuantity,
         bytes32[] calldata merkleProof
     ) external {
-        if (claimed[account]) revert AlreadyClaimed(account);
-
         // Verify the merkle proof.
-        bytes32 node = keccak256(abi.encodePacked(account, quantity));
+        bytes32 node = keccak256(abi.encodePacked(account, totalQuantity));
 
         if (!MerkleProofUpgradeable.verify(merkleProof, merkleRoot1, node)) revert InvalidProof();
+        if (totalClaimed[account] + quantity > totalQuantity) revert AlreadyClaimed(account);
 
-        claimed[account] = true;
+        totalClaimed[account] += quantity;
 
         mafagafo.safeMint(account, quantity);
 
@@ -105,8 +105,8 @@ contract Minter is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         uint256 quantity,
         bytes32[] calldata merkleProof
     ) external payable {
-        if (claimed2[account]) revert AlreadyClaimed(account);
         if (quantity > 3 || quantity == 0) revert QuantityError(quantity);
+        if (totalClaimed2[account] + quantity > 3) revert AlreadyClaimed(account);
         uint256 _firstAmount = firstAmount * quantity;
         uint256 _secondAmount = secondAmount * quantity;
         if (msg.value != _firstAmount + _secondAmount) revert PriceMismatch(msg.value, _firstAmount + _secondAmount);
@@ -116,7 +116,7 @@ contract Minter is Initializable, OwnableUpgradeable, UUPSUpgradeable {
 
         if (!MerkleProofUpgradeable.verify(merkleProof, merkleRoot2, node)) revert InvalidProof();
 
-        claimed2[account] = true;
+        totalClaimed2[account] += quantity;
 
         (bool firstSent, ) = firstReceiver.call{ value: _firstAmount }("");
         if (!firstSent) revert TransferError();
