@@ -8,7 +8,7 @@ import keccak256 from "keccak256";
 import { MerkleTree } from "merkletreejs";
 import { expect } from "chai";
 
-describe.only("Unit tests", function () {
+describe("Unit tests", function () {
   let mafagafo: Mafagafo;
   let minter: Minter;
   const users: {
@@ -57,6 +57,7 @@ describe.only("Unit tests", function () {
           kind: "uups",
         },
       );
+      await mafagafo.deployed();
 
       const minterFactory = <Minter__factory>await ethers.getContractFactory("Minter");
       minter = <Minter>await upgrades.deployProxy(
@@ -67,8 +68,9 @@ describe.only("Unit tests", function () {
           mafagafo.address,
           accounts[2].address,
           accounts[3].address,
-          utils.parseEther("0.07"),
-          utils.parseEther("0.03"),
+          utils.parseEther("0.1"),
+          utils.parseEther("0.29"),
+          utils.parseEther("0.45"),
         ],
         {
           initializer: "initialize",
@@ -168,16 +170,65 @@ describe.only("Unit tests", function () {
         leaf = elements2[4];
         proof = merkleTree2.getHexProof(leaf);
 
-        await expect(minter.claim2(users2[4].address, 2, proof, { value: utils.parseEther("0.2") }))
+        await expect(minter.claim2(users2[4].address, 3, proof, { value: utils.parseEther("0.29") }))
           .to.emit(minter, "Claimed")
-          .withArgs(users2[4].address, 2);
+          .withArgs(users2[4].address, 3);
+
+        expect(await mafagafo.balanceOf(users2[4].address)).to.equal(3);
+        expect(await mafagafo.provider.getBalance(accounts[2].address)).to.equal(
+          previousAccount2Balance.add(utils.parseEther("0.07").add(utils.parseEther("0.203"))),
+        );
+        expect(await mafagafo.provider.getBalance(accounts[3].address)).to.equal(
+          previousAccount3Balance.add(utils.parseEther("0.03").add(utils.parseEther("0.087"))),
+        );
 
         leaf = elements2[5];
         proof = merkleTree2.getHexProof(leaf);
 
-        await expect(minter.claim2(users2[5].address, 3, proof, { value: utils.parseEther("0.3") }))
+        await expect(minter.claim2(users2[5].address, 5, proof, { value: utils.parseEther("0.45") }))
           .to.emit(minter, "Claimed")
-          .withArgs(users2[5].address, 3);
+          .withArgs(users2[5].address, 5);
+
+        expect(await mafagafo.balanceOf(users2[5].address)).to.equal(5);
+        expect(await mafagafo.provider.getBalance(accounts[2].address)).to.equal(
+          previousAccount2Balance.add(
+            utils.parseEther("0.07").add(utils.parseEther("0.203")).add(utils.parseEther("0.315")),
+          ),
+        );
+        expect(await mafagafo.provider.getBalance(accounts[3].address)).to.equal(
+          previousAccount3Balance.add(
+            utils.parseEther("0.03").add(utils.parseEther("0.087")).add(utils.parseEther("0.135")),
+          ),
+        );
+      });
+
+      it("should revert for invalid options", async function () {
+        const leaf = elements2[3];
+        const proof = merkleTree2.getHexProof(leaf);
+
+        await minter.setFirstOption(false);
+
+        await expect(minter.claim2(users2[3].address, 1, proof, { value: utils.parseEther("0.1") })).to.be.revertedWith(
+          "InvalidOption()",
+        );
+
+        await minter.setSecondOption(false);
+
+        await expect(
+          minter.claim2(users2[3].address, 3, proof, { value: utils.parseEther("0.29") }),
+        ).to.be.revertedWith("InvalidOption()");
+
+        await minter.setThirdOption(false);
+
+        await expect(
+          minter.claim2(users2[3].address, 5, proof, { value: utils.parseEther("0.45") }),
+        ).to.be.revertedWith("InvalidOption()");
+
+        await minter.setFirstOption(true);
+
+        await expect(minter.claim2(users2[3].address, 1, proof, { value: utils.parseEther("0.1") }))
+          .to.emit(minter, "Claimed")
+          .withArgs(users2[3].address, 1);
       });
 
       it("should revert for invalid address", async function () {
@@ -185,9 +236,9 @@ describe.only("Unit tests", function () {
         const proof = merkleTree2.getHexProof(leaf);
 
         // random address
-        await expect(minter.claim2(users2[2].address, 3, proof, { value: utils.parseEther("0.3") })).to.be.revertedWith(
-          "InvalidProof()",
-        );
+        await expect(
+          minter.claim2(users2[2].address, 3, proof, { value: utils.parseEther("0.29") }),
+        ).to.be.revertedWith("InvalidProof()");
       });
 
       it("should revert for invalid quantity", async function () {
@@ -196,6 +247,10 @@ describe.only("Unit tests", function () {
 
         await expect(minter.claim2(users2[3].address, 0, proof, { value: utils.parseEther("0.1") })).to.be.revertedWith(
           "QuantityError(0)",
+        );
+
+        await expect(minter.claim2(users2[3].address, 2, proof, { value: utils.parseEther("0.2") })).to.be.revertedWith(
+          "QuantityError(2)",
         );
 
         await expect(minter.claim2(users2[3].address, 4, proof, { value: utils.parseEther("0.4") })).to.be.revertedWith(
@@ -225,17 +280,17 @@ describe.only("Unit tests", function () {
         const leaf = elements2[3];
         const proof = merkleTree2.getHexProof(leaf);
 
-        await expect(minter.claim2(users2[3].address, 1, proof, { value: utils.parseEther("0.3") })).to.be.revertedWith(
-          "PriceMismatch(300000000000000000, 100000000000000000)",
-        );
+        await expect(
+          minter.claim2(users2[3].address, 1, proof, { value: utils.parseEther("0.09") }),
+        ).to.be.revertedWith("PriceMismatch(90000000000000000, 100000000000000000)");
 
-        await expect(minter.claim2(users2[3].address, 2, proof, { value: utils.parseEther("0.1") })).to.be.revertedWith(
-          "PriceMismatch(100000000000000000, 200000000000000000)",
-        );
+        await expect(
+          minter.claim2(users2[3].address, 3, proof, { value: utils.parseEther("0.28") }),
+        ).to.be.revertedWith("PriceMismatch(280000000000000000, 290000000000000000)");
 
-        await expect(minter.claim2(users2[3].address, 3, proof, { value: utils.parseEther("0.2") })).to.be.revertedWith(
-          "PriceMismatch(200000000000000000, 300000000000000000)",
-        );
+        await expect(
+          minter.claim2(users2[3].address, 5, proof, { value: utils.parseEther("0.44") }),
+        ).to.be.revertedWith("PriceMismatch(440000000000000000, 450000000000000000)");
       });
     });
   });

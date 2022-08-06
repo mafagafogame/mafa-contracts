@@ -15,8 +15,13 @@ contract Minter is Initializable, OwnableUpgradeable, UUPSUpgradeable {
 
     address public firstReceiver;
     address public secondReceiver;
-    uint256 public firstAmount;
-    uint256 public secondAmount;
+    uint256 public firstOptionAmount;
+    uint256 public secondOptionAmount;
+    uint256 public thirdOptionAmount;
+
+    bool public isFirstOptionOn;
+    bool public isSecondOptionOn;
+    bool public isThirdOptionOn;
 
     Mafagafo public mafagafo;
 
@@ -28,6 +33,7 @@ contract Minter is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     error PriceMismatch(uint256 value, uint256 price);
     error QuantityError(uint256 quantity);
     error TransferError();
+    error InvalidOption();
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -40,8 +46,9 @@ contract Minter is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         address _mafagafo,
         address _firstReceiver,
         address _secondReceiver,
-        uint256 _firstAmount,
-        uint256 _secondAmount
+        uint256 _firstOptionAmount,
+        uint256 _secondOptionAmount,
+        uint256 _thirdOptionAmount
     ) public initializer {
         __Ownable_init();
         __UUPSUpgradeable_init();
@@ -51,8 +58,13 @@ contract Minter is Initializable, OwnableUpgradeable, UUPSUpgradeable {
 
         firstReceiver = _firstReceiver;
         secondReceiver = _secondReceiver;
-        firstAmount = _firstAmount;
-        secondAmount = _secondAmount;
+        firstOptionAmount = _firstOptionAmount;
+        secondOptionAmount = _secondOptionAmount;
+        thirdOptionAmount = _thirdOptionAmount;
+
+        isFirstOptionOn = true;
+        isSecondOptionOn = true;
+        isThirdOptionOn = true;
 
         mafagafo = Mafagafo(_mafagafo);
     }
@@ -73,12 +85,28 @@ contract Minter is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         secondReceiver = _secondReceiver;
     }
 
-    function setFirstAmount(uint256 _firstAmount) external onlyOwner {
-        firstAmount = _firstAmount;
+    function setFirstOptionAmount(uint256 _firstOptionAmount) external onlyOwner {
+        firstOptionAmount = _firstOptionAmount;
     }
 
-    function setSecondAmount(uint256 _secondAmount) external onlyOwner {
-        secondAmount = _secondAmount;
+    function setSecondOptionAmount(uint256 _secondOptionAmount) external onlyOwner {
+        secondOptionAmount = _secondOptionAmount;
+    }
+
+    function setThirdOptionAmount(uint256 _thirdOptionAmount) external onlyOwner {
+        thirdOptionAmount = _thirdOptionAmount;
+    }
+
+    function setFirstOption(bool _flag) external onlyOwner {
+        isFirstOptionOn = _flag;
+    }
+
+    function setSecondOption(bool _flag) external onlyOwner {
+        isSecondOptionOn = _flag;
+    }
+
+    function setThirdOption(bool _flag) external onlyOwner {
+        isThirdOptionOn = _flag;
     }
 
     function claim1(
@@ -105,11 +133,8 @@ contract Minter is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         uint256 quantity,
         bytes32[] calldata merkleProof
     ) external payable {
-        if (quantity > 3 || quantity == 0) revert QuantityError(quantity);
-        if (totalClaimed2[account] + quantity > 3) revert AlreadyClaimed(account);
-        uint256 _firstAmount = firstAmount * quantity;
-        uint256 _secondAmount = secondAmount * quantity;
-        if (msg.value != _firstAmount + _secondAmount) revert PriceMismatch(msg.value, _firstAmount + _secondAmount);
+        if (!(quantity == 1 || quantity == 3 || quantity == 5)) revert QuantityError(quantity);
+        if (totalClaimed2[account] > 0) revert AlreadyClaimed(account);
 
         // Verify the merkle proof.
         bytes32 node = keccak256(abi.encodePacked(account));
@@ -118,10 +143,35 @@ contract Minter is Initializable, OwnableUpgradeable, UUPSUpgradeable {
 
         totalClaimed2[account] += quantity;
 
-        (bool firstSent, ) = firstReceiver.call{ value: _firstAmount }("");
+        uint256 firstAmount;
+        uint256 secondAmount;
+        uint256 _firstOptionAmount = firstOptionAmount;
+        uint256 _secondOptionAmount = secondOptionAmount;
+        uint256 _thirdOptionAmount = thirdOptionAmount;
+        if (quantity == 1) {
+            if (!isFirstOptionOn) revert InvalidOption();
+            if (msg.value != _firstOptionAmount) revert PriceMismatch(msg.value, _firstOptionAmount);
+
+            firstAmount = (_firstOptionAmount * 70) / 100;
+            secondAmount = (_firstOptionAmount * 30) / 100;
+        } else if (quantity == 3) {
+            if (!isSecondOptionOn) revert InvalidOption();
+            if (msg.value != _secondOptionAmount) revert PriceMismatch(msg.value, _secondOptionAmount);
+
+            firstAmount = (_secondOptionAmount * 70) / 100;
+            secondAmount = (_secondOptionAmount * 30) / 100;
+        } else if (quantity == 5) {
+            if (!isThirdOptionOn) revert InvalidOption();
+            if (msg.value != _thirdOptionAmount) revert PriceMismatch(msg.value, _thirdOptionAmount);
+
+            firstAmount = (_thirdOptionAmount * 70) / 100;
+            secondAmount = (_thirdOptionAmount * 30) / 100;
+        }
+
+        (bool firstSent, ) = firstReceiver.call{ value: firstAmount }("");
         if (!firstSent) revert TransferError();
 
-        (bool secondSent, ) = secondReceiver.call{ value: _secondAmount }("");
+        (bool secondSent, ) = secondReceiver.call{ value: secondAmount }("");
         if (!secondSent) revert TransferError();
 
         mafagafo.safeMint(account, quantity);
