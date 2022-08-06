@@ -9,7 +9,7 @@ import { ethers } from "hardhat";
 
 import { IUniswapV2Factory, IUniswapV2Pair, IUniswapV2Router02, MafaCoin, MafaCoin__factory } from "../../typechain";
 
-describe("MafaCoin", function () {
+describe.only("MafaCoin", function () {
   const DEAD_ADDRESS = "0x000000000000000000000000000000000000dEaD";
   let contract: MafaCoin;
   let owner: SignerWithAddress;
@@ -281,9 +281,45 @@ describe("MafaCoin", function () {
         const finalLiquidityBalance = await contract.provider.getBalance(address4.address);
 
         expect(await contract.balanceOf(address1.address)).to.equal(utils.parseEther("99000"));
-        expect(await contract.balanceOf(pairContract.address)).to.equal(utils.parseEther("101000"));
+        expect(await contract.balanceOf(pairContract.address)).to.equal(utils.parseEther("100970"));
         expect(await contract.balanceOf(address2.address)).to.equal(0);
         expect(await contract.balanceOf(address3.address)).to.equal(0);
+        expect(await contract.balanceOf(contract.address)).to.equal(utils.parseEther("30"));
+        expect(initialDevelopmentBalance).to.be.eq(finalDevelopmentBalance); // development fee
+        expect(initialMarketingBalance).to.be.eq(finalMarketingBalance); // marketing fee
+        expect(initialLiquidityBalance).to.be.eq(finalLiquidityBalance); // liquidity fee
+      });
+
+      it("Should take fee when contract has more than 20000 tokens acumulated", async function () {
+        await contract.transfer(contract.address, utils.parseEther("19970"));
+
+        await contract.connect(address1).approve(router.address, ethers.constants.MaxUint256);
+
+        const initialDevelopmentBalance = await contract.provider.getBalance(address2.address); // development address
+        const initialMarketingBalance = await contract.provider.getBalance(address3.address); // marketing address
+        const initialLiquidityBalance = await contract.provider.getBalance(address4.address); // liquidity address
+
+        await expect(
+          router
+            .connect(address1)
+            .swapExactTokensForETHSupportingFeeOnTransferTokens(
+              utils.parseEther("1000"),
+              0,
+              [contract.address, WETH],
+              address1.address,
+              ethers.constants.MaxUint256,
+            ),
+        ).to.emit(contract, "Transfer");
+
+        const finalDevelopmentBalance = await contract.provider.getBalance(address2.address);
+        const finalMarketingBalance = await contract.provider.getBalance(address3.address);
+        const finalLiquidityBalance = await contract.provider.getBalance(address4.address);
+
+        expect(await contract.balanceOf(address1.address)).to.equal(utils.parseEther("99000"));
+        expect(await contract.balanceOf(pairContract.address)).to.equal(utils.parseEther("120970"));
+        expect(await contract.balanceOf(address2.address)).to.equal(0);
+        expect(await contract.balanceOf(address3.address)).to.equal(0);
+        expect(await contract.balanceOf(contract.address)).to.equal(0);
         expect(initialDevelopmentBalance).to.be.lt(finalDevelopmentBalance); // development fee
         expect(initialMarketingBalance).to.be.lt(finalMarketingBalance); // marketing fee
         expect(initialLiquidityBalance).to.be.lt(finalLiquidityBalance); // liquidity fee

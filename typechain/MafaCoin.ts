@@ -22,6 +22,7 @@ export interface MafaCoinInterface extends utils.Interface {
     "MAX_BUY_FEE()": FunctionFragment;
     "MAX_SELL_FEE()": FunctionFragment;
     "MIN_ANTI_DUMP_LIMIT()": FunctionFragment;
+    "MIN_TAKE_FEE()": FunctionFragment;
     "allowance(address,address)": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
     "automatedMarketMakerPairs(address)": FunctionFragment;
@@ -81,6 +82,10 @@ export interface MafaCoinInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "MIN_ANTI_DUMP_LIMIT",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "MIN_TAKE_FEE",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -261,6 +266,10 @@ export interface MafaCoinInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "MIN_ANTI_DUMP_LIMIT",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "MIN_TAKE_FEE",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "allowance", data: BytesLike): Result;
@@ -615,6 +624,8 @@ export interface MafaCoin extends BaseContract {
 
     MIN_ANTI_DUMP_LIMIT(overrides?: CallOverrides): Promise<[BigNumber]>;
 
+    MIN_TAKE_FEE(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     allowance(
       owner: string,
       spender: string,
@@ -808,6 +819,8 @@ export interface MafaCoin extends BaseContract {
 
   MIN_ANTI_DUMP_LIMIT(overrides?: CallOverrides): Promise<BigNumber>;
 
+  MIN_TAKE_FEE(overrides?: CallOverrides): Promise<BigNumber>;
+
   allowance(
     owner: string,
     spender: string,
@@ -997,6 +1010,8 @@ export interface MafaCoin extends BaseContract {
     MAX_SELL_FEE(overrides?: CallOverrides): Promise<BigNumber>;
 
     MIN_ANTI_DUMP_LIMIT(overrides?: CallOverrides): Promise<BigNumber>;
+
+    MIN_TAKE_FEE(overrides?: CallOverrides): Promise<BigNumber>;
 
     allowance(
       owner: string,
@@ -1317,6 +1332,8 @@ export interface MafaCoin extends BaseContract {
 
     MIN_ANTI_DUMP_LIMIT(overrides?: CallOverrides): Promise<BigNumber>;
 
+    MIN_TAKE_FEE(overrides?: CallOverrides): Promise<BigNumber>;
+
     allowance(
       owner: string,
       spender: string,
@@ -1512,6 +1529,8 @@ export interface MafaCoin extends BaseContract {
     MIN_ANTI_DUMP_LIMIT(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    MIN_TAKE_FEE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     allowance(
       owner: string,

@@ -14,7 +14,6 @@ error AccountAlreadyExcluded();
 error AccountAlreadyIncluded();
 error SettingZeroAddress();
 error AddressAlreadySet();
-error TransferError();
 error TransferFromZeroAddress();
 error TransferToZeroAddress();
 error NoAmount();
@@ -23,7 +22,7 @@ error MaxBuyFeeExceeded(uint256 amount);
 error MaxSellFeeExceeded(uint256 amount);
 error MaxSellAmountTooLow(uint256 amount);
 
-contract MafaCoin is ERC20, WithdrawableOwnable {
+contract MafaCoinV2 is ERC20, WithdrawableOwnable {
     // @dev the fee the development takes on buy txs.
     uint256 public developmentBuyFee = 0;
 
@@ -56,9 +55,6 @@ contract MafaCoin is ERC20, WithdrawableOwnable {
 
     // @dev maximum amount that sell fees added together can be raised to
     uint256 public constant MAX_SELL_FEE = 10 * 10**16; // 10%;
-
-    // @dev minimum amount of tokens acumulated in the contract to take fee on sell txs
-    uint256 public constant MIN_TAKE_FEE = 20000 * 10**18;
 
     // @dev maximum amount of tokens a user can sell on a single transaction (antidump mechanism)
     uint256 public maxSellAmount = 100000 * 10**18;
@@ -221,42 +217,22 @@ contract MafaCoin is ERC20, WithdrawableOwnable {
         emit MaxSellAmountUpdated(amount);
     }
 
-    function _takeFeeInBNB() internal {
-        uint256 amount = balanceOf(address(this));
+    function _takeFeeInBNB(
+        address from,
+        address to,
+        uint256 amount
+    ) private {
+        if (amount == 0) return;
 
-        if (amount == 0) {
-            return;
-        }
+        super._transfer(from, address(this), amount);
 
-        uint256 balanceBefore = address(this).balance;
         address[] memory path = new address[](2);
         path[0] = address(this);
         path[1] = dexRouter.WETH();
 
         _approve(address(this), address(dexRouter), amount);
 
-        dexRouter.swapExactTokensForETHSupportingFeeOnTransferTokens(amount, 0, path, address(this), block.timestamp);
-
-        uint256 bnbAmount = address(this).balance - balanceBefore;
-
-        uint256 developmentFee = developmentSellFee;
-        uint256 liquidityFee = liquiditySellFee;
-        uint256 marketingFee = marketingSellFee;
-
-        (bool success, ) = payable(developmentAddress).call{
-            value: (bnbAmount * developmentFee) / (developmentFee + liquidityFee + marketingFee)
-        }("");
-        if (!success) revert TransferError();
-
-        (success, ) = payable(liquidityAddress).call{
-            value: (bnbAmount * liquidityFee) / (developmentFee + liquidityFee + marketingFee)
-        }("");
-        if (!success) revert TransferError();
-
-        (success, ) = payable(marketingAddress).call{
-            value: (bnbAmount * marketingFee) / (developmentFee + liquidityFee + marketingFee)
-        }("");
-        if (!success) revert TransferError();
+        dexRouter.swapExactTokensForETHSupportingFeeOnTransferTokens(amount, 0, path, to, block.timestamp);
     }
 
     function _transfer(
@@ -282,18 +258,21 @@ contract MafaCoin is ERC20, WithdrawableOwnable {
                 if (amount > maxSellAmount) revert MaxSellAmountExceeded(amount);
 
                 uint256 developmentFee = developmentSellFee;
+                if (developmentFee > 0) {
+                    tokensToDevelopment = (amount * developmentFee) / 10**decimals();
+                    _takeFeeInBNB(from, developmentAddress, tokensToDevelopment);
+                }
+
                 uint256 liquidityFee = liquiditySellFee;
+                if (liquidityFee > 0) {
+                    tokensToLiquidity = (amount * liquidityFee) / 10**decimals();
+                    _takeFeeInBNB(from, liquidityAddress, tokensToLiquidity);
+                }
+
                 uint256 marketingFee = marketingSellFee;
-                uint256 tokensToContract = (amount * (developmentSellFee + liquiditySellFee + marketingSellFee)) /
-                    10**decimals();
-
-                if (tokensToContract > 0) super._transfer(from, address(this), tokensToContract);
-                if (developmentFee > 0) tokensToDevelopment = (amount * developmentFee) / 10**decimals();
-                if (liquidityFee > 0) tokensToLiquidity = (amount * liquidityFee) / 10**decimals();
-                if (marketingFee > 0) tokensToMarketing = (amount * marketingFee) / 10**decimals();
-
-                if (balanceOf(address(this)) >= MIN_TAKE_FEE) {
-                    _takeFeeInBNB();
+                if (marketingFee > 0) {
+                    tokensToMarketing = (amount * marketingFee) / 10**decimals();
+                    _takeFeeInBNB(from, marketingAddress, tokensToMarketing);
                 }
             } else if (automatedMarketMakerPairs[from]) {
                 uint256 developmentFee = developmentBuyFee;
