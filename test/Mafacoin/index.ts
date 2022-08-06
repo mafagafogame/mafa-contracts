@@ -40,11 +40,11 @@ describe.only("MafaCoin", function () {
     expect(await contract.marketingAddress()).to.equal("0x272C14981F2Ff4fF06F5EF326940E7F067b4b5D6");
     expect(await contract.liquidityAddress()).to.equal("0xc76280a36743E1266dC73F114bB1c9950ee37E7c");
 
-    expect(await contract.developmentBuyFee()).to.equal(0);
-    expect(await contract.marketingBuyFee()).to.equal(0);
+    expect(await contract.developmentBuyFee()).to.equal(utils.parseEther("0.01"));
+    expect(await contract.marketingBuyFee()).to.equal(utils.parseEther("0.02"));
     expect(await contract.liquidityBuyFee()).to.equal(utils.parseEther("0.01"));
-    expect(await contract.developmentSellFee()).to.equal(utils.parseEther("0.03"));
-    expect(await contract.marketingSellFee()).to.equal(utils.parseEther("0.03"));
+    expect(await contract.developmentSellFee()).to.equal(utils.parseEther("0.01"));
+    expect(await contract.marketingSellFee()).to.equal(utils.parseEther("0.02"));
     expect(await contract.liquiditySellFee()).to.equal(utils.parseEther("0.01"));
 
     expect(await contract.MAX_BUY_FEE()).to.equal(utils.parseEther("0.10"));
@@ -256,6 +256,42 @@ describe.only("MafaCoin", function () {
         expect(await contract.balanceOf(address4.address)).to.be.equal(0); // liquidity fee is not charged
       });
 
+      it("Should not take sell fee if sell fee is 0", async function () {
+        await contract.setDevelopmentSellFee(0);
+        await contract.setMarketingSellFee(0);
+        await contract.setLiquiditySellFee(0);
+        await contract.connect(address1).approve(router.address, ethers.constants.MaxUint256);
+
+        const initialDevelopmentBalance = await contract.provider.getBalance(address2.address); // development address
+        const initialMarketingBalance = await contract.provider.getBalance(address3.address); // marketing address
+        const initialLiquidityBalance = await contract.provider.getBalance(address4.address); // liquidity address
+
+        await expect(
+          router
+            .connect(address1)
+            .swapExactTokensForETHSupportingFeeOnTransferTokens(
+              utils.parseEther("1000"),
+              0,
+              [contract.address, WETH],
+              address1.address,
+              ethers.constants.MaxUint256,
+            ),
+        ).to.emit(contract, "Transfer");
+
+        const finalDevelopmentBalance = await contract.provider.getBalance(address2.address);
+        const finalMarketingBalance = await contract.provider.getBalance(address3.address);
+        const finalLiquidityBalance = await contract.provider.getBalance(address4.address);
+
+        expect(await contract.balanceOf(address1.address)).to.equal(utils.parseEther("99000"));
+        expect(await contract.balanceOf(pairContract.address)).to.equal(utils.parseEther("101000"));
+        expect(await contract.balanceOf(address2.address)).to.equal(0);
+        expect(await contract.balanceOf(address3.address)).to.equal(0);
+        expect(await contract.balanceOf(contract.address)).to.equal(0);
+        expect(initialDevelopmentBalance).to.be.eq(finalDevelopmentBalance); // development fee
+        expect(initialMarketingBalance).to.be.eq(finalMarketingBalance); // marketing fee
+        expect(initialLiquidityBalance).to.be.eq(finalLiquidityBalance); // liquidity fee
+      });
+
       // sell
       it("Should swap Tokens for ETH supporting fees on transfer", async function () {
         await contract.connect(address1).approve(router.address, ethers.constants.MaxUint256);
@@ -285,6 +321,45 @@ describe.only("MafaCoin", function () {
         expect(await contract.balanceOf(address2.address)).to.equal(0);
         expect(await contract.balanceOf(address3.address)).to.equal(0);
         expect(await contract.balanceOf(contract.address)).to.equal(utils.parseEther("30"));
+        expect(initialDevelopmentBalance).to.be.eq(finalDevelopmentBalance); // development fee
+        expect(initialMarketingBalance).to.be.eq(finalMarketingBalance); // marketing fee
+        expect(initialLiquidityBalance).to.be.eq(finalLiquidityBalance); // liquidity fee
+      });
+
+      it("Should not take fee if contract has more than 20000 tokens acumulated but all fees are zero", async function () {
+        await contract.transfer(contract.address, utils.parseEther("20000"));
+
+        await contract.connect(address1).approve(router.address, ethers.constants.MaxUint256);
+
+        const initialDevelopmentBalance = await contract.provider.getBalance(address2.address); // development address
+        const initialMarketingBalance = await contract.provider.getBalance(address3.address); // marketing address
+        const initialLiquidityBalance = await contract.provider.getBalance(address4.address); // liquidity address
+
+        await contract.setLiquiditySellFee(0);
+        await contract.setDevelopmentSellFee(0);
+        await contract.setMarketingSellFee(0);
+
+        await expect(
+          router
+            .connect(address1)
+            .swapExactTokensForETHSupportingFeeOnTransferTokens(
+              utils.parseEther("1000"),
+              0,
+              [contract.address, WETH],
+              address1.address,
+              ethers.constants.MaxUint256,
+            ),
+        ).to.emit(contract, "Transfer");
+
+        const finalDevelopmentBalance = await contract.provider.getBalance(address2.address);
+        const finalMarketingBalance = await contract.provider.getBalance(address3.address);
+        const finalLiquidityBalance = await contract.provider.getBalance(address4.address);
+
+        expect(await contract.balanceOf(address1.address)).to.equal(utils.parseEther("99000"));
+        expect(await contract.balanceOf(pairContract.address)).to.equal(utils.parseEther("101000"));
+        expect(await contract.balanceOf(address2.address)).to.equal(0);
+        expect(await contract.balanceOf(address3.address)).to.equal(0);
+        expect(await contract.balanceOf(contract.address)).to.equal(utils.parseEther("20000"));
         expect(initialDevelopmentBalance).to.be.eq(finalDevelopmentBalance); // development fee
         expect(initialMarketingBalance).to.be.eq(finalMarketingBalance); // marketing fee
         expect(initialLiquidityBalance).to.be.eq(finalLiquidityBalance); // liquidity fee
