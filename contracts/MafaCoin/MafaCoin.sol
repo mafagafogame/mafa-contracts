@@ -25,10 +25,10 @@ error MaxSellAmountTooLow(uint256 amount);
 
 contract MafaCoin is ERC20, WithdrawableOwnable {
     // @dev the fee the development takes on buy txs.
-    uint256 public developmentBuyFee = 0;
+    uint256 public developmentBuyFee = 1 * 10**16; // 1%
 
     // @dev the fee the development takes on sell txs.
-    uint256 public developmentSellFee = 3 * 10**16; // 3%
+    uint256 public developmentSellFee = 1 * 10**16; // 1%
 
     // @dev which wallet will receive the development fee
     address public developmentAddress = 0x056f3E1B30797a122447581d0F34CD69E9A26690;
@@ -43,10 +43,10 @@ contract MafaCoin is ERC20, WithdrawableOwnable {
     address public liquidityAddress = 0xc76280a36743E1266dC73F114bB1c9950ee37E7c;
 
     // @dev the fee the marketing takes on buy txs.
-    uint256 public marketingBuyFee = 0;
+    uint256 public marketingBuyFee = 2 * 10**16; // 2%
 
     // @dev the fee the marketing takes on sell txs.
-    uint256 public marketingSellFee = 3 * 10**16; // 3%
+    uint256 public marketingSellFee = 2 * 10**16; // 2%
 
     // @dev which wallet will receive the marketing fee
     address public marketingAddress = 0x272C14981F2Ff4fF06F5EF326940E7F067b4b5D6;
@@ -224,7 +224,11 @@ contract MafaCoin is ERC20, WithdrawableOwnable {
     function _takeFeeInBNB() internal {
         uint256 amount = balanceOf(address(this));
 
-        if (amount == 0) {
+        uint256 developmentFee = developmentSellFee;
+        uint256 liquidityFee = liquiditySellFee;
+        uint256 marketingFee = marketingSellFee;
+
+        if (amount == 0 || (developmentFee == 0 && liquidityFee == 0 && marketingFee == 0)) {
             return;
         }
 
@@ -238,10 +242,6 @@ contract MafaCoin is ERC20, WithdrawableOwnable {
         dexRouter.swapExactTokensForETHSupportingFeeOnTransferTokens(amount, 0, path, address(this), block.timestamp);
 
         uint256 bnbAmount = address(this).balance - balanceBefore;
-
-        uint256 developmentFee = developmentSellFee;
-        uint256 liquidityFee = liquiditySellFee;
-        uint256 marketingFee = marketingSellFee;
 
         (bool success, ) = payable(developmentAddress).call{
             value: (bnbAmount * developmentFee) / (developmentFee + liquidityFee + marketingFee)
