@@ -83,7 +83,7 @@
     "commit": "git-cz",
     "compile": "hardhat compile",
     "coverage": "hardhat coverage --solcoverjs ./.solcover.js --temp artifacts --testfiles \"./test/**/*.ts\"",
-    "deploy": "hardhat run scripts/deploy.ts",
+    "deploy": "hardhat run scripts/deployMafacoin.ts",
     "deploy:network": "hardhat run scripts/deploy.ts --network",
     "deploy:network:localhost": "hardhat run scripts/deploy.ts --network localhost",
     "airdrop:network:localhost": "hardhat run scripts/airdrop.ts --network hardhat",
@@ -109,7 +109,7 @@
     "verify": "hardhat verify",
     "slither:log": "python3 -m slither . --ignore-compile --filter-paths \"node_modules\" --disable-color > slither-audit.txt 2>&1",
     "slither:summary": "python3 -m slither . --ignore-compile --filter-paths \"node_modules\" --print human-summary",
-    "slither": "slither ./contracts/MafagoldAction/Minter.sol --ignore-compile --solc-remaps '@openzeppelin=node_modules/@openzeppelin @chainlink=node_modules/@chainlink erc721a-upgradeable=node_modules/erc721a-upgradeable' --exclude naming-convention,external-function,low-level-calls",
+    "slither": "slither ./contracts/MafaCoin/MafaCoin.sol --ignore-compile --solc-remaps '@uniswap=node_modules/@uniswap @openzeppelin=node_modules/@openzeppelin @chainlink=node_modules/@chainlink erc721a-upgradeable=node_modules/erc721a-upgradeable' --exclude naming-convention,external-function,low-level-calls",
     "generate:wallets": "ts-node scripts/createRandomWallets.ts"
   },
   "dependencies": {
