@@ -49,24 +49,39 @@ const config: HardhatUserConfig = {
       url: process.env.ROPSTEN_URL || "",
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
+    goerli: {
+      url: "https://goerli.prylabs.net",
+      chainId: 5,
+      accounts: { mnemonic },
+    },
+    rinkeby: {
+      url: "https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
+      chainId: 4,
+      accounts: { mnemonic },
+    },
     bsctest: {
       url: "https://data-seed-prebsc-1-s1.binance.org:8545",
       chainId: 97,
-      gasPrice: 20000000000,
       accounts: { mnemonic },
     },
     bsc: {
       url: "https://bsc-dataseed.binance.org/",
       chainId: 56,
-      gasPrice: 20000000000,
       accounts: { mnemonic },
     },
+    // hardhat: {
+    //   allowUnlimitedContractSize: true,
+    // },
     hardhat: {
       forking: {
         url: `${process.env.CHAINSTACK_PROVIDER}`,
       },
       accounts: { mnemonic },
+      allowUnlimitedContractSize: true,
     },
+  },
+  mocha: {
+    timeout: 100000000,
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,
@@ -76,6 +91,7 @@ const config: HardhatUserConfig = {
     apiKey: {
       bsc: process.env.BSCSCAN_API_KEY,
       bscTestnet: process.env.BSCSCAN_API_KEY,
+      goerli: process.env.ETHSCAN_API_KEY,
     },
   },
   paths: {

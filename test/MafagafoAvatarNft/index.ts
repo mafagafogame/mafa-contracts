@@ -82,6 +82,19 @@ describe("Unit tests", function () {
       await expect(mafagafoAvatar.connect(account1).setMafaVersion(1)).to.be.reverted;
     });
 
+    it("token uri", async function () {
+      await mafagafoAvatar.setBaseURI(
+        "https://bafybeig3ichbjdsko3mn6lgxxe46cmqt5vk67ypwh6ixvdybvimhfuhklm.ipfs.dweb.link/",
+      );
+
+      expect(await mafagafoAvatar.tokenURI(1)).to.equal(
+        "https://bafybeig3ichbjdsko3mn6lgxxe46cmqt5vk67ypwh6ixvdybvimhfuhklm.ipfs.dweb.link/0.json",
+      );
+      expect(await mafagafoAvatar.tokenURI(2)).to.equal(
+        "https://bafybeig3ichbjdsko3mn6lgxxe46cmqt5vk67ypwh6ixvdybvimhfuhklm.ipfs.dweb.link/2.json",
+      );
+    });
+
     it("admin should be able to change mafa version", async function () {
       expect(await mafagafoAvatar.mafaVersion()).to.equal(0);
 

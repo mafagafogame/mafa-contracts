@@ -22,6 +22,8 @@ task("upgrade:contract", "Upgrade a contract from an address")
       case "mafabox":
         ContractFactory = await ethers.getContractFactory("MafaBox");
         break;
+      case "burner":
+        ContractFactory = await ethers.getContractFactory("Burner");
     }
 
     const contract = ContractFactory.attach(taskArgs.address);
