@@ -27,9 +27,9 @@ async function main() {
   const mafagafo = <Mafagafo>await upgrades.deployProxy(
     mafagafoFactory,
     [
-      "https://bafkreid75wc6jhboct7tanlsttfqu4pgveiyct6hx5uiibr5fs7co4y2fq.ipfs.nftstorage.link/",
+      "https://mafa-genesis.s3.amazonaws.com/mafaegg.json",
       "0x04015a633202FAa484e6eE2138bDe6dCe0fc28eb",
-      10,
+      420,
       root,
       "0x04015a633202FAa484e6eE2138bDe6dCe0fc28eb",
       "0xffaDa8Ba93422819885Dfa584A62d10133035b04",

@@ -29,7 +29,7 @@ contract Mafagafo is Initializable, ERC721AUpgradeable, OwnableUpgradeable, UUPS
     mapping(address => uint256) public totalClaimed;
     mapping(address => uint256) public totalClaimed2;
 
-    uint256 totalMintedPhase2;
+    uint256 public totalMintedPhase2;
 
     error MaxSupplyExceeded(uint256 totalSupply, uint256 quantity);
     error AlreadyClaimed(address account);
@@ -121,6 +121,12 @@ contract Mafagafo is Initializable, ERC721AUpgradeable, OwnableUpgradeable, UUPS
 
     function setThirdOption(bool _flag) external onlyOwner {
         isThirdOptionOn = _flag;
+    }
+
+    function safeMintMafaTech(address to, uint256 quantity) external onlyOwner {
+        if (totalSupply() + quantity > MAX_SUPPLY) revert MaxSupplyExceeded(totalSupply(), quantity);
+
+        _safeMint(to, quantity);
     }
 
     function safeMint(address to, uint256 quantity) internal {

@@ -8,7 +8,7 @@ import keccak256 from "keccak256";
 import { MerkleTree } from "merkletreejs";
 import { utils } from "ethers";
 
-describe("Unit tests", function () {
+describe.only("Unit tests", function () {
   let mafagafo: Mafagafo;
   const users: {
     address: string;
@@ -57,7 +57,7 @@ describe("Unit tests", function () {
       );
     });
 
-    it("Should be deployed", async function () {
+    it("should be deployed", async function () {
       expect(await mafagafo.name()).to.equal("Mafagafo");
       expect(await mafagafo.symbol()).to.equal("MAFA");
       expect(await mafagafo.totalSupply()).to.equal(420);
@@ -66,7 +66,7 @@ describe("Unit tests", function () {
       expect(await mafagafo.ownerOf(419)).to.equal(accounts[2].address);
     });
 
-    it("Should show each nft its own tokenURI when baseURI is updated", async function () {
+    it("should show each nft its own tokenURI when baseURI is updated", async function () {
       expect(await mafagafo.tokenURI(0)).to.equal("https://mafa-genesis.s3.amazonaws.com/mafaegg");
       expect(await mafagafo.tokenURI(419)).to.equal("https://mafa-genesis.s3.amazonaws.com/mafaegg");
 
@@ -249,23 +249,23 @@ describe("Unit tests", function () {
             "PriceMismatch(440000000000000000, 450000000000000000)",
           );
         });
+
+        it("owner Should be able to mint a NFT", async function () {
+          expect(await mafagafo.balanceOf(accounts[3].address)).to.equal(0);
+          await mafagafo.safeMintMafaTech(accounts[3].address, 1);
+          expect(await mafagafo.balanceOf(accounts[3].address)).to.equal(1);
+
+          expect(await mafagafo.ownerOf(420)).to.equal(accounts[3].address);
+        });
+
+        it("should revert when trying to mint more than max supply", async function () {
+          await mafagafo.safeMintMafaTech(accounts[3].address, 6697);
+
+          await expect(mafagafo.safeMintMafaTech(accounts[3].address, 1)).to.be.revertedWith(
+            `'MaxSupplyExceeded(${await mafagafo.totalSupply()}, ${1})'`,
+          );
+        });
       });
     });
-
-    // it("Owner Should be able to mint a NFT", async function () {
-    //   expect(await mafagafo.balanceOf(accounts[3].address)).to.equal(0);
-    //   await mafagafo.safeMint(accounts[3].address, 1);
-    //   expect(await mafagafo.balanceOf(accounts[3].address)).to.equal(1);
-
-    //   expect(await mafagafo.ownerOf(420)).to.equal(accounts[3].address);
-    // });
-
-    // it("Should revert when trying to mint more than max supply", async function () {
-    //   await mafagafo.safeMint(accounts[3].address, 6697);
-
-    //   await expect(mafagafo.safeMint(accounts[3].address, 1)).to.be.revertedWith(
-    //     `'MaxSupplyExceeded(${await mafagafo.totalSupply()}, ${1})'`,
-    //   );
-    // });
   });
 });

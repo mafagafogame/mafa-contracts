@@ -60,7 +60,6 @@ export type { WithdrawableOwnable } from "./WithdrawableOwnable";
 export type { Burner } from "./Burner";
 export type { BurnerMock } from "./BurnerMock";
 export type { Mafagafo } from "./Mafagafo";
-export type { Minter } from "./Minter";
 export type { BaseERC1155 } from "./BaseERC1155";
 export type { BaseNft } from "./BaseNft";
 export type { BaseNftTestV2 } from "./BaseNftTestV2";
@@ -144,7 +143,6 @@ export { WithdrawableOwnable__factory } from "./factories/WithdrawableOwnable__f
 export { Burner__factory } from "./factories/Burner__factory";
 export { BurnerMock__factory } from "./factories/BurnerMock__factory";
 export { Mafagafo__factory } from "./factories/Mafagafo__factory";
-export { Minter__factory } from "./factories/Minter__factory";
 export { BaseERC1155__factory } from "./factories/BaseERC1155__factory";
 export { BaseNft__factory } from "./factories/BaseNft__factory";
 export { BaseNftTestV2__factory } from "./factories/BaseNftTestV2__factory";
