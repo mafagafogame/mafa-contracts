@@ -84,6 +84,7 @@
     "compile": "hardhat compile",
     "coverage": "hardhat coverage --solcoverjs ./.solcover.js --temp artifacts --testfiles \"./test/**/*.ts\"",
     "deploy": "hardhat run scripts/deployMafacoin.ts",
+    "deploy:genesis": "hardhat run scripts/deployMafagafo.ts",
     "deploy:network": "hardhat run scripts/deploy.ts --network",
     "deploy:network:localhost": "hardhat run scripts/deploy.ts --network localhost",
     "airdrop:network:localhost": "hardhat run scripts/airdrop.ts --network hardhat",
