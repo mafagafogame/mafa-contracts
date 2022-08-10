@@ -40,6 +40,16 @@
       "address": "0x60d6683199e18113AB4860B85e21f275c8e79c05",
       "txHash": "0xe563b1b7b5cc5108eedd1bd95e0e67c3701a28078842fd5758942c4dc35e33b0",
       "kind": "uups"
+    },
+    {
+      "address": "0xd6edB6bcDE989967fcd28Ec9f3F22633FDB2B832",
+      "txHash": "0x694a236b5299b934f83124f77d95f26663209af8d634f5c2d1418cbd8294fd8a",
+      "kind": "uups"
+    },
+    {
+      "address": "0x9357CD3d6c45Ff5dD23c7c2Ce685569C2cF64c29",
+      "txHash": "0x3f01536f2a9795ff3fec88b27d28a184a0ad293dfaf6c33991657a1f65f6480b",
+      "kind": "uups"
     }
   ],
   "impls": {
@@ -909,6 +919,221 @@
           },
           "t_mapping(t_address,t_uint256)": {
             "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
+    },
+    "087e0f86c44d57f641f15c4a51ec1544f58e7f61f3344257a8568b7bc976e260": {
+      "address": "0xDD6b113Ab0093e51c358AA135719Eb54859075CD",
+      "txHash": "0x5c29145271492167c000ae5c40e24df5d2f3c49a28aa476e6de591750794d22e",
+      "layout": {
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:62",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:67"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:87"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol:211"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol:107"
+          },
+          {
+            "label": "preRevealBaseURI",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_string_storage",
+            "contract": "Mafagafo",
+            "src": "contracts/MafagoldAction/Mafagafo.sol:14"
+          },
+          {
+            "label": "_baseTokenURI",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_string_storage",
+            "contract": "Mafagafo",
+            "src": "contracts/MafagoldAction/Mafagafo.sol:15"
+          },
+          {
+            "label": "merkleRoot",
+            "offset": 0,
+            "slot": "203",
+            "type": "t_bytes32",
+            "contract": "Mafagafo",
+            "src": "contracts/MafagoldAction/Mafagafo.sol:17"
+          },
+          {
+            "label": "firstReceiver",
+            "offset": 0,
+            "slot": "204",
+            "type": "t_address",
+            "contract": "Mafagafo",
+            "src": "contracts/MafagoldAction/Mafagafo.sol:19"
+          },
+          {
+            "label": "secondReceiver",
+            "offset": 0,
+            "slot": "205",
+            "type": "t_address",
+            "contract": "Mafagafo",
+            "src": "contracts/MafagoldAction/Mafagafo.sol:20"
+          },
+          {
+            "label": "firstOptionAmount",
+            "offset": 0,
+            "slot": "206",
+            "type": "t_uint256",
+            "contract": "Mafagafo",
+            "src": "contracts/MafagoldAction/Mafagafo.sol:21"
+          },
+          {
+            "label": "secondOptionAmount",
+            "offset": 0,
+            "slot": "207",
+            "type": "t_uint256",
+            "contract": "Mafagafo",
+            "src": "contracts/MafagoldAction/Mafagafo.sol:22"
+          },
+          {
+            "label": "thirdOptionAmount",
+            "offset": 0,
+            "slot": "208",
+            "type": "t_uint256",
+            "contract": "Mafagafo",
+            "src": "contracts/MafagoldAction/Mafagafo.sol:23"
+          },
+          {
+            "label": "isFirstOptionOn",
+            "offset": 0,
+            "slot": "209",
+            "type": "t_bool",
+            "contract": "Mafagafo",
+            "src": "contracts/MafagoldAction/Mafagafo.sol:25"
+          },
+          {
+            "label": "isSecondOptionOn",
+            "offset": 1,
+            "slot": "209",
+            "type": "t_bool",
+            "contract": "Mafagafo",
+            "src": "contracts/MafagoldAction/Mafagafo.sol:26"
+          },
+          {
+            "label": "isThirdOptionOn",
+            "offset": 2,
+            "slot": "209",
+            "type": "t_bool",
+            "contract": "Mafagafo",
+            "src": "contracts/MafagoldAction/Mafagafo.sol:27"
+          },
+          {
+            "label": "totalClaimed",
+            "offset": 0,
+            "slot": "210",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "Mafagafo",
+            "src": "contracts/MafagoldAction/Mafagafo.sol:29"
+          },
+          {
+            "label": "totalClaimed2",
+            "offset": 0,
+            "slot": "211",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "Mafagafo",
+            "src": "contracts/MafagoldAction/Mafagafo.sol:30"
+          },
+          {
+            "label": "totalMintedPhase2",
+            "offset": 0,
+            "slot": "212",
+            "type": "t_uint256",
+            "contract": "Mafagafo",
+            "src": "contracts/MafagoldAction/Mafagafo.sol:32"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
             "numberOfBytes": "32"
           },
           "t_uint256": {
