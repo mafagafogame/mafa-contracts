@@ -11,7 +11,6 @@ import "./Mafagafo.sol";
 
 contract Minter is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     bytes32 public merkleRoot1;
-    bytes32 public merkleRoot2;
 
     address public firstReceiver;
     address public secondReceiver;
@@ -42,7 +41,6 @@ contract Minter is Initializable, OwnableUpgradeable, UUPSUpgradeable {
 
     function initialize(
         bytes32 _merkleRoot1,
-        bytes32 _merkleRoot2,
         address _mafagafo,
         address _firstReceiver,
         address _secondReceiver,
@@ -54,7 +52,6 @@ contract Minter is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         __UUPSUpgradeable_init();
 
         merkleRoot1 = _merkleRoot1;
-        merkleRoot2 = _merkleRoot2;
 
         firstReceiver = _firstReceiver;
         secondReceiver = _secondReceiver;
@@ -71,10 +68,6 @@ contract Minter is Initializable, OwnableUpgradeable, UUPSUpgradeable {
 
     function setMerkleRoot1(bytes32 _merkleRoot1) external onlyOwner {
         merkleRoot1 = _merkleRoot1;
-    }
-
-    function setMerkleRoot2(bytes32 _merkleRoot2) external onlyOwner {
-        merkleRoot2 = _merkleRoot2;
     }
 
     function setFirstReceiver(address _firstReceiver) external onlyOwner {
@@ -128,18 +121,9 @@ contract Minter is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         emit Claimed(account, quantity);
     }
 
-    function claim2(
-        address account,
-        uint256 quantity,
-        bytes32[] calldata merkleProof
-    ) external payable {
+    function claim2(address account, uint256 quantity) external payable {
         if (!(quantity == 1 || quantity == 3 || quantity == 5)) revert QuantityError(quantity);
         if (totalClaimed2[account] > 0) revert AlreadyClaimed(account);
-
-        // Verify the merkle proof.
-        bytes32 node = keccak256(abi.encodePacked(account));
-
-        if (!MerkleProofUpgradeable.verify(merkleProof, merkleRoot2, node)) revert InvalidProof();
 
         totalClaimed2[account] += quantity;
 
