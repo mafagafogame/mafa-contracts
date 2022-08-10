@@ -52,5 +52,13 @@ describe("Unit tests", function () {
 
       expect(await mafagafo.ownerOf(420)).to.equal(accounts[3].address);
     });
+
+    it("Should revert when trying to mint more than max supply", async function () {
+      await mafagafo.safeMint(accounts[3].address, 6697);
+
+      await expect(mafagafo.safeMint(accounts[3].address, 1)).to.be.revertedWith(
+        `'MaxSupplyExceeded(${await mafagafo.totalSupply()}, ${1})'`,
+      );
+    });
   });
 });

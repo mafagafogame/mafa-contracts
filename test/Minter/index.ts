@@ -8,7 +8,7 @@ import keccak256 from "keccak256";
 import { MerkleTree } from "merkletreejs";
 import { expect } from "chai";
 
-describe("Unit tests", function () {
+describe.only("Unit tests", function () {
   let mafagafo: Mafagafo;
   let minter: Minter;
   const users: {

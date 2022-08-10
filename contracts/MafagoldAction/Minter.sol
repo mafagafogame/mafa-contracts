@@ -27,12 +27,15 @@ contract Minter is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     mapping(address => uint256) public totalClaimed;
     mapping(address => uint256) public totalClaimed2;
 
+    uint256 totalMintedPhase2;
+
     error AlreadyClaimed(address account);
     error InvalidProof();
     error PriceMismatch(uint256 value, uint256 price);
     error QuantityError(uint256 quantity);
     error TransferError();
     error InvalidOption();
+    error SoldOut();
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -58,6 +61,8 @@ contract Minter is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         firstOptionAmount = _firstOptionAmount;
         secondOptionAmount = _secondOptionAmount;
         thirdOptionAmount = _thirdOptionAmount;
+
+        totalMintedPhase2 = 0;
 
         isFirstOptionOn = true;
         isSecondOptionOn = true;
@@ -124,8 +129,10 @@ contract Minter is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     function claim2(address account, uint256 quantity) external payable {
         if (!(quantity == 1 || quantity == 3 || quantity == 5)) revert QuantityError(quantity);
         if (totalClaimed2[account] > 0) revert AlreadyClaimed(account);
+        if (quantity + totalMintedPhase2 > 411) revert SoldOut();
 
         totalClaimed2[account] += quantity;
+        totalMintedPhase2 += quantity;
 
         uint256 firstAmount;
         uint256 secondAmount;

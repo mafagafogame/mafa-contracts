@@ -26,7 +26,7 @@ async function main() {
   const mafagafoFactory = <Mafagafo__factory>await ethers.getContractFactory("Mafagafo");
   const mafagafo = <Mafagafo>await upgrades.deployProxy(
     mafagafoFactory,
-    ["https://i.pinimg.com/originals/0b/04/d7/0b04d7f67d836af867c4192699773c52.gif", accounts[0].address, 420],
+    ["https://mafa-genesis.s3.amazonaws.com/mafaegg", "0x04015a633202FAa484e6eE2138bDe6dCe0fc28eb", 420],
     {
       initializer: "initialize",
       kind: "uups",
@@ -42,8 +42,8 @@ async function main() {
     [
       root,
       mafagafo.address,
-      accounts[0].address,
-      accounts[3].address,
+      "0x04015a633202FAa484e6eE2138bDe6dCe0fc28eb",
+      "0xffaDa8Ba93422819885Dfa584A62d10133035b04",
       utils.parseEther("0.1"),
       utils.parseEther("0.29"),
       utils.parseEther("0.45"),

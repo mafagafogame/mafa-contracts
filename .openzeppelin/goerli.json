@@ -30,6 +30,16 @@
       "address": "0x407F1A8baFFDA2d5014aAd164D0cf0146E89272f",
       "txHash": "0x77b8261e3f2a9e16f3768eaba2c5149e63f75b240dccb4f73b61458eff99e39a",
       "kind": "uups"
+    },
+    {
+      "address": "0xf90F14076104b36a56286bb8288DAf8Fa7cbEe9b",
+      "txHash": "0x35c3c435335b65c335b74b2ff3aa9085a75a17f4489005eca66eb3dacac181a1",
+      "kind": "uups"
+    },
+    {
+      "address": "0x60d6683199e18113AB4860B85e21f275c8e79c05",
+      "txHash": "0xe563b1b7b5cc5108eedd1bd95e0e67c3701a28078842fd5758942c4dc35e33b0",
+      "kind": "uups"
     }
   ],
   "impls": {
@@ -522,6 +532,354 @@
             "type": "t_mapping(t_address,t_uint256)",
             "contract": "Minter",
             "src": "contracts/MafagoldAction/Minter.sol:29"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(Mafagafo)16569": {
+            "label": "contract Mafagafo",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
+    },
+    "1edaa2cdb3bdbbc77274aeba370bdef837955748a43e7325c347a0667b9d46b6": {
+      "address": "0x3735fd38B49c3c297c8AcE892d81d0fA0d5A93d5",
+      "txHash": "0xebf8ab856da5cd772c8860fabbbd2b07b47992eae57709169b42364d74f83842",
+      "layout": {
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:62",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:67"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC165Upgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol:41"
+          },
+          {
+            "label": "_roles",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_mapping(t_bytes32,t_struct(RoleData)179_storage)",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:61"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:247"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol:211"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol:107"
+          },
+          {
+            "label": "preRevealBaseURI",
+            "offset": 0,
+            "slot": "251",
+            "type": "t_string_storage",
+            "contract": "Mafagafo",
+            "src": "contracts/MafagoldAction/Mafagafo.sol:16"
+          },
+          {
+            "label": "_baseTokenURI",
+            "offset": 0,
+            "slot": "252",
+            "type": "t_string_storage",
+            "contract": "Mafagafo",
+            "src": "contracts/MafagoldAction/Mafagafo.sol:17"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)179_storage)": {
+            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(RoleData)179_storage": {
+            "label": "struct AccessControlUpgradeable.RoleData",
+            "members": [
+              {
+                "label": "members",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
+    },
+    "85d1b3dc58d9189de8355e21526506dbaffb2eaa769b628e8029e6f7f6c39bef": {
+      "address": "0x4dC1Ad9Be482DC2C438eF064F96e71C218700239",
+      "txHash": "0xb11530847faf59c553f6e11b71f9e74429fd01c5a20c4c228ac9f3b26446c7c0",
+      "layout": {
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:62",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:67"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:87"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol:211"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol:107"
+          },
+          {
+            "label": "merkleRoot1",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_bytes32",
+            "contract": "Minter",
+            "src": "contracts/MafagoldAction/Minter.sol:13"
+          },
+          {
+            "label": "firstReceiver",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_address",
+            "contract": "Minter",
+            "src": "contracts/MafagoldAction/Minter.sol:15"
+          },
+          {
+            "label": "secondReceiver",
+            "offset": 0,
+            "slot": "203",
+            "type": "t_address",
+            "contract": "Minter",
+            "src": "contracts/MafagoldAction/Minter.sol:16"
+          },
+          {
+            "label": "firstOptionAmount",
+            "offset": 0,
+            "slot": "204",
+            "type": "t_uint256",
+            "contract": "Minter",
+            "src": "contracts/MafagoldAction/Minter.sol:17"
+          },
+          {
+            "label": "secondOptionAmount",
+            "offset": 0,
+            "slot": "205",
+            "type": "t_uint256",
+            "contract": "Minter",
+            "src": "contracts/MafagoldAction/Minter.sol:18"
+          },
+          {
+            "label": "thirdOptionAmount",
+            "offset": 0,
+            "slot": "206",
+            "type": "t_uint256",
+            "contract": "Minter",
+            "src": "contracts/MafagoldAction/Minter.sol:19"
+          },
+          {
+            "label": "isFirstOptionOn",
+            "offset": 0,
+            "slot": "207",
+            "type": "t_bool",
+            "contract": "Minter",
+            "src": "contracts/MafagoldAction/Minter.sol:21"
+          },
+          {
+            "label": "isSecondOptionOn",
+            "offset": 1,
+            "slot": "207",
+            "type": "t_bool",
+            "contract": "Minter",
+            "src": "contracts/MafagoldAction/Minter.sol:22"
+          },
+          {
+            "label": "isThirdOptionOn",
+            "offset": 2,
+            "slot": "207",
+            "type": "t_bool",
+            "contract": "Minter",
+            "src": "contracts/MafagoldAction/Minter.sol:23"
+          },
+          {
+            "label": "mafagafo",
+            "offset": 3,
+            "slot": "207",
+            "type": "t_contract(Mafagafo)16569",
+            "contract": "Minter",
+            "src": "contracts/MafagoldAction/Minter.sol:25"
+          },
+          {
+            "label": "totalClaimed",
+            "offset": 0,
+            "slot": "208",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "Minter",
+            "src": "contracts/MafagoldAction/Minter.sol:27"
+          },
+          {
+            "label": "totalClaimed2",
+            "offset": 0,
+            "slot": "209",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "Minter",
+            "src": "contracts/MafagoldAction/Minter.sol:28"
           }
         ],
         "types": {
