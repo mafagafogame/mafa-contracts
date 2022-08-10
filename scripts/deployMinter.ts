@@ -9,7 +9,7 @@ import { Mafagafo, Mafagafo__factory, Minter, Minter__factory } from "../typecha
 import { utils } from "ethers";
 import keccak256 from "keccak256";
 import { MerkleTree } from "merkletreejs";
-import { users, users2 } from "./users";
+import { users } from "./users";
 
 async function main() {
   const accounts = await ethers.getSigners();
@@ -18,13 +18,10 @@ async function main() {
 
   // equal to MerkleDistributor.sol #keccak256(abi.encodePacked(account, amount));
   const elements = users.map(x => utils.solidityKeccak256(["address", "uint256"], [x.address, x.amount]));
-  const elements2 = users2.map(x => utils.solidityKeccak256(["address"], [x.address]));
 
   const merkleTree = new MerkleTree(elements, keccak256, { sort: true });
-  const merkleTree2 = new MerkleTree(elements2, keccak256, { sort: true });
 
   const root = merkleTree.getHexRoot();
-  const root2 = merkleTree2.getHexRoot();
 
   const mafagafoFactory = <Mafagafo__factory>await ethers.getContractFactory("Mafagafo");
   const mafagafo = <Mafagafo>await upgrades.deployProxy(
@@ -44,7 +41,6 @@ async function main() {
     minterFactory,
     [
       root,
-      root2,
       mafagafo.address,
       accounts[0].address,
       accounts[3].address,
