@@ -2,40 +2,20 @@
   "manifestVersion": "3.2",
   "proxies": [
     {
-      "address": "0x9b31D287c7bB6E91b63aCc7631370E4b9F4203Ad",
-      "txHash": "0x3f2092e2ec91306692c3495132e81eb5d6c791e703547e017a7c21596800a4d4",
+      "address": "0x0751aD36cF95F5B2411D6eCa5017F0D41E0A3b06",
+      "txHash": "0x1064e02841eeb4794d4f65deb8efca2d3449ed9050938a9b88ace7078550210a",
       "kind": "uups"
     },
     {
-      "address": "0x42Ff7c0b9353510b95D654d4c28b506e92f3cbe5",
-      "txHash": "0xe6e8fbdaca5b8b5c629746afdbd580a343815e4ed5067d30d5688700871089b4",
-      "kind": "uups"
-    },
-    {
-      "address": "0x2C28c1cD9cfe98DF08Cb1E5D541C3aC175b0cACE",
-      "txHash": "0x6e20474d11c14889cb43e680b9758afce66f5b76249f45a43d9dce788b0bd21e",
-      "kind": "uups"
-    },
-    {
-      "address": "0x8CA7D544F7D6031974ca8bDbf5532177A1D9bbD5",
-      "txHash": "0x47d3d3c966e6d4764e50577cf5dc4abc4ff7a73972d30b8879665ce303dcc266",
-      "kind": "uups"
-    },
-    {
-      "address": "0x147C615f2AB42F01EdEB17d481A9f56efA604847",
-      "txHash": "0x1949334fc1ea1c1038fafceff5755ceaf76e92ce9825726f58003b17860d56c3",
-      "kind": "uups"
-    },
-    {
-      "address": "0x407F1A8baFFDA2d5014aAd164D0cf0146E89272f",
-      "txHash": "0x77b8261e3f2a9e16f3768eaba2c5149e63f75b240dccb4f73b61458eff99e39a",
+      "address": "0x7ac8ee28657Ed2a9ce251eC8741B740E4bF2F46e",
+      "txHash": "0x3bc9ccd7b5f551c3b992f88a3a256f1ceca22f363479ae2ab2787579375aeff7",
       "kind": "uups"
     }
   ],
   "impls": {
     "7efd85d3feb8de92549d876573f5ef36454954369bc4ae2f278513fd6982d382": {
-      "address": "0x74401412AF6959F50DC6177994c3a0E07054Aa16",
-      "txHash": "0x15cef6199b6622e99a57b9945b06a36f8687172536431b0f6dc2d3865dd1c650",
+      "address": "0x5E7b4971Dfd679896015DD1E79A2D2a44cF67139",
+      "txHash": "0xecb96d6c1544b49996a82e2bccb9afc5e6fbfa84619bb22bd767d08836b8b7ec",
       "layout": {
         "storage": [
           {
@@ -182,184 +162,9 @@
         }
       }
     },
-    "29c75d50c40a754b29a7ea30d19a0829cd21b211ced0bf0ee34928be3866d364": {
-      "address": "0xEF5A84054dF52b8C2884d4588c424713C7D45018",
-      "txHash": "0xa44161c3dbcce6df2050783611cc1a5088b675e91807113282e0f451cf423c23",
-      "layout": {
-        "storage": [
-          {
-            "label": "_initialized",
-            "offset": 0,
-            "slot": "0",
-            "type": "t_uint8",
-            "contract": "Initializable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:62",
-            "retypedFrom": "bool"
-          },
-          {
-            "label": "_initializing",
-            "offset": 1,
-            "slot": "0",
-            "type": "t_bool",
-            "contract": "Initializable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:67"
-          },
-          {
-            "label": "__gap",
-            "offset": 0,
-            "slot": "1",
-            "type": "t_array(t_uint256)50_storage",
-            "contract": "ContextUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
-          },
-          {
-            "label": "_owner",
-            "offset": 0,
-            "slot": "51",
-            "type": "t_address",
-            "contract": "OwnableUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
-          },
-          {
-            "label": "__gap",
-            "offset": 0,
-            "slot": "52",
-            "type": "t_array(t_uint256)49_storage",
-            "contract": "OwnableUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:87"
-          },
-          {
-            "label": "__gap",
-            "offset": 0,
-            "slot": "101",
-            "type": "t_array(t_uint256)50_storage",
-            "contract": "ERC1967UpgradeUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol:211"
-          },
-          {
-            "label": "__gap",
-            "offset": 0,
-            "slot": "151",
-            "type": "t_array(t_uint256)50_storage",
-            "contract": "UUPSUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol:107"
-          },
-          {
-            "label": "merkleRoot1",
-            "offset": 0,
-            "slot": "201",
-            "type": "t_bytes32",
-            "contract": "Minter",
-            "src": "contracts/MafagoldAction/Minter.sol:13"
-          },
-          {
-            "label": "merkleRoot2",
-            "offset": 0,
-            "slot": "202",
-            "type": "t_bytes32",
-            "contract": "Minter",
-            "src": "contracts/MafagoldAction/Minter.sol:14"
-          },
-          {
-            "label": "firstReceiver",
-            "offset": 0,
-            "slot": "203",
-            "type": "t_address",
-            "contract": "Minter",
-            "src": "contracts/MafagoldAction/Minter.sol:16"
-          },
-          {
-            "label": "secondReceiver",
-            "offset": 0,
-            "slot": "204",
-            "type": "t_address",
-            "contract": "Minter",
-            "src": "contracts/MafagoldAction/Minter.sol:17"
-          },
-          {
-            "label": "firstAmount",
-            "offset": 0,
-            "slot": "205",
-            "type": "t_uint256",
-            "contract": "Minter",
-            "src": "contracts/MafagoldAction/Minter.sol:18"
-          },
-          {
-            "label": "secondAmount",
-            "offset": 0,
-            "slot": "206",
-            "type": "t_uint256",
-            "contract": "Minter",
-            "src": "contracts/MafagoldAction/Minter.sol:19"
-          },
-          {
-            "label": "mafagafo",
-            "offset": 0,
-            "slot": "207",
-            "type": "t_contract(Mafagafo)15396",
-            "contract": "Minter",
-            "src": "contracts/MafagoldAction/Minter.sol:21"
-          },
-          {
-            "label": "totalClaimed",
-            "offset": 0,
-            "slot": "208",
-            "type": "t_mapping(t_address,t_uint256)",
-            "contract": "Minter",
-            "src": "contracts/MafagoldAction/Minter.sol:23"
-          },
-          {
-            "label": "totalClaimed2",
-            "offset": 0,
-            "slot": "209",
-            "type": "t_mapping(t_address,t_uint256)",
-            "contract": "Minter",
-            "src": "contracts/MafagoldAction/Minter.sol:24"
-          }
-        ],
-        "types": {
-          "t_address": {
-            "label": "address",
-            "numberOfBytes": "20"
-          },
-          "t_array(t_uint256)49_storage": {
-            "label": "uint256[49]",
-            "numberOfBytes": "1568"
-          },
-          "t_array(t_uint256)50_storage": {
-            "label": "uint256[50]",
-            "numberOfBytes": "1600"
-          },
-          "t_bool": {
-            "label": "bool",
-            "numberOfBytes": "1"
-          },
-          "t_bytes32": {
-            "label": "bytes32",
-            "numberOfBytes": "32"
-          },
-          "t_contract(Mafagafo)15396": {
-            "label": "contract Mafagafo",
-            "numberOfBytes": "20"
-          },
-          "t_mapping(t_address,t_uint256)": {
-            "label": "mapping(address => uint256)",
-            "numberOfBytes": "32"
-          },
-          "t_uint256": {
-            "label": "uint256",
-            "numberOfBytes": "32"
-          },
-          "t_uint8": {
-            "label": "uint8",
-            "numberOfBytes": "1"
-          }
-        }
-      }
-    },
     "519cb7b35a3c31beb52f3faeffefa8afb17789d0c7bfb51aa81bfb43d7e02fb6": {
-      "address": "0xbfc98b13d055ee7E93D6f0D6F7BcdfD3A8625260",
-      "txHash": "0x7e3b4c7c7862e22b7b20d93b09e27e5eb62f403c2e786ce0e977457077b1d71e",
+      "address": "0x7b94B58e41B9b0c8c05e9007aa96a73Be7Ea3D12",
+      "txHash": "0x5d4fbeae23f75852aad0e11cb1b983908c365c21fab326db424274c61533116a",
       "layout": {
         "storage": [
           {

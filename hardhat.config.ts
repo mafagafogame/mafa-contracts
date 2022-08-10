@@ -92,6 +92,7 @@ const config: HardhatUserConfig = {
       bsc: process.env.BSCSCAN_API_KEY,
       bscTestnet: process.env.BSCSCAN_API_KEY,
       goerli: process.env.ETHSCAN_API_KEY,
+      rinkeby: process.env.ETHSCAN_API_KEY,
     },
   },
   paths: {
