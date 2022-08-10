@@ -2,70 +2,50 @@
   "manifestVersion": "3.2",
   "proxies": [
     {
-      "address": "0x9b31D287c7bB6E91b63aCc7631370E4b9F4203Ad",
-      "txHash": "0x3f2092e2ec91306692c3495132e81eb5d6c791e703547e017a7c21596800a4d4",
+      "address": "0x0751aD36cF95F5B2411D6eCa5017F0D41E0A3b06",
+      "txHash": "0x1064e02841eeb4794d4f65deb8efca2d3449ed9050938a9b88ace7078550210a",
       "kind": "uups"
     },
     {
-      "address": "0x42Ff7c0b9353510b95D654d4c28b506e92f3cbe5",
-      "txHash": "0xe6e8fbdaca5b8b5c629746afdbd580a343815e4ed5067d30d5688700871089b4",
+      "address": "0x7ac8ee28657Ed2a9ce251eC8741B740E4bF2F46e",
+      "txHash": "0x3bc9ccd7b5f551c3b992f88a3a256f1ceca22f363479ae2ab2787579375aeff7",
       "kind": "uups"
     },
     {
-      "address": "0x2C28c1cD9cfe98DF08Cb1E5D541C3aC175b0cACE",
-      "txHash": "0x6e20474d11c14889cb43e680b9758afce66f5b76249f45a43d9dce788b0bd21e",
+      "address": "0x3F7fB530973f13d8a0F81EB6f2526D293C87a21B",
+      "txHash": "0xb33f8cbe6bb31ad97922ce969faf7d9f0343c2f30a68b3394fc5128e018b2b0f",
       "kind": "uups"
     },
     {
-      "address": "0x8CA7D544F7D6031974ca8bDbf5532177A1D9bbD5",
-      "txHash": "0x47d3d3c966e6d4764e50577cf5dc4abc4ff7a73972d30b8879665ce303dcc266",
+      "address": "0x12D4905a48b7bc86F672385753DD0E47c09d314E",
+      "txHash": "0x49d22726293c27bc455e7af59b6283a72616e22f3c85401de90482c4926bf15c",
       "kind": "uups"
     },
     {
-      "address": "0x147C615f2AB42F01EdEB17d481A9f56efA604847",
-      "txHash": "0x1949334fc1ea1c1038fafceff5755ceaf76e92ce9825726f58003b17860d56c3",
+      "address": "0x9fFE56BeC119De84f83e193F6A9d266Ab6934c79",
+      "txHash": "0xdb794b25c54c0538346d7f02ee2748904bc873fa8f72942d5d28158463f17753",
       "kind": "uups"
     },
     {
-      "address": "0x407F1A8baFFDA2d5014aAd164D0cf0146E89272f",
-      "txHash": "0x77b8261e3f2a9e16f3768eaba2c5149e63f75b240dccb4f73b61458eff99e39a",
+      "address": "0x2f948cd1e41c549F30b33aBB72CC4b7dF01937E2",
+      "txHash": "0xc2cc6af62fafbf1004c12b031119a7ee7bbad038c388c05d4128bd970a4618bd",
       "kind": "uups"
     },
     {
-      "address": "0xf90F14076104b36a56286bb8288DAf8Fa7cbEe9b",
-      "txHash": "0x35c3c435335b65c335b74b2ff3aa9085a75a17f4489005eca66eb3dacac181a1",
+      "address": "0xF45030996Ec26Fe2edCd2211205675D529c29F1A",
+      "txHash": "0x689311dfa2ceb6e1714dceb904153fe7efe7c935803bb372f97162236a107be9",
       "kind": "uups"
     },
     {
-      "address": "0x60d6683199e18113AB4860B85e21f275c8e79c05",
-      "txHash": "0xe563b1b7b5cc5108eedd1bd95e0e67c3701a28078842fd5758942c4dc35e33b0",
-      "kind": "uups"
-    },
-    {
-      "address": "0xd6edB6bcDE989967fcd28Ec9f3F22633FDB2B832",
-      "txHash": "0x694a236b5299b934f83124f77d95f26663209af8d634f5c2d1418cbd8294fd8a",
-      "kind": "uups"
-    },
-    {
-      "address": "0x9357CD3d6c45Ff5dD23c7c2Ce685569C2cF64c29",
-      "txHash": "0x3f01536f2a9795ff3fec88b27d28a184a0ad293dfaf6c33991657a1f65f6480b",
-      "kind": "uups"
-    },
-    {
-      "address": "0xC8C52404BcE1e804464d7f6cD081D2BB69A3334a",
-      "txHash": "0xd51b07b875b59565ee364f9aca18395a6568741d1de38a6aa5c0e660fbb71b32",
-      "kind": "uups"
-    },
-    {
-      "address": "0xBe53DDD50c06AEe0acABEc55c06afC1Ad78E6FBc",
-      "txHash": "0x994ed5f1b47006244ba4f9820fbe3981156bb1f6c243e2e8e859e1698317e4fc",
+      "address": "0x6042fb3DDDcA65cc81A45534fe7b225D30484828",
+      "txHash": "0x575ee537cabf7874bfb0b897fc522dfeac80189e63b08c552d22ad5abec6aa68",
       "kind": "uups"
     }
   ],
   "impls": {
     "7efd85d3feb8de92549d876573f5ef36454954369bc4ae2f278513fd6982d382": {
-      "address": "0x74401412AF6959F50DC6177994c3a0E07054Aa16",
-      "txHash": "0x15cef6199b6622e99a57b9945b06a36f8687172536431b0f6dc2d3865dd1c650",
+      "address": "0x5E7b4971Dfd679896015DD1E79A2D2a44cF67139",
+      "txHash": "0xecb96d6c1544b49996a82e2bccb9afc5e6fbfa84619bb22bd767d08836b8b7ec",
       "layout": {
         "storage": [
           {
@@ -212,184 +192,9 @@
         }
       }
     },
-    "29c75d50c40a754b29a7ea30d19a0829cd21b211ced0bf0ee34928be3866d364": {
-      "address": "0xEF5A84054dF52b8C2884d4588c424713C7D45018",
-      "txHash": "0xa44161c3dbcce6df2050783611cc1a5088b675e91807113282e0f451cf423c23",
-      "layout": {
-        "storage": [
-          {
-            "label": "_initialized",
-            "offset": 0,
-            "slot": "0",
-            "type": "t_uint8",
-            "contract": "Initializable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:62",
-            "retypedFrom": "bool"
-          },
-          {
-            "label": "_initializing",
-            "offset": 1,
-            "slot": "0",
-            "type": "t_bool",
-            "contract": "Initializable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:67"
-          },
-          {
-            "label": "__gap",
-            "offset": 0,
-            "slot": "1",
-            "type": "t_array(t_uint256)50_storage",
-            "contract": "ContextUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
-          },
-          {
-            "label": "_owner",
-            "offset": 0,
-            "slot": "51",
-            "type": "t_address",
-            "contract": "OwnableUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
-          },
-          {
-            "label": "__gap",
-            "offset": 0,
-            "slot": "52",
-            "type": "t_array(t_uint256)49_storage",
-            "contract": "OwnableUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:87"
-          },
-          {
-            "label": "__gap",
-            "offset": 0,
-            "slot": "101",
-            "type": "t_array(t_uint256)50_storage",
-            "contract": "ERC1967UpgradeUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol:211"
-          },
-          {
-            "label": "__gap",
-            "offset": 0,
-            "slot": "151",
-            "type": "t_array(t_uint256)50_storage",
-            "contract": "UUPSUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol:107"
-          },
-          {
-            "label": "merkleRoot1",
-            "offset": 0,
-            "slot": "201",
-            "type": "t_bytes32",
-            "contract": "Minter",
-            "src": "contracts/MafagoldAction/Minter.sol:13"
-          },
-          {
-            "label": "merkleRoot2",
-            "offset": 0,
-            "slot": "202",
-            "type": "t_bytes32",
-            "contract": "Minter",
-            "src": "contracts/MafagoldAction/Minter.sol:14"
-          },
-          {
-            "label": "firstReceiver",
-            "offset": 0,
-            "slot": "203",
-            "type": "t_address",
-            "contract": "Minter",
-            "src": "contracts/MafagoldAction/Minter.sol:16"
-          },
-          {
-            "label": "secondReceiver",
-            "offset": 0,
-            "slot": "204",
-            "type": "t_address",
-            "contract": "Minter",
-            "src": "contracts/MafagoldAction/Minter.sol:17"
-          },
-          {
-            "label": "firstAmount",
-            "offset": 0,
-            "slot": "205",
-            "type": "t_uint256",
-            "contract": "Minter",
-            "src": "contracts/MafagoldAction/Minter.sol:18"
-          },
-          {
-            "label": "secondAmount",
-            "offset": 0,
-            "slot": "206",
-            "type": "t_uint256",
-            "contract": "Minter",
-            "src": "contracts/MafagoldAction/Minter.sol:19"
-          },
-          {
-            "label": "mafagafo",
-            "offset": 0,
-            "slot": "207",
-            "type": "t_contract(Mafagafo)15396",
-            "contract": "Minter",
-            "src": "contracts/MafagoldAction/Minter.sol:21"
-          },
-          {
-            "label": "totalClaimed",
-            "offset": 0,
-            "slot": "208",
-            "type": "t_mapping(t_address,t_uint256)",
-            "contract": "Minter",
-            "src": "contracts/MafagoldAction/Minter.sol:23"
-          },
-          {
-            "label": "totalClaimed2",
-            "offset": 0,
-            "slot": "209",
-            "type": "t_mapping(t_address,t_uint256)",
-            "contract": "Minter",
-            "src": "contracts/MafagoldAction/Minter.sol:24"
-          }
-        ],
-        "types": {
-          "t_address": {
-            "label": "address",
-            "numberOfBytes": "20"
-          },
-          "t_array(t_uint256)49_storage": {
-            "label": "uint256[49]",
-            "numberOfBytes": "1568"
-          },
-          "t_array(t_uint256)50_storage": {
-            "label": "uint256[50]",
-            "numberOfBytes": "1600"
-          },
-          "t_bool": {
-            "label": "bool",
-            "numberOfBytes": "1"
-          },
-          "t_bytes32": {
-            "label": "bytes32",
-            "numberOfBytes": "32"
-          },
-          "t_contract(Mafagafo)15396": {
-            "label": "contract Mafagafo",
-            "numberOfBytes": "20"
-          },
-          "t_mapping(t_address,t_uint256)": {
-            "label": "mapping(address => uint256)",
-            "numberOfBytes": "32"
-          },
-          "t_uint256": {
-            "label": "uint256",
-            "numberOfBytes": "32"
-          },
-          "t_uint8": {
-            "label": "uint8",
-            "numberOfBytes": "1"
-          }
-        }
-      }
-    },
     "519cb7b35a3c31beb52f3faeffefa8afb17789d0c7bfb51aa81bfb43d7e02fb6": {
-      "address": "0xbfc98b13d055ee7E93D6f0D6F7BcdfD3A8625260",
-      "txHash": "0x7e3b4c7c7862e22b7b20d93b09e27e5eb62f403c2e786ce0e977457077b1d71e",
+      "address": "0x7b94B58e41B9b0c8c05e9007aa96a73Be7Ea3D12",
+      "txHash": "0x5d4fbeae23f75852aad0e11cb1b983908c365c21fab326db424274c61533116a",
       "layout": {
         "storage": [
           {
@@ -595,8 +400,8 @@
       }
     },
     "1edaa2cdb3bdbbc77274aeba370bdef837955748a43e7325c347a0667b9d46b6": {
-      "address": "0x3735fd38B49c3c297c8AcE892d81d0fA0d5A93d5",
-      "txHash": "0xebf8ab856da5cd772c8860fabbbd2b07b47992eae57709169b42364d74f83842",
+      "address": "0x7C9566b4662ffC7A988a75Ab8bf250b3bA367Ca2",
+      "txHash": "0x383f3546b0a96985d505e20a636ed9c1b1b710a2da1153811dc288bad5c09614",
       "layout": {
         "storage": [
           {
@@ -743,9 +548,9 @@
         }
       }
     },
-    "85d1b3dc58d9189de8355e21526506dbaffb2eaa769b628e8029e6f7f6c39bef": {
-      "address": "0x4dC1Ad9Be482DC2C438eF064F96e71C218700239",
-      "txHash": "0xb11530847faf59c553f6e11b71f9e74429fd01c5a20c4c228ac9f3b26446c7c0",
+    "087e0f86c44d57f641f15c4a51ec1544f58e7f61f3344257a8568b7bc976e260": {
+      "address": "0xaDE03C95B75B7e312CE441D4Eebc226fd1845e9c",
+      "txHash": "0xf2e5aac70e1f2c5d3ef28bdd1b597f2bcf6aa9bd320341ece3a300d484066c7d",
       "layout": {
         "storage": [
           {
@@ -806,100 +611,116 @@
             "src": "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol:107"
           },
           {
-            "label": "merkleRoot1",
+            "label": "preRevealBaseURI",
             "offset": 0,
             "slot": "201",
+            "type": "t_string_storage",
+            "contract": "Mafagafo",
+            "src": "contracts/MafagoldAction/Mafagafo.sol:14"
+          },
+          {
+            "label": "_baseTokenURI",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_string_storage",
+            "contract": "Mafagafo",
+            "src": "contracts/MafagoldAction/Mafagafo.sol:15"
+          },
+          {
+            "label": "merkleRoot",
+            "offset": 0,
+            "slot": "203",
             "type": "t_bytes32",
-            "contract": "Minter",
-            "src": "contracts/MafagoldAction/Minter.sol:13"
+            "contract": "Mafagafo",
+            "src": "contracts/MafagoldAction/Mafagafo.sol:17"
           },
           {
             "label": "firstReceiver",
             "offset": 0,
-            "slot": "202",
+            "slot": "204",
             "type": "t_address",
-            "contract": "Minter",
-            "src": "contracts/MafagoldAction/Minter.sol:15"
+            "contract": "Mafagafo",
+            "src": "contracts/MafagoldAction/Mafagafo.sol:19"
           },
           {
             "label": "secondReceiver",
             "offset": 0,
-            "slot": "203",
+            "slot": "205",
             "type": "t_address",
-            "contract": "Minter",
-            "src": "contracts/MafagoldAction/Minter.sol:16"
+            "contract": "Mafagafo",
+            "src": "contracts/MafagoldAction/Mafagafo.sol:20"
           },
           {
             "label": "firstOptionAmount",
             "offset": 0,
-            "slot": "204",
+            "slot": "206",
             "type": "t_uint256",
-            "contract": "Minter",
-            "src": "contracts/MafagoldAction/Minter.sol:17"
+            "contract": "Mafagafo",
+            "src": "contracts/MafagoldAction/Mafagafo.sol:21"
           },
           {
             "label": "secondOptionAmount",
             "offset": 0,
-            "slot": "205",
+            "slot": "207",
             "type": "t_uint256",
-            "contract": "Minter",
-            "src": "contracts/MafagoldAction/Minter.sol:18"
+            "contract": "Mafagafo",
+            "src": "contracts/MafagoldAction/Mafagafo.sol:22"
           },
           {
             "label": "thirdOptionAmount",
             "offset": 0,
-            "slot": "206",
+            "slot": "208",
             "type": "t_uint256",
-            "contract": "Minter",
-            "src": "contracts/MafagoldAction/Minter.sol:19"
+            "contract": "Mafagafo",
+            "src": "contracts/MafagoldAction/Mafagafo.sol:23"
           },
           {
             "label": "isFirstOptionOn",
             "offset": 0,
-            "slot": "207",
+            "slot": "209",
             "type": "t_bool",
-            "contract": "Minter",
-            "src": "contracts/MafagoldAction/Minter.sol:21"
+            "contract": "Mafagafo",
+            "src": "contracts/MafagoldAction/Mafagafo.sol:25"
           },
           {
             "label": "isSecondOptionOn",
             "offset": 1,
-            "slot": "207",
+            "slot": "209",
             "type": "t_bool",
-            "contract": "Minter",
-            "src": "contracts/MafagoldAction/Minter.sol:22"
+            "contract": "Mafagafo",
+            "src": "contracts/MafagoldAction/Mafagafo.sol:26"
           },
           {
             "label": "isThirdOptionOn",
             "offset": 2,
-            "slot": "207",
+            "slot": "209",
             "type": "t_bool",
-            "contract": "Minter",
-            "src": "contracts/MafagoldAction/Minter.sol:23"
-          },
-          {
-            "label": "mafagafo",
-            "offset": 3,
-            "slot": "207",
-            "type": "t_contract(Mafagafo)16569",
-            "contract": "Minter",
-            "src": "contracts/MafagoldAction/Minter.sol:25"
+            "contract": "Mafagafo",
+            "src": "contracts/MafagoldAction/Mafagafo.sol:27"
           },
           {
             "label": "totalClaimed",
             "offset": 0,
-            "slot": "208",
+            "slot": "210",
             "type": "t_mapping(t_address,t_uint256)",
-            "contract": "Minter",
-            "src": "contracts/MafagoldAction/Minter.sol:27"
+            "contract": "Mafagafo",
+            "src": "contracts/MafagoldAction/Mafagafo.sol:29"
           },
           {
             "label": "totalClaimed2",
             "offset": 0,
-            "slot": "209",
+            "slot": "211",
             "type": "t_mapping(t_address,t_uint256)",
-            "contract": "Minter",
-            "src": "contracts/MafagoldAction/Minter.sol:28"
+            "contract": "Mafagafo",
+            "src": "contracts/MafagoldAction/Mafagafo.sol:30"
+          },
+          {
+            "label": "totalMintedPhase2",
+            "offset": 0,
+            "slot": "212",
+            "type": "t_uint256",
+            "contract": "Mafagafo",
+            "src": "contracts/MafagoldAction/Mafagafo.sol:32"
           }
         ],
         "types": {
@@ -923,12 +744,12 @@
             "label": "bytes32",
             "numberOfBytes": "32"
           },
-          "t_contract(Mafagafo)16569": {
-            "label": "contract Mafagafo",
-            "numberOfBytes": "20"
-          },
           "t_mapping(t_address,t_uint256)": {
             "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
             "numberOfBytes": "32"
           },
           "t_uint256": {
@@ -942,9 +763,9 @@
         }
       }
     },
-    "087e0f86c44d57f641f15c4a51ec1544f58e7f61f3344257a8568b7bc976e260": {
-      "address": "0xDD6b113Ab0093e51c358AA135719Eb54859075CD",
-      "txHash": "0x5c29145271492167c000ae5c40e24df5d2f3c49a28aa476e6de591750794d22e",
+    "630ee090a3f69d4a3c1f1cd8fce448b39149cc5dd793843f18a72ae25c1fc9db": {
+      "address": "0xE645802715E2736eA1862F8A4fBfe5ED8b08269d",
+      "txHash": "0x7e63e9d81a67727e24320dbae95a8c80e13948b73cc341861036dd7d0108a396",
       "layout": {
         "storage": [
           {

@@ -45,6 +45,11 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 
 const config: HardhatUserConfig = {
   networks: {
+    ethereum: {
+      url: "https://eth-mainnet.nodereal.io/v1/1659dfb40aa24bbb8153a677b98064d7",
+      chainId: 1,
+      accounts: { mnemonic },
+    },
     ropsten: {
       url: process.env.ROPSTEN_URL || "",
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
@@ -89,9 +94,11 @@ const config: HardhatUserConfig = {
   },
   etherscan: {
     apiKey: {
+      mainnet: process.env.ETHERSCAN_API_KEY,
       bsc: process.env.BSCSCAN_API_KEY,
       bscTestnet: process.env.BSCSCAN_API_KEY,
       goerli: process.env.ETHSCAN_API_KEY,
+      rinkeby: process.env.ETHSCAN_API_KEY,
     },
   },
   paths: {
