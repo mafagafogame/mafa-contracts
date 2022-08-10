@@ -7,16 +7,16 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
-error MaxSupplyExceeded(uint256 totalSupply, uint256 quantity);
-
 contract Mafagafo is Initializable, ERC721AUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
 
-    uint256 public constant MAX_SUPPLY = 10420;
+    uint256 public constant MAX_SUPPLY = 7117;
 
     string public preRevealBaseURI;
     string private _baseTokenURI;
+
+    error MaxSupplyExceeded(uint256 totalSupply, uint256 quantity);
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
