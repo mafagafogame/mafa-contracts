@@ -7,25 +7,16 @@ import { Mafagafo, Mafagafo__factory } from "../../typechain";
 import keccak256 from "keccak256";
 import { MerkleTree } from "merkletreejs";
 import { utils } from "ethers";
+import { users } from "../../scripts/users";
 
 describe.only("Unit tests", function () {
   let mafagafo: Mafagafo;
-  const users: {
-    address: string;
-    amount: number;
-  }[] = [];
   let elements: string[];
   let merkleTree: MerkleTree;
   let accounts: SignerWithAddress[];
 
   before(async function () {
     accounts = await ethers.getSigners();
-
-    for (let i = 0; i < 500; i++) {
-      const wallet = ethers.Wallet.createRandom();
-
-      users.push({ address: wallet.address, amount: 3 });
-    }
 
     // equal to MerkleDistributor.sol #keccak256(abi.encodePacked(account, amount));
     elements = users.map(x => utils.solidityKeccak256(["address", "uint256"], [x.address, x.amount]));
@@ -264,6 +255,40 @@ describe.only("Unit tests", function () {
           await expect(mafagafo.safeMintMafaTech(accounts[3].address, 1)).to.be.revertedWith(
             `'MaxSupplyExceeded(${await mafagafo.totalSupply()}, ${1})'`,
           );
+        });
+      });
+
+      describe("gas test", async function () {
+        it("should report gas", async function () {
+          const leaf = elements[0];
+          const proof = merkleTree.getHexProof(leaf);
+
+          console.log(elements[0]);
+          console.log(await mafagafo.totalClaimed(users[0].address));
+
+          let claim = await mafagafo.claim1(users[0].address, 1, users[0].amount, proof);
+          let claimTxnResponse = await claim.wait();
+          console.log(`\tgas to claim 1: `, claimTxnResponse.gasUsed.toString());
+
+          console.log(await mafagafo.totalClaimed(users[0].address));
+
+          claim = await mafagafo.claim1(users[0].address, 10, users[0].amount, proof);
+          claimTxnResponse = await claim.wait();
+          console.log(`\tgas to claim 10: `, claimTxnResponse.gasUsed.toString());
+
+          console.log(await mafagafo.totalClaimed(users[0].address));
+
+          claim = await mafagafo.claim1(users[0].address, 50, users[0].amount, proof);
+          claimTxnResponse = await claim.wait();
+          console.log(`\tgas to claim 50: `, claimTxnResponse.gasUsed.toString());
+
+          console.log(await mafagafo.totalClaimed(users[0].address));
+
+          claim = await mafagafo.claim1(users[0].address, 100, users[0].amount, proof);
+          claimTxnResponse = await claim.wait();
+          console.log(`\tgas to claim 100: `, claimTxnResponse.gasUsed.toString());
+
+          console.log(await mafagafo.totalClaimed(users[0].address));
         });
       });
     });
